@@ -30,4 +30,9 @@ public class Product {
 	private boolean stock = true;
 
 	private double price;
+	
+	@Override
+	public String toString() {
+		return String.format("id=%s, product=%s, precio=%s, stock=%s ", this.getId(), this.getProduct(), this.getPrice(), this.isStock());
+	}
 }
