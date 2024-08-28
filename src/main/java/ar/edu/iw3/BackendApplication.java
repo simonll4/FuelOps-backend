@@ -24,19 +24,19 @@ public class BackendApplication implements CommandLineRunner{
 	@Override
 	public void run(String... args) throws Exception {
 		
-		/*
-		try {
-			Product p=new Product();
-			p.setProduct("Arroz");
-			p.setPrice(156.67);
-			productBusiness.add(p);
-			Product p1=productBusiness.load(p.getId());
-			Product p2=productBusiness.load(p.getProduct());
-			log.info(p1.toString());
-			log.info(p2.toString());
-		} catch (Exception e) {
-			log.warn(e.getMessage());
-		}*/
+
+//		try {
+//			Product p=new Product();
+//			p.setProduct("Arroz");
+//			p.setPrice(156.67);
+//			productBusiness.add(p);
+//			Product p1=productBusiness.load(p.getId());
+//			Product p2=productBusiness.load(p.getProduct());
+//			log.info(p1.toString());
+//			log.info(p2.toString());
+//		} catch (Exception e) {
+//			log.warn(e.getMessage());
+//		}
 		
 	}
 
