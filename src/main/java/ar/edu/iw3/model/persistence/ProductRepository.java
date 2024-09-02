@@ -9,5 +9,11 @@ import ar.edu.iw3.model.Product;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
-	Optional<Product> findByProduct(String product);
+
+    // JPA Query Methods https://docs.spring.io/spring-data/jpa/reference/jpa/query-methods.html
+
+    Optional<Product> findByProduct(String product);
+
+    Optional<Product> findByProductAndIdNot(String product, Long id);
+
 }

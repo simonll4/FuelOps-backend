@@ -35,4 +35,5 @@ public class Product {
 	public String toString() {
 		return String.format("id=%s, product=%s, precio=%s, stock=%s ", this.getId(), this.getProduct(), this.getPrice(), this.isStock());
 	}
+
 }

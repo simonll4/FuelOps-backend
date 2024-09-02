@@ -14,116 +14,123 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ProductBusiness implements IProductBusiness {
 
-	// IoC
-	@Autowired
-	private ProductRepository productDAO;
-	
-	@Override
-	public Product load(long id) throws NotFoundException, BusinessException {
-		Optional<Product> r;
-		
-		try {
-			r=productDAO.findById(id);
-		} catch (Exception e) {
-			log.error(e.getMessage(),e);
-			throw BusinessException.builder().ex(e).build();
-		}
-		if(r.isEmpty())
-			throw NotFoundException.builder().message("No se encuentra el Producto id="+id).build();
-		
-		return r.get();
-		
-		//return productDAO.findById(id).get();
-	}
-	
-	@Override
-	public Product load(String product) throws NotFoundException, BusinessException {
-		Optional<Product> r;
-		
-		try {
-			r=productDAO.findByProduct(product);
-		} catch (Exception e) {
-			log.error(e.getMessage(),e);
-			throw BusinessException.builder().ex(e).build();
-		}
-		if(r.isEmpty())
-			throw NotFoundException.builder().message("No se encuentra el Producto denominado "+product).build();
-		
-		return r.get();
-	}
+    // IoC
+    @Autowired
+    private ProductRepository productDAO;
 
-	
-	@Override
-	public Product add(Product product) throws FoundException, BusinessException {
-		
-		try {
-			load(product.getId());
-			throw FoundException.builder().message("Se encontró el producto id="+product.getId()).build();
-		} catch (NotFoundException e) {
-			// log.trace(e.getMessage(), e);
-		}
-		
-		try {
-			load(product.getProduct());
-			throw FoundException.builder().message("Se encontró el producto "+product.getProduct()).build();
-		} catch (NotFoundException e) {}
-		
-		try {
-			return productDAO.save(product);
-		} catch (Exception e) {
-			log.error(e.getMessage(),e);
-			throw BusinessException.builder().ex(e).build();
-		}
-		
-	}
+    @Override
+    public Product load(long id) throws NotFoundException, BusinessException {
+        Optional<Product> productFound;
 
-	
-	@Override
-	public List<Product> list() throws BusinessException {
-		try {
-			return productDAO.findAll();
-		} catch (Exception e) {
-			log.error(e.getMessage(),e);
-			throw BusinessException.builder().ex(e).build();
-		}
-	}
+        try {
+            productFound = productDAO.findById(id);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            throw BusinessException.builder().ex(e).build();
+        }
+        if (productFound.isEmpty())
+            throw NotFoundException.builder().message("No se encuentra el Producto id= " + id).build();
+
+        return productFound.get();
+    }
+
+    @Override
+    public Product load(String product) throws NotFoundException, BusinessException {
+        Optional<Product> productFound;
+
+        try {
+            productFound = productDAO.findByProduct(product);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            throw BusinessException.builder().ex(e).build();
+        }
+        if (productFound.isEmpty())
+            throw NotFoundException.builder().message("No se Encuentra el Producto Denominado " + product).build();
+
+        return productFound.get();
+    }
 
 
-// 1 Arroz 189 true
-// 2 Leche 50  true
+    @Override
+    public Product add(Product product) throws FoundException, BusinessException {
 
-// 1 Leche 190 true <-- esto no puede ocurrir!!!!!!
+        try {
+            load(product.getId());
+            throw FoundException.builder().message("Se Encontró el Producto id= " + product.getId()).build();
+        } catch (NotFoundException e) {
+            // log.trace(e.getMessage(), e);
+        }
+
+        try {
+            load(product.getProduct());
+            throw FoundException.builder().message("Se Encontró el Producto " + product.getProduct()).build();
+        } catch (NotFoundException e) {
+            // log.trace(e.getMessage(), e);
+        }
+
+        try {
+            return productDAO.save(product);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            throw BusinessException.builder().ex(e).build();
+        }
+
+    }
 
 
-	@Override
-	public Product update(Product product) throws NotFoundException, BusinessException {
-		load(product.getId());
-		//load(product.getProduct()); CHacer todo para que esto funcione!!!!
-		try {
-			return productDAO.save(product);
-		} catch (Exception e) {
+    @Override
+    public List<Product> list() throws BusinessException {
+        try {
+            return productDAO.findAll();
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            throw BusinessException.builder().ex(e).build();
+        }
+    }
 
-			log.error(e.getMessage(),e);
-			throw BusinessException.builder().ex(e).build();
-		}
-	}
 
-	@Override
-	public void delete(Product product) throws NotFoundException, BusinessException {
-		delete(product.getId());
+    @Override
+    public Product update(Product product) throws NotFoundException, BusinessException, FoundException {
 
-	}
+        load(product.getId());
 
-	@Override
-	public void delete(long id) throws NotFoundException, BusinessException {
-		load(id);
-		try {
-			productDAO.deleteById(id);
-		} catch (Exception e) {
-			log.error(e.getMessage(),e);
-			throw BusinessException.builder().ex(e).build();
-		}
+        Optional<Product> productFound;
+        try {
+            productFound = productDAO.findByProductAndIdNot(product.getProduct(), product.getId());
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            throw BusinessException.builder().ex(e).build();
+        }
 
-	}
+        if (productFound.isPresent()) {
+            throw new FoundException("El Nombre Corresponde con Otro Producto.");
+        }
+
+        try {
+            return productDAO.save(product);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            throw BusinessException.builder().ex(e).build();
+        }
+
+    }
+
+    @Override
+    public void delete(Product product) throws NotFoundException, BusinessException {
+        delete(product.getId());
+
+    }
+
+    @Override
+    public void delete(long id) throws NotFoundException, BusinessException {
+        load(id);
+        try {
+            productDAO.deleteById(id);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            throw BusinessException.builder().ex(e).build();
+        }
+
+    }
 
 }

@@ -9,26 +9,25 @@ import ar.edu.iw3.model.Product;
 import ar.edu.iw3.model.business.IProductBusiness;
 import lombok.extern.slf4j.Slf4j;
 
-@SpringBootApplication 
+@SpringBootApplication
 @Slf4j
-public class BackendApplication implements CommandLineRunner{
+public class BackendApplication implements CommandLineRunner {
 
-	public static void main(String[] args) {
-		SpringApplication.run(BackendApplication.class, args);
-		
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(BackendApplication.class, args);
 
-	@Autowired
-	private IProductBusiness productBusiness;
-	
-	@Override
-	public void run(String... args) throws Exception {
-		
+    }
+
+    @Autowired
+    private IProductBusiness productBusiness;
+
+    @Override
+    public void run(String... args) throws Exception {
 
 //		try {
 //			Product p=new Product();
-//			p.setProduct("Arroz");
-//			p.setPrice(156.67);
+//			p.setProduct("Leche");
+//			p.setPrice(100);
 //			productBusiness.add(p);
 //			Product p1=productBusiness.load(p.getId());
 //			Product p2=productBusiness.load(p.getProduct());
@@ -37,7 +36,16 @@ public class BackendApplication implements CommandLineRunner{
 //		} catch (Exception e) {
 //			log.warn(e.getMessage());
 //		}
-		
-	}
 
+//        try {
+//            Product p = new Product();
+//            p.setId(2);
+//            p.setProduct("Leches");
+//            p.setPrice(100);
+//            productBusiness.update(p);
+//
+//        } catch (Exception e) {
+//            log.warn(e.getMessage());
+//        }
+    }
 }

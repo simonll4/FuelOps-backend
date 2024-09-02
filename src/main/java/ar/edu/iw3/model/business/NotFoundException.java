@@ -3,8 +3,11 @@ package ar.edu.iw3.model.business;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 
+import java.io.Serial;
+
 @NoArgsConstructor
 public class NotFoundException extends Exception {
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	@Builder
