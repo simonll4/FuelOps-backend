@@ -1,4 +1,4 @@
-package ar.edu.iw3.model.business;
+package ar.edu.iw3.model.business.exceptions;
 
 import lombok.Builder;
 import lombok.NoArgsConstructor;
@@ -6,20 +6,20 @@ import lombok.NoArgsConstructor;
 import java.io.Serial;
 
 @NoArgsConstructor
-public class NotFoundException extends Exception {
+public class BusinessException extends Exception {
 	@Serial
 	private static final long serialVersionUID = 1L;
 
 	@Builder
-	public NotFoundException(String message, Throwable ex) {
+	public BusinessException(String message, Throwable ex) {
 		super(message, ex);
 	}
 	@Builder
-	public NotFoundException(String message) {
+	public BusinessException(String message) {
 		super(message);
 	}
 	@Builder
-	public NotFoundException(Throwable ex) {
+	public BusinessException(Throwable ex) {
 		super(ex.getMessage(), ex);
 	}
 }

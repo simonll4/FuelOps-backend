@@ -6,6 +6,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "products")
 @AllArgsConstructor
@@ -29,6 +32,10 @@ public class Product {
     @ManyToOne
     @JoinColumn(name = "category_id", nullable = true)
     private Category category;
+
+    @ManyToMany
+    @JoinTable(name = "products_suppliers", joinColumns = @JoinColumn(name = "id_product"), inverseJoinColumns = @JoinColumn(name = "id_supplier"))
+    private List<Supplier> suppliers = new ArrayList<>();
 
     @Override
     public String toString() {

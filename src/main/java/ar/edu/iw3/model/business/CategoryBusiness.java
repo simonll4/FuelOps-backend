@@ -1,7 +1,9 @@
 package ar.edu.iw3.model.business;
 
 import ar.edu.iw3.model.Category;
-import ar.edu.iw3.model.Product;
+import ar.edu.iw3.model.business.exceptions.BusinessException;
+import ar.edu.iw3.model.business.exceptions.FoundException;
+import ar.edu.iw3.model.business.exceptions.NotFoundException;
 import ar.edu.iw3.model.persistence.CategoryRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +14,7 @@ import java.util.Optional;
 
 @Service
 @Slf4j
-public class CategoryBusiness implements ICategoryBussiness {
+public class CategoryBusiness implements ICategoryBusiness {
 
     @Autowired
     private CategoryRepository categoryDAO;
@@ -59,7 +61,14 @@ public class CategoryBusiness implements ICategoryBussiness {
     public Category add(Category category) throws FoundException, BusinessException {
         try {
             load(category.getId());
-            throw FoundException.builder().message("Se Encontró la Categoria id= " + category.getId()).build();
+            throw FoundException.builder().message("Ya existe la Categoria id = " + category.getId()).build();
+        } catch (NotFoundException e) {
+            // log.trace(e.getMessage(), e);
+        }
+
+        try {
+            load(category.getCategory());
+            throw FoundException.builder().message("Ya existe la Cateogoria = " + category.getCategory()).build();
         } catch (NotFoundException e) {
             // log.trace(e.getMessage(), e);
         }
@@ -73,8 +82,20 @@ public class CategoryBusiness implements ICategoryBussiness {
     }
 
     @Override
-    public Category update(Category category) throws NotFoundException, BusinessException {
+    public Category update(Category category) throws NotFoundException, FoundException, BusinessException {
         load(category.getId());
+        Optional<Category> categoryFound;
+        try {
+            categoryFound = categoryDAO.findByCategoryAndIdNot(category.getCategory(), category.getId());
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            throw BusinessException.builder().ex(e).build();
+        }
+
+        if (categoryFound.isPresent()) {
+            throw FoundException.builder().message("Se encontró la Categoria nombre =" + category.getCategory()).build();
+        }
+
         try {
             return categoryDAO.save(category);
         } catch (Exception e) {

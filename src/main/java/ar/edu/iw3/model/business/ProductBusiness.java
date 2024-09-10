@@ -3,6 +3,9 @@ package ar.edu.iw3.model.business;
 import java.util.List;
 import java.util.Optional;
 
+import ar.edu.iw3.model.business.exceptions.BusinessException;
+import ar.edu.iw3.model.business.exceptions.FoundException;
+import ar.edu.iw3.model.business.exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -56,14 +59,14 @@ public class ProductBusiness implements IProductBusiness {
 
         try {
             load(product.getId());
-            throw FoundException.builder().message("Se Encontró el Producto id= " + product.getId()).build();
+            throw FoundException.builder().message("Ya existe el Producto id= " + product.getId()).build();
         } catch (NotFoundException e) {
             // log.trace(e.getMessage(), e);
         }
 
         try {
             load(product.getProduct());
-            throw FoundException.builder().message("Se Encontró el Producto " + product.getProduct()).build();
+            throw FoundException.builder().message("Ya existe el Producto " + product.getProduct()).build();
         } catch (NotFoundException e) {
             // log.trace(e.getMessage(), e);
         }
@@ -89,7 +92,7 @@ public class ProductBusiness implements IProductBusiness {
 
 
     @Override
-    public Product update(Product product) throws NotFoundException, BusinessException, FoundException {
+    public Product update(Product product) throws NotFoundException, FoundException, BusinessException {
 
         load(product.getId());
 

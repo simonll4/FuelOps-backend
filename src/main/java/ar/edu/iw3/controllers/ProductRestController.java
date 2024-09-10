@@ -3,6 +3,9 @@ package ar.edu.iw3.controllers;
 import ar.edu.iw3.model.Product;
 import ar.edu.iw3.model.Category;
 import ar.edu.iw3.model.business.*;
+import ar.edu.iw3.model.business.exceptions.BusinessException;
+import ar.edu.iw3.model.business.exceptions.FoundException;
+import ar.edu.iw3.model.business.exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -33,7 +36,7 @@ public class ProductRestController extends BaseRestController {
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<?> load(@PathVariable long id) {
+    public ResponseEntity<?> loadProduct(@PathVariable long id) {
         try {
             return new ResponseEntity<>(productBusiness.load(id), HttpStatus.OK);
         } catch (BusinessException e) {
@@ -45,7 +48,7 @@ public class ProductRestController extends BaseRestController {
     }
 
     @GetMapping(value = "/by_name/{product}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> load(@PathVariable String product) {
+    public ResponseEntity<?> loadProduct(@PathVariable String product) {
         try {
             return new ResponseEntity<>(productBusiness.load(product), HttpStatus.OK);
         } catch (BusinessException e) {
@@ -57,7 +60,7 @@ public class ProductRestController extends BaseRestController {
     }
 
     @PostMapping(value = "")
-    public ResponseEntity<?> add(@RequestBody Product product) {
+    public ResponseEntity<?> addProduct(@RequestBody Product product) {
         try {
             Product response = productBusiness.add(product);
             HttpHeaders responseHeaders = new HttpHeaders();
@@ -72,7 +75,7 @@ public class ProductRestController extends BaseRestController {
     }
 
     @PutMapping(value = "")
-    public ResponseEntity<?> update(@RequestBody Product product) {
+    public ResponseEntity<?> updateProduct(@RequestBody Product product) {
         try {
             productBusiness.update(product);
             return new ResponseEntity<>(HttpStatus.OK);
@@ -88,7 +91,7 @@ public class ProductRestController extends BaseRestController {
     }
 
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<?> delete(@PathVariable long id) {
+    public ResponseEntity<?> deleteProduct(@PathVariable long id) {
         try {
             productBusiness.delete(id);
             return new ResponseEntity<String>(HttpStatus.OK);
@@ -101,12 +104,12 @@ public class ProductRestController extends BaseRestController {
     }
 
     @Autowired
-    private ICategoryBussiness categoryBussiness;
+    private ICategoryBusiness categoryBusiness;
 
     @GetMapping(value = "/categories", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> listCategories() {
         try {
-            return new ResponseEntity<>(categoryBussiness.list(), HttpStatus.OK);
+            return new ResponseEntity<>(categoryBusiness.list(), HttpStatus.OK);
         } catch (BusinessException e) {
             return new ResponseEntity<>(response.build(HttpStatus.INTERNAL_SERVER_ERROR, e, e.getMessage()),
                     HttpStatus.INTERNAL_SERVER_ERROR);
@@ -116,7 +119,7 @@ public class ProductRestController extends BaseRestController {
     @GetMapping(value = "/categories/{id}")
     public ResponseEntity<?> loadCategory(@PathVariable long id) {
         try {
-            return new ResponseEntity<>(categoryBussiness.load(id), HttpStatus.OK);
+            return new ResponseEntity<>(categoryBusiness.load(id), HttpStatus.OK);
         } catch (BusinessException e) {
             return new ResponseEntity<>(response.build(HttpStatus.INTERNAL_SERVER_ERROR, e, e.getMessage()),
                     HttpStatus.INTERNAL_SERVER_ERROR);
@@ -125,11 +128,22 @@ public class ProductRestController extends BaseRestController {
         }
     }
 
+    @GetMapping(value = "/categories/by_name/{category}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> loadCategory(@PathVariable String category) {
+        try {
+            return new ResponseEntity<>(categoryBusiness.load(category), HttpStatus.OK);
+        } catch (BusinessException e) {
+            return new ResponseEntity<>(response.build(HttpStatus.INTERNAL_SERVER_ERROR, e, e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (NotFoundException e) {
+            return new ResponseEntity<>(response.build(HttpStatus.NOT_FOUND, e, e.getMessage()), HttpStatus.NOT_FOUND);
+        }
+    }
 
     @PostMapping(value = "/categories")
     public ResponseEntity<?> addCategory(@RequestBody Category category) {
         try {
-            Category response = categoryBussiness.add(category);
+            Category response = categoryBusiness.add(category);
             HttpHeaders responseHeaders = new HttpHeaders();
             responseHeaders.set("location", Constants.URL_PRODUCTS + "/categories/" + response.getId());
             return new ResponseEntity<>(responseHeaders, HttpStatus.CREATED);
@@ -144,20 +158,22 @@ public class ProductRestController extends BaseRestController {
     @PutMapping(value = "/categories")
     public ResponseEntity<?> updateCategory(@RequestBody Category category) {
         try {
-            categoryBussiness.update(category);
+            categoryBusiness.update(category);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (BusinessException e) {
             return new ResponseEntity<>(response.build(HttpStatus.INTERNAL_SERVER_ERROR, e, e.getMessage()),
                     HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (NotFoundException e) {
             return new ResponseEntity<>(response.build(HttpStatus.NOT_FOUND, e, e.getMessage()), HttpStatus.NOT_FOUND);
+        } catch (FoundException e) {
+            return new ResponseEntity<>(response.build(HttpStatus.FOUND, e, e.getMessage()), HttpStatus.FOUND);
         }
     }
 
     @DeleteMapping(value = "/categories/{id}")
     public ResponseEntity<?> deleteCategory(@PathVariable long id) {
         try {
-            categoryBussiness.delete(id);
+            categoryBusiness.delete(id);
             return new ResponseEntity<String>(HttpStatus.OK);
         } catch (BusinessException e) {
             return new ResponseEntity<>(response.build(HttpStatus.INTERNAL_SERVER_ERROR, e, e.getMessage()),
