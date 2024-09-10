@@ -18,6 +18,8 @@ public class SupplierBusiness implements ISupplierBusiness {
     @Autowired
     private SupplierRepository supplierDAO;
 
+    private Supplier supplier;
+
     @Override
     public List<Supplier> list() throws BusinessException {
         try {

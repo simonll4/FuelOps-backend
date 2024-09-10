@@ -33,7 +33,6 @@ public class ProductBusiness implements IProductBusiness {
         }
         if (productFound.isEmpty())
             throw NotFoundException.builder().message("No se encuentra el Producto id= " + id).build();
-
         return productFound.get();
     }
 
