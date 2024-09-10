@@ -74,7 +74,6 @@ public class ProductBusiness implements IProductBusiness {
             log.error(e.getMessage(), e);
             throw BusinessException.builder().ex(e).build();
         }
-
     }
 
 
@@ -103,7 +102,7 @@ public class ProductBusiness implements IProductBusiness {
         }
 
         if (productFound.isPresent()) {
-            throw new FoundException("El Nombre Corresponde con Otro Producto.");
+            throw FoundException.builder().message("Se encontró el Producto nombre=" + product.getProduct()).build();
         }
 
         try {
