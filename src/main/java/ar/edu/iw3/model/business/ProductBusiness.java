@@ -74,10 +74,11 @@ public class ProductBusiness implements IProductBusiness {
             return productDAO.save(product);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            throw BusinessException.builder().ex(e).build();
+            //throw BusinessException.builder().ex(e).build();
+            throw BusinessException.builder().message("Error al Crear Nuevo Producto").build();
         }
-    }
 
+    }
 
     @Override
     public List<Product> list() throws BusinessException {
@@ -88,7 +89,6 @@ public class ProductBusiness implements IProductBusiness {
             throw BusinessException.builder().ex(e).build();
         }
     }
-
 
     @Override
     public Product update(Product product) throws NotFoundException, FoundException, BusinessException {
@@ -111,9 +111,9 @@ public class ProductBusiness implements IProductBusiness {
             return productDAO.save(product);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            throw BusinessException.builder().ex(e).build();
+            //throw BusinessException.builder().ex(e).build();
+            throw BusinessException.builder().message("Error al Actualizar Producto").build();
         }
-
     }
 
     @Override
