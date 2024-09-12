@@ -1,5 +1,6 @@
 package ar.edu.iw3.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -33,13 +34,13 @@ public class Product {
     @JoinColumn(name = "category_id", nullable = true)
     private Category category;
 
-    @ManyToMany
+    @ManyToMany()
     @JoinTable(name = "products_suppliers", joinColumns = @JoinColumn(name = "id_product"), inverseJoinColumns = @JoinColumn(name = "id_supplier"))
+    @JsonIgnoreProperties("products")
     private List<Supplier> suppliers = new ArrayList<>();
 
     @Override
     public String toString() {
         return String.format("id=%s, product=%s, precio=%s, stock=%s ", this.getId(), this.getProduct(), this.getPrice(), this.isStock());
     }
-
 }
