@@ -7,8 +7,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.List;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "products")
@@ -35,9 +36,11 @@ public class Product {
     private Category category;
 
     @ManyToMany()
-    @JoinTable(name = "products_suppliers", joinColumns = @JoinColumn(name = "id_product"), inverseJoinColumns = @JoinColumn(name = "id_supplier"))
+    @JoinTable(name = "products_suppliers",
+            joinColumns = {@JoinColumn(name = "id_product", referencedColumnName = "id")},
+            inverseJoinColumns = {@JoinColumn(name = "id_supplier", referencedColumnName = "id")})
     @JsonIgnoreProperties("products")
-    private List<Supplier> suppliers = new ArrayList<>();
+    private Set<Supplier> suppliers = new HashSet<>();
 
     @Override
     public String toString() {

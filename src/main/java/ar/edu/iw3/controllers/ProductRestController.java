@@ -87,7 +87,6 @@ public class ProductRestController extends BaseRestController {
         } catch (FoundException e) {
             return new ResponseEntity<>(response.build(HttpStatus.FOUND, e, e.getMessage()), HttpStatus.FOUND);
         }
-
     }
 
     @DeleteMapping(value = "/{id}")

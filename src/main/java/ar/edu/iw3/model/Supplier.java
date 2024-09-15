@@ -7,7 +7,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "suppliers")
@@ -25,5 +27,5 @@ public class Supplier {
 
     @ManyToMany(mappedBy = "suppliers")
     @JsonIgnoreProperties("suppliers")
-    private List<Product> products;
+    private Set<Product> products = new HashSet<>();
 }

@@ -104,7 +104,7 @@ public class ProductBusiness implements IProductBusiness {
         }
 
         if (productFound.isPresent()) {
-            throw FoundException.builder().message("Se encontró el Producto nombre=" + product.getProduct()).build();
+            throw FoundException.builder().message("Ya Existe un Producto con el Nombre =" + product.getProduct()).build();
         }
 
         try {
