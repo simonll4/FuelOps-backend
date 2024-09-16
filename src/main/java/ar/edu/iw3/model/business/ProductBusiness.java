@@ -119,7 +119,6 @@ public class ProductBusiness implements IProductBusiness {
     @Override
     public void delete(Product product) throws NotFoundException, BusinessException {
         delete(product.getId());
-
     }
 
     @Override

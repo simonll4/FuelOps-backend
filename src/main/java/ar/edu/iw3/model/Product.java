@@ -39,7 +39,6 @@ public class Product {
     @JoinTable(name = "products_suppliers",
             joinColumns = {@JoinColumn(name = "id_product", referencedColumnName = "id")},
             inverseJoinColumns = {@JoinColumn(name = "id_supplier", referencedColumnName = "id")})
-    @JsonIgnoreProperties("products")
     private Set<Supplier> suppliers = new HashSet<>();
 
     @Override
