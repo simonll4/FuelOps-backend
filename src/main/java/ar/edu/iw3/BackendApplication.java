@@ -1,12 +1,12 @@
 package ar.edu.iw3;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.TimeZone;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import ar.edu.iw3.model.business.IProductBusiness;
 import lombok.extern.slf4j.Slf4j;
 
 @SpringBootApplication
@@ -18,15 +18,25 @@ public class BackendApplication  implements CommandLineRunner{
 
     }
 
-    @Autowired
-    private IProductBusiness productBusiness;
+    //@Autowired
+    //private ProductCli2Respository productCli2DAO;
 
-    @Value("${spring.profiles.active}") //spring.profiles.active:mysqldev casteo de perfil
+    @Value("${spring.profiles.active}")
     private String profile;
+
+    @Value("${spring.jackson.time-zone:-}")
+    private String backendTimezone;
+
 
     @Override
     public void run(String... args) throws Exception {
-        log.info("Perfil activo '{}'",profile);
+        String tzId = backendTimezone.equals("-") ? TimeZone.getDefault().getID() : backendTimezone;
+        TimeZone.setDefault(TimeZone.getTimeZone(tzId));
+
+        log.info("-------------------------------------------------------------------------------------------------------------------");
+        log.info("- Initial TimeZone: {} ({})", TimeZone.getDefault().getDisplayName(), TimeZone.getDefault().getID());
+        log.info("- Perfil activo {}",profile);
+
 		/*
 		try {
 			Product p=new Product();
@@ -40,6 +50,7 @@ public class BackendApplication  implements CommandLineRunner{
 		} catch (Exception e) {
 			log.warn(e.getMessage());
 		}*/
+        //System.out.println(productCli2DAO.findAll());
 
     }
 
