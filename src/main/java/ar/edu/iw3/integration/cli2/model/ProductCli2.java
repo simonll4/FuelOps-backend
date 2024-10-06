@@ -33,6 +33,6 @@ public class ProductCli2 extends Product {
 	@JoinTable(name = "cli2_product_component", joinColumns = {
 			@JoinColumn(name = "id_product", referencedColumnName = "id_product") }, inverseJoinColumns = {
 					@JoinColumn(name = "id_component", referencedColumnName = "id") })
-	private Set<ComponentCli2> components;
 
+	private Set<ComponentCli2> components;
 }

@@ -1,7 +1,11 @@
 package ar.edu.iw3;
 
+import java.util.Date;
 import java.util.TimeZone;
 
+import ar.edu.iw3.integration.cli2.model.business.IProductCli2Business;
+import ar.edu.iw3.model.persistence.ProductRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -11,7 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @SpringBootApplication
 @Slf4j
-public class BackendApplication  implements CommandLineRunner{
+public class BackendApplication implements CommandLineRunner {
 
     public static void main(String[] args) {
         SpringApplication.run(BackendApplication.class, args);
@@ -21,12 +25,17 @@ public class BackendApplication  implements CommandLineRunner{
     //@Autowired
     //private ProductCli2Respository productCli2DAO;
 
+//    @Autowired
+//    private IProductCli2Business productCli2Business;
+
+//    @Autowired
+//    private ProductRepository productDAO;
+
     @Value("${spring.profiles.active}")
     private String profile;
 
     @Value("${spring.jackson.time-zone:-}")
     private String backendTimezone;
-
 
     @Override
     public void run(String... args) throws Exception {
@@ -35,7 +44,16 @@ public class BackendApplication  implements CommandLineRunner{
 
         log.info("-------------------------------------------------------------------------------------------------------------------");
         log.info("- Initial TimeZone: {} ({})", TimeZone.getDefault().getDisplayName(), TimeZone.getDefault().getID());
-        log.info("- Perfil activo {}",profile);
+        log.info("- Perfil activo {}", profile);
+
+//        log.info("Cantidad de productos de la categoría id=1: {}", productDAO.countProductsByCategory(1));
+//        log.info("Set stock=true producto id que no existe, resultado={}", productDAO.setStock(true, 333));
+
+//        log.info(" Default -------------------------------------------------------------------------------------------------------------------");
+//        productCli2Business.listExpired(new Date());
+//
+//        log.info(" Slim -------------------------------------------------------------------------------------------------------------------");
+//        productCli2Business.listSlim();
 
 		/*
 		try {
