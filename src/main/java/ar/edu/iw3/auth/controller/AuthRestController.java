@@ -37,6 +37,7 @@ public class AuthRestController extends BaseRestController {
 	@PostMapping(value = Constants.URL_LOGIN, produces = MediaType.TEXT_PLAIN_VALUE)
 	public ResponseEntity<?> loginExternalOnlyToken(@RequestParam String username, @RequestParam String password) {
 		Authentication auth = null;
+
 		try {
 			auth = authManager.authenticate(((CustomAuthenticationManager) authManager).authWrap(username, password));
 		} catch (AuthenticationServiceException e0) {
@@ -49,6 +50,7 @@ public class AuthRestController extends BaseRestController {
 
 		User user = (User) auth.getPrincipal();
 		String token = JWT.create().withSubject(user.getUsername())
+				.withClaim("internalid",user.getIdUser())
 				.withClaim("roles", new ArrayList<String>(user.getAuthoritiesStr())).withClaim("email", user.getEmail())
 				.withClaim("version", "1.0.0")
 				.withExpiresAt(new Date(System.currentTimeMillis() + AuthConstants.EXPIRATION_TIME))
@@ -56,13 +58,14 @@ public class AuthRestController extends BaseRestController {
 
 		return new ResponseEntity<String>(token, HttpStatus.OK);
 	}
+
 	@Autowired
 	private PasswordEncoder pEncoder;
 
 	@GetMapping(value = "/demo/encodepass", produces = MediaType.TEXT_PLAIN_VALUE)
 	public ResponseEntity<?> encodepass(@RequestParam String password) {
 		try {
-			return new ResponseEntity<String>(pEncoder.encode("admin123"), HttpStatus.OK);
+			return new ResponseEntity<String>(pEncoder.encode(password), HttpStatus.OK);
 		} catch (Exception e) {
 			return new ResponseEntity<>(response.build(HttpStatus.INTERNAL_SERVER_ERROR, e, e.getMessage()),
 					HttpStatus.INTERNAL_SERVER_ERROR);

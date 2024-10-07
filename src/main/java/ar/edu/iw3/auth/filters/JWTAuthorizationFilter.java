@@ -2,9 +2,12 @@ package ar.edu.iw3.auth.filters;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
+import ar.edu.iw3.auth.Role;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
@@ -64,15 +67,23 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 				log.trace("Usuario logueado: " + jwt.getSubject());
 				log.trace("Roles: " + jwt.getClaim("roles"));
 				log.trace("Custom JWT Version: " + jwt.getClaim("version").asString());
+
+				Set<Role> roles = new HashSet<Role>();
+
 				List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
 				@SuppressWarnings("unchecked")
 				List<String> rolesStr = (List<String>) jwt.getClaim("roles").as(List.class);
 				authorities = rolesStr.stream().map(role -> new SimpleGrantedAuthority(role))
 						.collect(Collectors.toList());
+				roles = rolesStr.stream().map(role -> new Role(role,0,role)).collect(Collectors.toSet());
+
 				String username = jwt.getSubject();
+
 				if (username != null) {
 					User user = new User();
+					user.setIdUser(jwt.getClaim("internalid").asLong());
 					user.setUsername(username);
+					user.setRoles(roles);
 					user.setEmail(jwt.getClaim("email").asString());
 					return new UsernamePasswordAuthenticationToken(user, null, authorities);
 				}
