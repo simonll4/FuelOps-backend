@@ -18,7 +18,7 @@
         <java.version>17</java.version>
         <tomcat.scope>runtime</tomcat.scope>
         <packaging.type>war</packaging.type>
-        
+
     </properties>
 
     <name>Backend</name>
@@ -92,7 +92,22 @@
     </dependencies>
 
     <profiles>
-        <!-- Perfiles de ejecución -->
+        <!-- Perfiles de ejecución  -->
+        <profile>
+            <id>cli1</id>
+            <properties>
+                <spring.profiles.active>cli1</spring.profiles.active>
+            </properties>
+        </profile>
+        <profile>
+            <id>cli2</id>
+            <properties>
+                <spring.profiles.active>cli2</spring.profiles.active>
+            </properties>
+        </profile>
+
+
+        <!-- Perfiles de ejecución on start -->
         <profile>
             <id>mysqldev</id>
             <properties>
