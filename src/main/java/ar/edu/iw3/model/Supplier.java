@@ -20,5 +20,4 @@ public class Supplier {
     @Column(length = 100, unique = true)
     private String supplier;
 
-
 }

@@ -33,7 +33,7 @@ public class Product {
     private double price;
 
     @ManyToOne
-    @JoinColumn(name = "category_id", nullable = true)
+    @JoinColumn(name = "id_category", nullable = true)
     private Category category;
 
     @ManyToMany()

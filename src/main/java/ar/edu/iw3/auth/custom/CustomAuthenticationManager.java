@@ -41,7 +41,6 @@ public class CustomAuthenticationManager implements AuthenticationManager {
 
         try {
             user = userBusiness.load(username);
-            System.out.println("User: " + user);
         } catch (NotFoundException e) {
             throw new BadCredentialsException("No user registered with this details");
         } catch (BusinessException e) {

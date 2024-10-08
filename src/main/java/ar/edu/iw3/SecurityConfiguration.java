@@ -34,6 +34,7 @@ public class SecurityConfiguration {
 
 	@Bean
 	WebMvcConfigurer corsConfigurer() {
+		// CORS: https://developer.mozilla.org/es/docs/Web/HTTP/CORS
 		return new WebMvcConfigurer() {
 			@Override
 			public void addCorsMappings(CorsRegistry registry) {
@@ -44,6 +45,7 @@ public class SecurityConfiguration {
 
 	@Autowired
 	private IUserBusiness userBusiness;
+
 	@Bean
 	AuthenticationManager authenticationManager() {
 		return new CustomAuthenticationManager(bCryptPasswordEncoder(), userBusiness);
@@ -51,7 +53,6 @@ public class SecurityConfiguration {
 
 	@Bean
 	SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-		// CORS: https://developer.mozilla.org/es/docs/Web/HTTP/CORS
 		// CSRF: https://developer.mozilla.org/es/docs/Glossary/CSRF
 		http.csrf(AbstractHttpConfigurer::disable);
 		http.authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.POST, Constants.URL_LOGIN).permitAll()

@@ -90,9 +90,6 @@ public class ProductCli1Business implements IProductCli1Business {
             log.error(e.getMessage(), e);
             throw BusinessException.builder().ex(e).build();
         }
-
         return add(product);
-
     }
-
 }

@@ -33,11 +33,13 @@ public class JsonUtiles {
         String defaultFormat = "yyyy-MM-dd'T'HH:mm:ssZ";
         if (dateFormat != null)
             defaultFormat = dateFormat;
+
         SimpleDateFormat df = new SimpleDateFormat(defaultFormat, Locale.getDefault());
         SimpleModule module = new SimpleModule();
         if (deser != null) {
             module.addDeserializer(clazz, deser);
         }
+
         mapper.setDateFormat(df);
         mapper.registerModule(module);
         return mapper;

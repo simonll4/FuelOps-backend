@@ -30,13 +30,13 @@ public class ProductCli1JsonDeserializer extends StdDeserializer<ProductCli1> {
 
     @Override
     public ProductCli1 deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JacksonException {
+
         ProductCli1 r = new ProductCli1();
         JsonNode node = jp.getCodec().readTree(jp);
 
-        String codTemporal=System.currentTimeMillis() + "";
+        String codTemporal = System.currentTimeMillis() + "";
         String code = JsonUtiles.getString(node, "product_code,code_product,code".split(","),
                 codTemporal);
-
 
         String productDesc = JsonUtiles.getString(node,
                 "product,description,product_description,product_name".split(","), null);
@@ -47,15 +47,14 @@ public class ProductCli1JsonDeserializer extends StdDeserializer<ProductCli1> {
         r.setPrice(price);
         r.setStock(stock);
         r.setCodCli1Temp(code.equals(codTemporal));
+
         String categoryName = JsonUtiles.getString(node, "category,product_category,category_product".split(","), null);
         if (categoryName != null) {
             try {
                 r.setCategory(categoryBusiness.load(categoryName));
-            } catch (NotFoundException | BusinessException e) {
+            } catch (NotFoundException | BusinessException ignored) {
             }
         }
         return r;
     }
-
-
 }
