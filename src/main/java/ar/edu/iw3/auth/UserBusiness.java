@@ -1,5 +1,6 @@
 package ar.edu.iw3.auth;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,6 +58,16 @@ public class UserBusiness implements IUserBusiness {
 	@Override
 	public void enable(String usernameOrEmail) throws NotFoundException, BusinessException {
 		setDisable(usernameOrEmail, true);
+	}
+
+	@Override
+	public List<User> list() throws BusinessException {
+		try {
+			return userDAO.findAll();
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+			throw BusinessException.builder().ex(e).build();
+		}
 	}
 
 	private void setDisable(String usernameOrEmail, boolean enable) throws NotFoundException, BusinessException {
