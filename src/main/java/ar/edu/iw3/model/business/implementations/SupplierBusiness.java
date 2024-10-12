@@ -1,6 +1,7 @@
-package ar.edu.iw3.model.business;
+package ar.edu.iw3.model.business.implementations;
 
 import ar.edu.iw3.model.Supplier;
+import ar.edu.iw3.model.business.interfaces.ISupplierBusiness;
 import ar.edu.iw3.model.business.exceptions.BusinessException;
 import ar.edu.iw3.model.business.exceptions.FoundException;
 import ar.edu.iw3.model.business.exceptions.NotFoundException;

@@ -9,7 +9,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 
 import ar.edu.iw3.model.business.exceptions.BusinessException;
-import ar.edu.iw3.model.business.ICategoryBusiness;
+import ar.edu.iw3.model.business.interfaces.ICategoryBusiness;
 import ar.edu.iw3.model.business.exceptions.NotFoundException;
 import ar.edu.iw3.util.JsonUtiles;
 

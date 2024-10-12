@@ -2,10 +2,11 @@ package ar.edu.iw3.controllers;
 
 import ar.edu.iw3.model.Product;
 import ar.edu.iw3.model.Category;
-import ar.edu.iw3.model.business.*;
 import ar.edu.iw3.model.business.exceptions.BusinessException;
 import ar.edu.iw3.model.business.exceptions.FoundException;
 import ar.edu.iw3.model.business.exceptions.NotFoundException;
+import ar.edu.iw3.model.business.interfaces.ICategoryBusiness;
+import ar.edu.iw3.model.business.interfaces.IProductBusiness;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
