@@ -5,9 +5,9 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import ar.edu.iw3.integration.cli1.model.ProductCli1;
+import ar.edu.iw3.integration.cli1.model.OrderCli1;
 
 @Repository
-public interface ProductCli1Respository extends JpaRepository<ProductCli1, Long>{
-    public Optional<ProductCli1> findOneByCodCli1(String codCli1);
+public interface OrderCli1Respository extends JpaRepository<OrderCli1, Long>{
+    Optional<OrderCli1> findOneByOrderNumberCli1(String oderNumberCli1);
 }

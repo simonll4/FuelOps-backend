@@ -19,12 +19,4 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     Optional<Product> findByProductAndIdNot(String product, Long id);
 
-    @Query(value="SELECT count(*) FROM products where category_id=?", nativeQuery=true)
-    public Integer countProductsByCategory(long idCategory);
-
-    @Transactional
-    @Modifying
-    @Query(value="UPDATE products SET stock=? WHERE id=?", nativeQuery=true)
-    public int setStock(boolean stock, long idProduct);
-
 }

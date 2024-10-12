@@ -1,6 +1,6 @@
 package ar.edu.iw3.integration.cli1.model;
 
-import ar.edu.iw3.model.Product;
+import ar.edu.iw3.model.Order;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.PrimaryKeyJoinColumn;
@@ -11,16 +11,16 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "cli1_products")
-@PrimaryKeyJoinColumn(name = "id_product")
+@Table(name = "cli1_orders")
+@PrimaryKeyJoinColumn(name = "id_order")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-public class ProductCli1 extends Product{
+public class OrderCli1 extends Order {
 
     @Column(nullable = false, unique = true)
-    private String codCli1;
+    private String orderNumberCli1;
 
     private boolean codCli1Temp=false;
 }

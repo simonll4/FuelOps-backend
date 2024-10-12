@@ -21,7 +21,7 @@ public class ProductCli2SlimV1JsonSerializer extends StdSerializer<ProductCli2> 
 
     @Override
     public void serialize(ProductCli2 value, JsonGenerator gen, SerializerProvider provider) throws IOException {
-        gen.writeStartObject();
+        /*gen.writeStartObject();
         gen.writeNumberField("id", value.getId());
         gen.writeStringField("product", value.getProduct());
         gen.writeBooleanField("stock", value.isStock());
@@ -47,7 +47,7 @@ public class ProductCli2SlimV1JsonSerializer extends StdSerializer<ProductCli2> 
         gen.writeFieldName("components");
         gen.writeRawValue(componentsStr);
 
-        gen.writeEndObject();
+        gen.writeEndObject();*/
 
     }
 
