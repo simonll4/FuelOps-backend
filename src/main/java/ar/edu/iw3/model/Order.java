@@ -10,6 +10,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "orders")
+@Inheritance(strategy = InheritanceType.JOINED)
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -26,37 +27,37 @@ public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-
+    // TODO volver a colocar parametros en nullable = false
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column()
     private Status status;
 
-    @Column(nullable = false)
+    @Column()
     private int activatePassword;
 
     @Column(nullable = false)
     private float preset;
 
-    @Column(nullable = false)
+    @Column()
     private float initialWeighing;
 
-    @Column(nullable = false)
+    @Column()
     private float finalWeighing;
 
     // Ultimo estado de carga
-    @Column(nullable = false)
+    @Column()
     private Date lastTimeStamp;
 
-    @Column(nullable = false)
+    @Column()
     private float lastAccumulatedMass;
 
-    @Column(nullable = false)
+    @Column()
     private float lastDensity;
 
-    @Column(nullable = false)
+    @Column()
     private float lastTemperature;
 
-    @Column(nullable = false)
+    @Column()
     private float lastFlowRate;
 
     // relaciones con otras entidades
@@ -76,28 +77,28 @@ public class Order {
     @JoinColumn(name = "id_product", nullable = false)
     private Product product;
 
-    @OneToMany(mappedBy = "order")
-    private Set<Detail> details;
+    /*@OneToMany(mappedBy = "order")
+    private Set<Detail> details;*/
 
-    @OneToMany(mappedBy = "order")
-    private Set<Alarm> alarms;
+    /*@OneToMany(mappedBy = "order")
+    private Set<Alarm> alarms;*/
 
     // fechas y horas de los eventos durante el proceso
     @Column(nullable = false)
     private Date estimatedTime;
 
-    @Column(nullable = false)
+    @Column()
     private Date externalReceptionDate;
 
-    @Column(nullable = false)
+    @Column()
     private Date initialWeighingDate;
 
-    @Column(nullable = false)
+    @Column()
     private Date finalWeighingDate;
 
-    @Column(nullable = false)
+    @Column()
     private Date fuelingStartDate;
 
-    @Column(nullable = false)
+    @Column()
     private Date fuelingEndDate;
 }
