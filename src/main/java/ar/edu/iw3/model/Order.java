@@ -1,5 +1,6 @@
 package ar.edu.iw3.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -79,6 +80,7 @@ public class Order {
 //    @JoinColumn(name = "id_product", nullable = false)
 //    private Product product;
 
+    @JsonIgnoreProperties("details")
     @OneToMany(mappedBy = "order")
     private Set<Detail> details;
 

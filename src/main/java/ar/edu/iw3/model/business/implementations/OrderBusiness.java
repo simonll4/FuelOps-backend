@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.Option;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -123,9 +124,7 @@ public class OrderBusiness implements IOrderBusiness {
         }
 
         // si la orden no esta en estado PESAJE_INICIAL_REGISTRADO rechazar la activación
-        if (order.get().getStatus() != Order.Status.PESAJE_INICIAL_REGISTRADO) {
-            throw new BusinessException("Estado de la orden no válido");
-        }
+        checkOrderStatus(order.get(), Order.Status.PESAJE_INICIAL_REGISTRADO);
 
         return order.get();
     }
@@ -138,7 +137,7 @@ public class OrderBusiness implements IOrderBusiness {
             order = orderDAO.findById(detail.getOrder().getId());
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            throw new BusinessException("Error al recuperarr orden", e);
+            throw new BusinessException("Error al recuperar orden", e);
         }
 
         if (order.isEmpty()) {
@@ -146,9 +145,8 @@ public class OrderBusiness implements IOrderBusiness {
         }
 
         // si la orden no esta en estado PESAJE_INICIAL_REGISTRADO rechazar la activación
-        if (order.get().getStatus() != Order.Status.PESAJE_INICIAL_REGISTRADO) {
-            throw new BusinessException("Estado de orden no válido");
-        }
+        // todo crear nueva excepcion para este caso
+        checkOrderStatus(order.get(), Order.Status.PESAJE_INICIAL_REGISTRADO);
 
         // chequeo de que los datos del detalle sean validos
         if ((detail.getFlowRate() > 0) && (detail.getAccumulatedMass() >= order.get().getLastAccumulatedMass())) {
@@ -167,13 +165,36 @@ public class OrderBusiness implements IOrderBusiness {
 
     }
 
-//    public Order closeOrder(Long orderId) {
-//        Order order = orderRepository.findById(orderId).orElseThrow(() -> new RuntimeException("Order not found"));
-//        order.setEstado(3); // Estado "Cerrada"
-//        return orderRepository.save(order);
-//    }
+    @Override
+    public Order closeOrder(Long orderId) throws BusinessException, NotFoundException {
+        Optional<Order> order;
+
+        try {
+            order = orderDAO.findById(orderId);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            throw new BusinessException("Error al recuperar orden", e);
+        }
+
+        if (order.isEmpty()) {
+            throw new NotFoundException("Orden no econtrada");
+        }
+
+        checkOrderStatus(order.get(), Order.Status.PESAJE_INICIAL_REGISTRADO);
+        order.get().setStatus(Order.Status.ORDEN_CERRADA);
+        return orderDAO.save(order.get());
+    }
+
+
+    /////////////////////////////////////////////////////////////////
+    ////////////////////////// UTILIDADES  //////////////////////////
+    /////////////////////////////////////////////////////////////////
+
+    private void checkOrderStatus(Order order, Order.Status expectedStatus) throws BusinessException {
+        if (order.getStatus() != expectedStatus) {
+            throw new BusinessException("Estado de orden no válido");
+        }
+    }
 
 }
-
-
 

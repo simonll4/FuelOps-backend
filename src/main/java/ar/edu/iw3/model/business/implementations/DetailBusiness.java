@@ -74,27 +74,6 @@ public class DetailBusiness implements IDetailBusiness {
         return detailsFound.get();
     }
 
-    private static final double MIN_TEMPERATURE = 10.0;
-    private static final double MAX_TEMPERATURE = 35.0;
-
-    private void checkTemperature(Detail detail) {
-        double temperature = detail.getTemperature();
-        if (temperature < MIN_TEMPERATURE || temperature > MAX_TEMPERATURE) {
-            System.out.println("Warning: Temperature out of range! " + temperature + "°C");
-        }
-    }
-
-    private long lastSaveTime = 0;
-    private static final long SAVE_INTERVAL_MS = 5000; // Frecuencia de guardado (5 segundos)
-
-    private boolean checkFrequency(long currentTime) {
-        if (currentTime - lastSaveTime >= SAVE_INTERVAL_MS) {
-            lastSaveTime = currentTime;
-            return true;
-        }
-        return false;
-    }
-
     @Autowired
     private OrderBusiness orderBusiness;
 
@@ -114,6 +93,31 @@ public class DetailBusiness implements IDetailBusiness {
             // todo aca quizas poner una exception para decir que el detail no se guardo en la db
             return null;
         }
+    }
+
+    /////////////////////////////////////////////////////////////////
+    ////////////////////////// UTILIDADES  //////////////////////////
+    /////////////////////////////////////////////////////////////////
+
+    private static final double MIN_TEMPERATURE = 10.0;
+    private static final double MAX_TEMPERATURE = 35.0;
+
+    private void checkTemperature(Detail detail) {
+        double temperature = detail.getTemperature();
+        if (temperature < MIN_TEMPERATURE || temperature > MAX_TEMPERATURE) {
+            System.out.println("Warning: Temperature out of range! " + temperature + "°C");
+        }
+    }
+
+    private long lastSaveTime = 0;
+    private static final long SAVE_INTERVAL_MS = 5000; // Frecuencia de guardado (5 segundos)
+
+    private boolean checkFrequency(long currentTime) {
+        if (currentTime - lastSaveTime >= SAVE_INTERVAL_MS) {
+            lastSaveTime = currentTime;
+            return true;
+        }
+        return false;
     }
 
 }

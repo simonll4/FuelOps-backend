@@ -30,7 +30,6 @@ public class OrderRestController extends BaseRestController {
     // Endpoint para validar password y obtener id de la orden y preset de carga
     @PostMapping(value = "/validate", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> validatePassword(@RequestBody String password) {
-        // todo manejar bien excepciones
         try {
             Order order = orderBusiness.validatePassword(Integer.parseInt(password));
             return new ResponseEntity<>(order, HttpStatus.OK);
@@ -54,18 +53,26 @@ public class OrderRestController extends BaseRestController {
         } catch (FoundException e) {
             return new ResponseEntity<>(response.build(HttpStatus.FOUND, e, e.getMessage()), HttpStatus.FOUND);
         } catch (BusinessException e) {
-            throw new RuntimeException(e);
+            return new ResponseEntity<>(response.build(HttpStatus.INTERNAL_SERVER_ERROR, e, e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (NotFoundException e) {
             return new ResponseEntity<>(response.build(HttpStatus.NOT_FOUND, e, e.getMessage()), HttpStatus.NOT_FOUND);
         }
 
     }
 
-//    // Endpoint para cerrar la orden
-//    @PostMapping("/{orderId}/close")
-//    public ResponseEntity<Order> closeOrder(@PathVariable Long orderId) {
-//        Order order = orderBusiness.closeOrder(orderId);
-//        return ResponseEntity.ok(order);
-//    }
+    // Endpoint para cerrar la orden
+    @PostMapping("/close")
+    public ResponseEntity<?> closeOrder(@RequestBody Long orderId) {
+        try {
+            Order response = orderBusiness.closeOrder(orderId);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (BusinessException e) {
+            return new ResponseEntity<>(response.build(HttpStatus.INTERNAL_SERVER_ERROR, e, e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (NotFoundException e) {
+            return new ResponseEntity<>(response.build(HttpStatus.NOT_FOUND, e, e.getMessage()), HttpStatus.NOT_FOUND);
+        }
+    }
 
 }
