@@ -3,7 +3,7 @@ package ar.edu.iw3;
 import java.util.Date;
 import java.util.TimeZone;
 
-import ar.edu.iw3.integration.cli2.model.business.IProductCli2Business;
+//import ar.edu.iw3.integration.cli2.model.business.IProductCli2Business;
 import ar.edu.iw3.model.persistence.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

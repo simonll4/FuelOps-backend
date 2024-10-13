@@ -5,6 +5,7 @@ public final class Constants {
 	public static final String URL_API_VERSION = "/v1";
 	public static final String URL_BASE = URL_API + URL_API_VERSION;
 	public static final String URL_PRODUCTS = URL_BASE + "/products";
+	public static final String URL_ORDERS = URL_BASE + "/orders";
 	public static final String URL_SUPPLIERS = URL_BASE + "/suppliers";
 
 	public static final String URL_INTEGRATION = URL_BASE + "/integration";

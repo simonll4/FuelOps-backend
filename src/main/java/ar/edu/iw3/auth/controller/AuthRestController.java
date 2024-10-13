@@ -36,7 +36,7 @@ public class AuthRestController extends BaseRestController {
     @Autowired
     private IStandartResponseBusiness response;
 
-    @PostMapping(value = Constants.URL_LOGIN, produces = MediaType.TEXT_PLAIN_VALUE)
+        @PostMapping(value = Constants.URL_LOGIN, produces = MediaType.TEXT_PLAIN_VALUE)
     public ResponseEntity<?> loginExternalOnlyToken(@RequestParam String username, @RequestParam String password) {
 
         Authentication auth = null;

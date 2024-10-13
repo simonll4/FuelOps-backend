@@ -23,7 +23,7 @@ public class Detail {
     @JoinColumn(name = "id_order", nullable = false)
     private Order order;
 
-    @Column(nullable = false)
+    // todo @Column(nullable = false)
     private Date timeStamp;
 
     @Column(nullable = false)
