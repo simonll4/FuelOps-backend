@@ -11,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.Option;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -68,20 +67,6 @@ public class OrderBusiness implements IOrderBusiness {
     @Override
     public Order update(Order order) throws NotFoundException, BusinessException, FoundException {
         load(order.getId());
-
-        // todo revisar: asi como esta devuelve una order con id distinto a 1
-//        Optional<Order> orderFound;
-//        try {
-//            orderFound = orderDAO.findByIdNot(order.getId());
-//        } catch (Exception e) {
-//            log.error(e.getMessage(), e);
-//            throw BusinessException.builder().ex(e).build();
-//        }
-//
-//        if (orderFound.isPresent()) {
-//            throw FoundException.builder().message("Ya Existe una Orden con el Id =" + order.getId()).build();
-//        }
-
         try {
             return orderDAO.save(order);
         } catch (Exception e) {
@@ -124,45 +109,8 @@ public class OrderBusiness implements IOrderBusiness {
         }
 
         // si la orden no esta en estado PESAJE_INICIAL_REGISTRADO rechazar la activación
-        checkOrderStatus(order.get(), Order.Status.PESAJE_INICIAL_REGISTRADO);
-
+        checkOrderStatus(order.get());
         return order.get();
-    }
-
-    @Override
-    public void saveLastDetails(Detail detail) throws NotFoundException, BusinessException {
-        Optional<Order> order;
-
-        try {
-            order = orderDAO.findById(detail.getOrder().getId());
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            throw new BusinessException("Error al recuperar orden", e);
-        }
-
-        if (order.isEmpty()) {
-            throw new NotFoundException("Orden no econtrada");
-        }
-
-        // si la orden no esta en estado PESAJE_INICIAL_REGISTRADO rechazar la activación
-        // todo crear nueva excepcion para este caso
-        checkOrderStatus(order.get(), Order.Status.PESAJE_INICIAL_REGISTRADO);
-
-        // chequeo de que los datos del detalle sean validos
-        if ((detail.getFlowRate() > 0) && (detail.getAccumulatedMass() >= order.get().getLastAccumulatedMass())) {
-            // actualizacion de cabecera de orden
-            order.get().setLastTimeStamp(new Date(System.currentTimeMillis()));
-            order.get().setLastAccumulatedMass(detail.getAccumulatedMass());
-            order.get().setLastDensity(detail.getDensity());
-            order.get().setLastTemperature(detail.getTemperature());
-            order.get().setLastFlowRate(detail.getFlowRate());
-            orderDAO.save(order.get());
-        }
-        // todo tirar excepcion personalizada si no se cumple la condicion??
-        else {
-            throw new BusinessException("Datos de detalle no validos");
-        }
-
     }
 
     @Override
@@ -175,23 +123,21 @@ public class OrderBusiness implements IOrderBusiness {
             log.error(e.getMessage(), e);
             throw new BusinessException("Error al recuperar orden", e);
         }
-
         if (order.isEmpty()) {
             throw new NotFoundException("Orden no econtrada");
         }
-
-        checkOrderStatus(order.get(), Order.Status.PESAJE_INICIAL_REGISTRADO);
-        order.get().setStatus(Order.Status.ORDEN_CERRADA);
+        checkOrderStatus(order.get());
+        order.get().setStatus(Order.Status.ORDER_CLOSED);
         return orderDAO.save(order.get());
     }
 
 
-    /////////////////////////////////////////////////////////////////
-    ////////////////////////// UTILIDADES  //////////////////////////
-    /////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////// UTILIDADES  ////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    private void checkOrderStatus(Order order, Order.Status expectedStatus) throws BusinessException {
-        if (order.getStatus() != expectedStatus) {
+    private void checkOrderStatus(Order order) throws BusinessException {
+        if (order.getStatus() != Order.Status.REGISTERED_INITIAL_WEIGHING) {
             throw new BusinessException("Estado de orden no válido");
         }
     }

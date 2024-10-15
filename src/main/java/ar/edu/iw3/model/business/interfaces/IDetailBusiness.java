@@ -1,6 +1,7 @@
 package ar.edu.iw3.model.business.interfaces;
 
 import  ar.edu.iw3.model.Detail;
+import ar.edu.iw3.model.Order;
 import ar.edu.iw3.model.business.exceptions.BusinessException;
 import ar.edu.iw3.model.business.exceptions.FoundException;
 import ar.edu.iw3.model.business.exceptions.NotFoundException;
@@ -17,7 +18,9 @@ public interface IDetailBusiness {
 
     public Detail add(Detail detail) throws FoundException, BusinessException;
 
-    public Detail ReceiveDetails(Detail detail) throws FoundException, BusinessException, NotFoundException;
+    public void receiveDetails(Detail detail) throws NotFoundException, BusinessException, FoundException;
+
+    public void saveDetails( Order orderFound,Detail detail) throws FoundException, BusinessException, NotFoundException;
 
     // todo public Detail update(Detail detail) throws NotFoundException, BusinessException, FoundException;
 

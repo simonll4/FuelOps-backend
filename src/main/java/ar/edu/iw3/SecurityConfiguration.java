@@ -20,7 +20,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import ar.edu.iw3.auth.IUserBusiness;
 import ar.edu.iw3.auth.custom.CustomAuthenticationManager;
 import ar.edu.iw3.auth.filters.JWTAuthorizationFilter;
-import ar.edu.iw3.controllers.Constants;
+import ar.edu.iw3.controllers.constants.Constants;
 
 @Configuration
 @EnableWebSecurity

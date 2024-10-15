@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 import java.util.Date;
 
 @Entity
@@ -27,10 +28,12 @@ public class Alarm {
     @Column(nullable = false)
     private Date timeStamp;
 
+    private float temperature;
+
     private String observation;
 
     @ManyToOne
-    @JoinColumn(name = "id_user", nullable = false)
+    @JoinColumn(name = "id_user")
     private User user;
 
 }

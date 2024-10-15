@@ -24,7 +24,5 @@ public interface IOrderBusiness {
 
     public Order validatePassword(int password) throws NotFoundException, BusinessException;
 
-    public void saveLastDetails(Detail detail) throws NotFoundException, BusinessException;
-
     public Order closeOrder(Long orderId) throws BusinessException, NotFoundException;
 }

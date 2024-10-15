@@ -1,5 +1,6 @@
 package ar.edu.iw3.controllers;
 
+import ar.edu.iw3.controllers.constants.Constants;
 import ar.edu.iw3.model.Order;
 import ar.edu.iw3.model.business.exceptions.BusinessException;
 import ar.edu.iw3.model.business.exceptions.FoundException;
@@ -28,48 +29,46 @@ public class OrderRestController extends BaseRestController {
     private IStandartResponseBusiness response;
 
     // Endpoint para validar password y obtener id de la orden y preset de carga
+    // todo pasar password por header?
     @PostMapping(value = "/validate", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> validatePassword(@RequestBody String password) {
         try {
             Order order = orderBusiness.validatePassword(Integer.parseInt(password));
             return new ResponseEntity<>(order, HttpStatus.OK);
         } catch (BusinessException e) {
-            return new ResponseEntity<>(response.build(HttpStatus.INTERNAL_SERVER_ERROR, e, e.getMessage()),
-                    HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(response.build(HttpStatus.INTERNAL_SERVER_ERROR, e, e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (NotFoundException e) {
             return new ResponseEntity<>(response.build(HttpStatus.NOT_FOUND, e, e.getMessage()), HttpStatus.NOT_FOUND);
         }
     }
 
     @Autowired
-    IDetailBusiness detailBusiness;
+    private IDetailBusiness detailBusiness;
 
     // Endpoint para recibir datos de carga
     @PostMapping("/detail")
     public ResponseEntity<?> receiveLoadData(@RequestBody Detail detail) {
         try {
-            Detail response = detailBusiness.ReceiveDetails(detail);
+            detailBusiness.receiveDetails(detail);
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (FoundException e) {
             return new ResponseEntity<>(response.build(HttpStatus.FOUND, e, e.getMessage()), HttpStatus.FOUND);
         } catch (BusinessException e) {
-            return new ResponseEntity<>(response.build(HttpStatus.INTERNAL_SERVER_ERROR, e, e.getMessage()),
-                    HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(response.build(HttpStatus.INTERNAL_SERVER_ERROR, e, e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (NotFoundException e) {
             return new ResponseEntity<>(response.build(HttpStatus.NOT_FOUND, e, e.getMessage()), HttpStatus.NOT_FOUND);
         }
-
     }
 
     // Endpoint para cerrar la orden
+    // todo pasar numero de orden por header?
     @PostMapping("/close")
     public ResponseEntity<?> closeOrder(@RequestBody Long orderId) {
         try {
             Order response = orderBusiness.closeOrder(orderId);
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (BusinessException e) {
-            return new ResponseEntity<>(response.build(HttpStatus.INTERNAL_SERVER_ERROR, e, e.getMessage()),
-                    HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(response.build(HttpStatus.INTERNAL_SERVER_ERROR, e, e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (NotFoundException e) {
             return new ResponseEntity<>(response.build(HttpStatus.NOT_FOUND, e, e.getMessage()), HttpStatus.NOT_FOUND);
         }

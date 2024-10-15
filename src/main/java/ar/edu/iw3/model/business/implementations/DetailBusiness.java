@@ -1,11 +1,13 @@
 package ar.edu.iw3.model.business.implementations;
 
 import ar.edu.iw3.model.Detail;
+import ar.edu.iw3.model.Order;
 import ar.edu.iw3.model.business.exceptions.BusinessException;
 import ar.edu.iw3.model.business.exceptions.FoundException;
 import ar.edu.iw3.model.business.exceptions.NotFoundException;
 import ar.edu.iw3.model.business.interfaces.IDetailBusiness;
 import ar.edu.iw3.model.persistence.DetailRepository;
+import ar.edu.iw3.model.persistence.OrderRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,8 @@ public class DetailBusiness implements IDetailBusiness {
     // IoC
     @Autowired
     private DetailRepository detailDAO;
+    @Autowired
+    private OrderRepository orderRepository;
 
     @Override
     public Detail load(long id) throws NotFoundException, BusinessException {
@@ -78,46 +82,77 @@ public class DetailBusiness implements IDetailBusiness {
     private OrderBusiness orderBusiness;
 
     @Override
-    public Detail ReceiveDetails(Detail detail) throws FoundException, NotFoundException, BusinessException {
-        checkTemperature(detail);
+    public void receiveDetails(Detail detail) throws NotFoundException, BusinessException, FoundException {
+        Order orderFound = orderBusiness.load(detail.getOrder().getId());
 
-        // lanza un BusinessException si hay datos invalidos
-        orderBusiness.saveLastDetails(detail);
+        // todo crear excepciones personalizadas para estos casos?
+        if (detail.getFlowRate() < 0) {
+            throw new BusinessException("Caudal no válido");
+        }
+        if (detail.getAccumulatedMass() < orderFound.getLastAccumulatedMass()) {
+            throw new BusinessException("Masa acumulada no válida");
+        }
 
-        // guarda el detalle en la base de datos de acuerdo a la frecuencia de guardado
-        long currentTime = System.currentTimeMillis();
-        if (checkFrequency(currentTime)) {
-            detail.setTimeStamp(new Date(currentTime));
-            return add(detail);
+        checkOrderStatus(orderFound);
+
+        if (detail.getTemperature() > temperaturaUmbral) {
+            if (orderFound.isAlarmAccepted()) {
+                orderFound.setAlarmAccepted(false);
+                orderBusiness.update(orderFound);
+                System.out.println("Alarma de temperatura activada (mandar mail)");
+            }
+            System.out.println("Guardar alerta en db ");
+        }
+
+        // Actualizacion de cabecera de orden
+        orderFound.setLastTimeStamp(new Date(System.currentTimeMillis()));
+        orderFound.setLastAccumulatedMass(detail.getAccumulatedMass());
+        orderFound.setLastDensity(detail.getDensity());
+        orderFound.setLastTemperature(detail.getTemperature());
+        orderFound.setLastFlowRate(detail.getFlowRate());
+        orderBusiness.update(orderFound);
+
+        // Gurdardado de detalle en db
+        saveDetails(orderFound, detail);
+    }
+
+    @Override
+    public void saveDetails(Order orderFound, Detail detail) throws FoundException, BusinessException, NotFoundException {
+        if (detailDAO.findByOrderId(orderFound.getId()).isPresent()) {
+            long currentTime = System.currentTimeMillis();
+            Date lastTimeStamp = orderFound.getFuelingEndDate();
+            if (checkFrequency(currentTime, lastTimeStamp)) {
+                detail.setTimeStamp(new Date(currentTime));
+                add(detail);
+                orderFound.setFuelingEndDate(new Date(System.currentTimeMillis()));
+                orderBusiness.update(orderFound);
+            } else {
+                throw BusinessException.builder().message("Detalle no guardado").build();
+            }
         } else {
-            // todo aca quizas poner una exception para decir que el detail no se guardo en la db
-            return null;
+            orderFound.setFuelingStartDate(new Date(System.currentTimeMillis()));
+            orderFound.setFuelingEndDate(new Date(System.currentTimeMillis()));
+            orderBusiness.update(orderFound);
         }
     }
 
-    /////////////////////////////////////////////////////////////////
-    ////////////////////////// UTILIDADES  //////////////////////////
-    /////////////////////////////////////////////////////////////////
 
-    private static final double MIN_TEMPERATURE = 10.0;
-    private static final double MAX_TEMPERATURE = 35.0;
+    //////////////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////// UTILIDADES  ////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    private void checkTemperature(Detail detail) {
-        double temperature = detail.getTemperature();
-        if (temperature < MIN_TEMPERATURE || temperature > MAX_TEMPERATURE) {
-            System.out.println("Warning: Temperature out of range! " + temperature + "°C");
+    // todo donde definir temperatura umbral? por orden o por producto?
+    private float temperaturaUmbral = 40.0F;
+
+    private void checkOrderStatus(Order order) throws BusinessException {
+        if (order.getStatus() != Order.Status.REGISTERED_INITIAL_WEIGHING) {
+            throw new BusinessException("Estado de orden no válido");
         }
     }
 
-    private long lastSaveTime = 0;
+    // todo dar la posibildidad de cambiar la frecuencia de guardado
     private static final long SAVE_INTERVAL_MS = 5000; // Frecuencia de guardado (5 segundos)
-
-    private boolean checkFrequency(long currentTime) {
-        if (currentTime - lastSaveTime >= SAVE_INTERVAL_MS) {
-            lastSaveTime = currentTime;
-            return true;
-        }
-        return false;
+    private boolean checkFrequency(long currentTime, Date lastTimeStamp) {
+        return currentTime - lastTimeStamp.getTime() >= SAVE_INTERVAL_MS;
     }
-
 }

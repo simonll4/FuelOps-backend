@@ -22,8 +22,8 @@ public class Detail {
     private long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnoreProperties("details")
     @JoinColumn(name = "id_order", nullable = false)
+    @JsonIgnoreProperties("details")
     private Order order;
 
     // todo @Column(nullable = false)
