@@ -67,21 +67,21 @@ public class Order {
     private float lastFlowRate;
 
     // relaciones con otras entidades
-    @ManyToOne
-    @JoinColumn(name = "id_truck", nullable = false)
-    private Truck truck;
-
-    @ManyToOne
-    @JoinColumn(name = "id_driver", nullable = false)
-    private Driver driver;
-
-    @ManyToOne
-    @JoinColumn(name = "id_customer", nullable = false)
-    private Customer customer;
-
-    @ManyToOne
-    @JoinColumn(name = "id_product", nullable = false)
-    private Product product;
+//    @ManyToOne
+//    @JoinColumn(name = "id_truck", nullable = false)
+//    private Truck truck;
+//
+//    @ManyToOne
+//    @JoinColumn(name = "id_driver", nullable = false)
+//    private Driver driver;
+//
+//    @ManyToOne
+//    @JoinColumn(name = "id_customer", nullable = false)
+//    private Customer customer;
+//
+//    @ManyToOne
+//    @JoinColumn(name = "id_product", nullable = false)
+//    private Product product;
 
     @OneToMany(mappedBy = "order")
     private Set<Detail> details;
@@ -90,7 +90,7 @@ public class Order {
     private Set<Alarm> alarms;
 
     // fechas y horas de los eventos durante el proceso
-    @Column(nullable = false)
+    @Column()
     private Date estimatedTime;
 
     @Column()

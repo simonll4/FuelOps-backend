@@ -8,6 +8,7 @@ import ar.edu.iw3.model.business.exceptions.NotFoundException;
 import ar.edu.iw3.model.business.interfaces.IDetailBusiness;
 import ar.edu.iw3.model.persistence.DetailRepository;
 import ar.edu.iw3.model.persistence.OrderRepository;
+import ar.edu.iw3.util.EmailBusiness;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -81,6 +82,9 @@ public class DetailBusiness implements IDetailBusiness {
     @Autowired
     private OrderBusiness orderBusiness;
 
+    @Autowired
+    private EmailBusiness emailBusiness;
+
     @Override
     public void receiveDetails(Detail detail) throws NotFoundException, BusinessException, FoundException {
         Order orderFound = orderBusiness.load(detail.getOrder().getId());
@@ -99,7 +103,9 @@ public class DetailBusiness implements IDetailBusiness {
             if (orderFound.isAlarmAccepted()) {
                 orderFound.setAlarmAccepted(false);
                 orderBusiness.update(orderFound);
-                System.out.println("Alarma de temperatura activada (mandar mail)");
+                // todo el envio del mail deberia ser en segundo plano, se tarda una banda
+                emailBusiness.sendSimpleMessage("simon.llamosas44@gmail.com", "EMERGENCIA: Temperatura por encima de lo normal",
+                        String.format("TEMEPERTURA: ", detail.getTemperature()));
             }
             System.out.println("Guardar alerta en db ");
         }
@@ -118,8 +124,9 @@ public class DetailBusiness implements IDetailBusiness {
 
     @Override
     public void saveDetails(Order orderFound, Detail detail) throws FoundException, BusinessException, NotFoundException {
-        if (detailDAO.findByOrderId(orderFound.getId()).isPresent()) {
-            long currentTime = System.currentTimeMillis();
+        long currentTime = System.currentTimeMillis();
+        Optional<List<Detail>> detailsOptional = detailDAO.findByOrderId(orderFound.getId());
+        if ((detailsOptional.isPresent() && !detailsOptional.get().isEmpty())) {
             Date lastTimeStamp = orderFound.getFuelingEndDate();
             if (checkFrequency(currentTime, lastTimeStamp)) {
                 detail.setTimeStamp(new Date(currentTime));
@@ -130,6 +137,8 @@ public class DetailBusiness implements IDetailBusiness {
                 throw BusinessException.builder().message("Detalle no guardado").build();
             }
         } else {
+            detail.setTimeStamp(new Date(currentTime));
+            add(detail);
             orderFound.setFuelingStartDate(new Date(System.currentTimeMillis()));
             orderFound.setFuelingEndDate(new Date(System.currentTimeMillis()));
             orderBusiness.update(orderFound);
@@ -152,6 +161,7 @@ public class DetailBusiness implements IDetailBusiness {
 
     // todo dar la posibildidad de cambiar la frecuencia de guardado
     private static final long SAVE_INTERVAL_MS = 5000; // Frecuencia de guardado (5 segundos)
+
     private boolean checkFrequency(long currentTime, Date lastTimeStamp) {
         return currentTime - lastTimeStamp.getTime() >= SAVE_INTERVAL_MS;
     }
