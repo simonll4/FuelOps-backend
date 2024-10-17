@@ -3,6 +3,7 @@ package ar.edu.iw3.integration.cli1.model.business;
 import java.util.List;
 import java.util.Optional;
 
+import ar.edu.iw3.model.business.implementations.TankBusiness;
 import ar.edu.iw3.model.business.interfaces.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,7 @@ public class OrderCli1Business implements IOrderCli1Business {
 
     @Autowired(required = false)
     private OrderCli1Respository orderDAO;
+
 
     @Override
     public OrderCli1 load(String orderNumberCli1) throws NotFoundException, BusinessException {
@@ -82,6 +84,9 @@ public class OrderCli1Business implements IOrderCli1Business {
     private ITruckBusiness truckBusiness;
 
     @Autowired
+    private TankBusiness tankBusiness;
+
+    @Autowired
     private IProductBusiness productBusiness;
 
     @Autowired
@@ -91,7 +96,7 @@ public class OrderCli1Business implements IOrderCli1Business {
     @Override
     public OrderCli1 addExternal(String json) throws FoundException, BusinessException {
         ObjectMapper mapper = JsonUtiles.getObjectMapper(OrderCli1.class,
-                new OrderCli1JsonDeserializer(OrderCli1.class,driverBusiness,truckBusiness,customerBusiness,productBusiness),null);
+                new OrderCli1JsonDeserializer(OrderCli1.class,driverBusiness,truckBusiness,customerBusiness,productBusiness,tankBusiness),null);
         OrderCli1 order = null;
         try {
             order = mapper.readValue(json, OrderCli1.class);

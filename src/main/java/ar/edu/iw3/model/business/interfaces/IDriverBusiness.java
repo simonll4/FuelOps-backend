@@ -22,4 +22,6 @@ public interface IDriverBusiness {
     public void delete(Driver driver) throws NotFoundException, BusinessException;
 
     public void delete(long id) throws NotFoundException, BusinessException;
+
+    public Driver loadOrCreate(Driver driver) throws BusinessException;
 }

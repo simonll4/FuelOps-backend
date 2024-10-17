@@ -127,4 +127,16 @@ public class DriverBusiness implements IDriverBusiness {
             throw BusinessException.builder().ex(e).build();
         }
     }
+
+    @Override
+    public Driver loadOrCreate(Driver driver) throws BusinessException {
+        Optional<Driver> findDriver;
+        try{
+            findDriver = driverDAO.findByDocument(driver.getDocument());
+            return findDriver.orElseGet(() -> driverDAO.save(driver));
+
+        } catch(Exception e){
+            throw BusinessException.builder().ex(e).build();
+        }
+    }
 }

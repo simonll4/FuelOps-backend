@@ -1,5 +1,6 @@
 package ar.edu.iw3.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,6 +18,11 @@ public class Tanker {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_truck", nullable = false)
+    @JsonIgnoreProperties("tanks")
+    private Truck truck;
 
     @Column(nullable = false)
     private long capacity_liters;
