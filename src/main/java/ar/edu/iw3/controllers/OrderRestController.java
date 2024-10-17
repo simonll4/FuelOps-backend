@@ -65,8 +65,8 @@ public class OrderRestController extends BaseRestController {
     @PostMapping("/close")
     public ResponseEntity<?> closeOrder(@RequestBody Long orderId) {
         try {
-            Order response = orderBusiness.closeOrder(orderId);
-            return new ResponseEntity<>(response, HttpStatus.OK);
+            Order order = orderBusiness.closeOrder(orderId);
+            return new ResponseEntity<>(order, HttpStatus.OK);
         } catch (BusinessException e) {
             return new ResponseEntity<>(response.build(HttpStatus.INTERNAL_SERVER_ERROR, e, e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (NotFoundException e) {

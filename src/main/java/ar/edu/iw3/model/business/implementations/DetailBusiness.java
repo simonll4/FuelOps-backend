@@ -1,5 +1,7 @@
 package ar.edu.iw3.model.business.implementations;
 
+import ar.edu.iw3.events.AlarmEvent;
+import ar.edu.iw3.model.Alarm;
 import ar.edu.iw3.model.Detail;
 import ar.edu.iw3.model.Order;
 import ar.edu.iw3.model.business.exceptions.BusinessException;
@@ -11,6 +13,7 @@ import ar.edu.iw3.model.persistence.OrderRepository;
 import ar.edu.iw3.util.EmailBusiness;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -21,11 +24,8 @@ import java.util.Optional;
 @Slf4j
 public class DetailBusiness implements IDetailBusiness {
 
-    // IoC
     @Autowired
     private DetailRepository detailDAO;
-    @Autowired
-    private OrderRepository orderRepository;
 
     @Override
     public Detail load(long id) throws NotFoundException, BusinessException {
@@ -51,8 +51,6 @@ public class DetailBusiness implements IDetailBusiness {
         } catch (NotFoundException e) {
             // log.trace(e.getMessage(), e);
         }
-
-        // todo validar que el detail traiga todos los campos antes de guardar (donde hacer eso?)
 
         try {
             return detailDAO.save(detail);
@@ -83,7 +81,7 @@ public class DetailBusiness implements IDetailBusiness {
     private OrderBusiness orderBusiness;
 
     @Autowired
-    private EmailBusiness emailBusiness;
+    private ApplicationEventPublisher applicationEventPublisher;
 
     @Override
     public void receiveDetails(Detail detail) throws NotFoundException, BusinessException, FoundException {
@@ -96,18 +94,14 @@ public class DetailBusiness implements IDetailBusiness {
         if (detail.getAccumulatedMass() < orderFound.getLastAccumulatedMass()) {
             throw new BusinessException("Masa acumulada no válida");
         }
-
         checkOrderStatus(orderFound);
 
         if (detail.getTemperature() > temperaturaUmbral) {
             if (orderFound.isAlarmAccepted()) {
                 orderFound.setAlarmAccepted(false);
                 orderBusiness.update(orderFound);
-                // todo el envio del mail deberia ser en segundo plano, se tarda una banda
-                emailBusiness.sendSimpleMessage("simon.llamosas44@gmail.com", "EMERGENCIA: Temperatura por encima de lo normal",
-                        String.format("TEMEPERTURA: ", detail.getTemperature()));
+                applicationEventPublisher.publishEvent(new AlarmEvent(detail, AlarmEvent.TypeEvent.TEMPERATURE_EXCEEDED));
             }
-            System.out.println("Guardar alerta en db ");
         }
 
         // Actualizacion de cabecera de orden
@@ -122,8 +116,8 @@ public class DetailBusiness implements IDetailBusiness {
         saveDetails(orderFound, detail);
     }
 
-    @Override
-    public void saveDetails(Order orderFound, Detail detail) throws FoundException, BusinessException, NotFoundException {
+
+    private void saveDetails(Order orderFound, Detail detail) throws FoundException, BusinessException, NotFoundException {
         long currentTime = System.currentTimeMillis();
         Optional<List<Detail>> detailsOptional = detailDAO.findByOrderId(orderFound.getId());
         if ((detailsOptional.isPresent() && !detailsOptional.get().isEmpty())) {

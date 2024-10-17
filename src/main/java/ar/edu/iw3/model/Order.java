@@ -30,6 +30,7 @@ public class Order {
     private long id;
 
     // TODO volver a colocar parametros en nullable = false
+
     @Enumerated(EnumType.STRING)
     @Column()
     private Status status;

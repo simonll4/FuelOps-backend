@@ -20,7 +20,7 @@ public interface IDetailBusiness {
 
     public void receiveDetails(Detail detail) throws NotFoundException, BusinessException, FoundException;
 
-    public void saveDetails( Order orderFound,Detail detail) throws FoundException, BusinessException, NotFoundException;
+    //public void saveDetails( Order orderFound,Detail detail) throws FoundException, BusinessException, NotFoundException;
 
     // todo public Detail update(Detail detail) throws NotFoundException, BusinessException, FoundException;
 

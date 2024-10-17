@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @Slf4j
 public class EmailBusiness {
+
     @Autowired
     private JavaMailSender emailSender;
 
@@ -30,4 +31,5 @@ public class EmailBusiness {
             throw BusinessException.builder().ex(e).message(e.getMessage()).build();
         }
     }
+
 }
