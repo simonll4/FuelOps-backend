@@ -3,6 +3,8 @@ package ar.edu.iw3.integration.cli1.model;
 import java.io.IOException;
 import java.util.Date;
 
+import ar.edu.iw3.model.Customer;
+import ar.edu.iw3.model.Driver;
 import ar.edu.iw3.model.Product;
 import ar.edu.iw3.model.Truck;
 import ar.edu.iw3.model.business.interfaces.*;
@@ -28,14 +30,16 @@ public class OrderCli1JsonDeserializer extends StdDeserializer<OrderCli1> {
     private IProductBusiness productBusiness;
     private IDriverBusiness driverBusiness;
     private ITruckBusiness truckBusiness;
+    private ITankBusiness tankBusiness;
 
     public OrderCli1JsonDeserializer(Class<?> vc, IDriverBusiness driverBusiness, ITruckBusiness truckBusiness,
-            ICustomerBusiness customerBusiness, IProductBusiness productBusiness) {
+                                     ICustomerBusiness customerBusiness, IProductBusiness productBusiness, ITankBusiness tankBusiness) {
         super(vc);
         this.driverBusiness = driverBusiness;
         this.truckBusiness = truckBusiness;
         this.customerBusiness = customerBusiness;
         this.productBusiness = productBusiness;
+        this.tankBusiness = tankBusiness;
     }
 
     @Override
@@ -52,29 +56,19 @@ public class OrderCli1JsonDeserializer extends StdDeserializer<OrderCli1> {
         r.setEstimatedTime(estimatedTime);
         r.setPreset(preset);
 
-        try {
-            r.setDriver(JsonUtiles.getDriver(node, new String[]{"driver_document", "driver_document_number"}, driverBusiness));
-        } catch (NotFoundException | BusinessException ignored) {
-        }
+        Driver driver = (JsonUtiles.getDriver(node, "driver_document,driver_document_number,document".split(","), driverBusiness));
 
-        try {
-            r.setTruck(JsonUtiles.getTruck(node, new String[]{"truck_plate", "truck_plate_number"}, truckBusiness));
-        } catch (NotFoundException | BusinessException ignored) {
-        }
+        Truck truck = (JsonUtiles.getTruck(node, "truck_plate,truck_plate_number,license_plate,truck_license_plate".split(","), truckBusiness, tankBusiness));
 
-        try {
-            r.setCustomer(JsonUtiles.getCustomer(node, new String[]{"name", "customer_name", "business_name"}, customerBusiness));
-        } catch (NotFoundException | BusinessException ignored) {
-        }
+        Customer customer = (JsonUtiles.getCustomer(node, "name,customer_name,business_name,customer".split(","), customerBusiness));
 
-        Product product = null;
-        try {
-            product = JsonUtiles.getProduct(node, "product,product_name".split(","), productBusiness);
-        } catch (NotFoundException e) {
-            // TODO Ver como resolver esta parte cuando no encuentra el producto
-        }
-        if (product != null) {
+        Product product = JsonUtiles.getProduct(node, "product,product_name".split(","), productBusiness);
+
+        if (product != null && customer != null && truck != null && driver != null) {
+            r.setCustomer(customer);
+            r.setDriver(driver);
             r.setProduct(product);
+            r.setTruck(truck);
         }
 
         return r;

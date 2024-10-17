@@ -25,7 +25,6 @@ public class Truck {
 
     private String description;
 
-    @OneToMany
-    @JoinColumn(name = "id_tank", nullable = false)
+    @OneToMany(mappedBy = "truck")
     private Set<Tanker> tanks = new HashSet<>();
 }

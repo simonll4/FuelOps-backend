@@ -1,18 +1,20 @@
 package ar.edu.iw3.model.business.implementations;
 
-import ar.edu.iw3.model.Product;
 import ar.edu.iw3.model.Truck;
 import ar.edu.iw3.model.business.exceptions.BusinessException;
 import ar.edu.iw3.model.business.exceptions.FoundException;
 import ar.edu.iw3.model.business.exceptions.NotFoundException;
 import ar.edu.iw3.model.business.interfaces.ITruckBusiness;
 import ar.edu.iw3.model.persistence.TruckRepository;
+import ar.edu.iw3.model.Tanker;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 @Slf4j
@@ -79,7 +81,10 @@ public class TruckBusiness implements ITruckBusiness {
         }
 
         try {
-            return truckDAO.save(truck);
+            truck = truckDAO.save(truck);
+            truck.setTanks(processTankers(truck));
+            return truck;
+
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             //throw BusinessException.builder().ex(e).build();
@@ -104,6 +109,7 @@ public class TruckBusiness implements ITruckBusiness {
         }
 
         try {
+
             return truckDAO.save(truck);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -128,4 +134,44 @@ public class TruckBusiness implements ITruckBusiness {
             throw BusinessException.builder().ex(e).build();
         }
     }
+
+
+    @Override
+    public Truck loadOrCreate(Truck truck) throws BusinessException {
+        Optional<Truck> findTruck;
+
+        try {
+            findTruck = truckDAO.findByLicensePlate(truck.getLicensePlate());
+            if (findTruck.isEmpty()){
+                truck = truckDAO.save(truck);
+                truck.setTanks(processTankers(truck));
+                return truck;
+            }
+            return findTruck.get();
+
+        } catch (Exception e) {
+            throw BusinessException.builder().ex(e).build();
+        }
+    }
+
+    @Autowired
+    private TankBusiness tankBusiness;
+
+    @Override
+    public Set<Tanker> processTankers(Truck truck) throws BusinessException {
+        Set<Tanker> tankers = truck.getTanks();
+        Set<Tanker> newTankers = new HashSet<>();
+        for (Tanker processedTanker : tankers) {
+            try {
+                processedTanker.setTruck(truck);
+                processedTanker = tankBusiness.loadOrCreate(processedTanker);
+                newTankers.add(processedTanker); // agregamos el cisterna cargado en base de datos
+            } catch (Exception e) {
+                log.error(e.getMessage(), e);
+                throw BusinessException.builder().ex(e).build();
+            }
+        }
+        return newTankers;
+    }
+
 }

@@ -9,11 +9,9 @@ import java.util.Set;
 
 import ar.edu.iw3.model.*;
 import ar.edu.iw3.model.business.exceptions.BusinessException;
+import ar.edu.iw3.model.business.exceptions.FoundException;
 import ar.edu.iw3.model.business.exceptions.NotFoundException;
-import ar.edu.iw3.model.business.interfaces.ICustomerBusiness;
-import ar.edu.iw3.model.business.interfaces.IDriverBusiness;
-import ar.edu.iw3.model.business.interfaces.IProductBusiness;
-import ar.edu.iw3.model.business.interfaces.ITruckBusiness;
+import ar.edu.iw3.model.business.interfaces.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
@@ -21,7 +19,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
 public class JsonUtiles {
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public static ObjectMapper getObjectMapper(Class clazz, StdSerializer ser, String dateFormat) {
         ObjectMapper mapper = new ObjectMapper();
         String defaultFormat = "yyyy-MM-dd'T'HH:mm:ssZ";
@@ -38,7 +36,7 @@ public class JsonUtiles {
 
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public static ObjectMapper getObjectMapper(Class clazz, StdDeserializer deser, String dateFormat) {
         ObjectMapper mapper = new ObjectMapper();
         String defaultFormat = "yyyy-MM-dd'T'HH:mm:ssZ";
@@ -59,12 +57,13 @@ public class JsonUtiles {
     /**
      * Obtiene una cadena con la siguiente lógica:
      * 1) Busca en cada uno de los atributos definidos en el arreglo "attrs",
-     *    el primero que encuentra será el valor retornado.
+     * el primero que encuentra será el valor retornado.
      * 2) Si no se encuentra ninguno de los atributos del punto 1), se
-     *    retorna "defaultValue".
+     * retorna "defaultValue".
      * Ejemplo: supongamos que "node" represente: {"code":"c1, "codigo":"c11", "stock":true}
-     *   getString(node, String[]{"codigo","cod"},"-1") retorna: "cl1"
-     *   getString(node, String[]{"cod_prod","c_prod"},"-1") retorna: "-1"
+     * getString(node, String[]{"codigo","cod"},"-1") retorna: "cl1"
+     * getString(node, String[]{"cod_prod","c_prod"},"-1") retorna: "-1"
+     *
      * @param node
      * @param attrs
      * @param defaultValue
@@ -140,7 +139,7 @@ public class JsonUtiles {
         }
 
         // Si no se encontró un valor válido, intentar con el valor por defecto
-        if (parsedDate == null && defaultValue != null) {
+        if (defaultValue != null) {
             for (SimpleDateFormat format : formats) {
                 try {
                     parsedDate = format.parse(defaultValue);
@@ -148,7 +147,7 @@ public class JsonUtiles {
                         return parsedDate; // Si parsea el default, devolverlo
                     }
                 } catch (ParseException e) {
-                    // Si falla el default, seguir intentando con otros formatos
+                    // TODO Si falla el default, seguir intentando con otros formatos
                 }
             }
         }
@@ -156,66 +155,107 @@ public class JsonUtiles {
         return parsedDate; // Si no se pudo parsear, devolver null
     }
 
-    public static Driver getDriver(JsonNode node, String[] attrs, IDriverBusiness driverBusiness) throws BusinessException, NotFoundException {
-        String driverDocument = getString(node, attrs, null);  // Obtener documento del driver desde los atributos
-        if (driverDocument != null) {
-            return driverBusiness.load(driverDocument); // Si se encuentra, cargar la entidad Driver desde el negocio
+    public static Driver getDriver(JsonNode node, String[] attrs, IDriverBusiness driverBusiness) {
+        JsonNode driverNode = node.get("driver"); // Buscar el nodo padre "driver"
+        if (driverNode != null) {
+            String driverDocument = null;
+
+            // Recorremos los atributos dentro del nodo "driver"
+            for (String attr : attrs) {
+                if (driverNode.get(attr) != null) {
+                    driverDocument = driverNode.get(attr).asText();
+                    break;
+                }
+            }
+
+            if (driverDocument != null) {
+                try {
+                    return driverBusiness.loadOrCreate(Utils.buildDriver(driverNode)); // Cargar el driver desde el business
+                } catch (BusinessException e) {
+                    // TODO tratar excepcion
+                }
+            }
         }
-        return null; // Si no se encuentra el documento, retorna null
+        return null;
     }
 
-    public static Truck getTruck(JsonNode node, String[] attrs, ITruckBusiness truckBusiness) throws BusinessException, NotFoundException {
-        String truckLicensePlate = getString(node, attrs, null);  // Obtener placa del camión desde los atributos
-        if (truckLicensePlate != null) {
-            Truck truck = truckBusiness.load(truckLicensePlate); // Si se encuentra, cargar la entidad Truck desde el negocio
-
-            // Si existe un nodo de "tanks" en el JSON, procesar los Tanker
-            JsonNode tanksNode = node.get("tanks");
-            if (tanksNode != null && tanksNode.isArray()) {
-                Set<Tanker> tankers = new HashSet<>();
-                for (JsonNode tankNode : tanksNode) {
-                    Tanker tanker = new Tanker();
-                    tanker.setCapacity_liters((long) getValue(tankNode, new String[]{"capacity_liters"}, 0)); // Set capacity
-                    tanker.setLicense(getString(tankNode, new String[]{"license"}, "")); // Set license
-                    tankers.add(tanker);
+    public static Truck getTruck(JsonNode node, String[] attrs, ITruckBusiness truckBusiness, ITankBusiness tankBusiness)  {
+        JsonNode truckNode = node.get("truck"); // Buscar el nodo padre "truck"
+        if (truckNode != null) {
+            String truckLicensePlate = getString(truckNode, attrs, null);  // Obtener placa del camión desde los atributos
+            if (truckLicensePlate != null) {
+                Truck truck = null; // Si se encuentra, cargar la entidad Truck desde el negocio
+                JsonNode tanksNode = truckNode.get("tanks");
+                try {
+                    truck = truckBusiness.loadOrCreate(Utils.buildTruck(truckNode,tanksNode));
+                } catch (BusinessException e) {
+                    // TODO tratar excepcion
                 }
-                truck.setTanks(tankers); // Asignar los tanks al truck
+
+
+
+                return truck;
             }
-            return truck;
         }
         return null; // Si no se encuentra la placa, retorna null
     }
 
-    public static Customer getCustomer(JsonNode node, String[] attrs, ICustomerBusiness customerBusiness) throws BusinessException, NotFoundException {
-        String customerName = getString(node, attrs, null);  // Obtener nombre del cliente desde los atributos
-        if (customerName != null) {
-            return customerBusiness.load(customerName);  // Si se encuentra, cargar la entidad Customer desde el negocio
-        }
-        return null;  // Si no se encuentra el nombre, retorna null
-    }
+    public static Customer getCustomer(JsonNode node, String[] attrs, ICustomerBusiness customerBusiness) {
+        JsonNode customerNode = node.get("customer"); // Buscar el nodo padre "customer"
+        if (customerNode != null) {
+            String customerName = null;
 
-    public static Product getProduct(JsonNode node, String[] attrs, IProductBusiness productBusiness) throws NotFoundException {
-        String productName = null;
+            // Recorremos los atributos dentro del nodo "customer"
+            for (String attr : attrs) {
+                if (customerNode.get(attr) != null) {
+                    customerName = customerNode.get(attr).asText();
+                    break;
+                }
+            }
 
-        // Recorremos los atributos buscando el nombre del producto
-        for (String attr : attrs) {
-            if (node.get(attr) != null) {
-                productName = node.get(attr).asText(); // Extraemos el texto del atributo
-                break;
+            if (customerName != null) {
+
+                try {
+                    return customerBusiness.loadOrCreate(Utils.buildCustomer(customerNode)); // Cargar el customer desde el business
+                } catch (BusinessException e) {
+                    // TODO tratar excepcion
+                }
+
             }
         }
 
-        // Si encontramos un nombre válido, intentamos cargar el producto
-        if (productName != null) {
-            try {
-                return productBusiness.load(productName); // Cargamos el producto desde el negocio
-            } catch (NotFoundException | BusinessException e) {
-                throw NotFoundException.builder().message("No se encontró el producto " + productName).build();
-            }
-        }
-
-        // Si no encontramos nada o hay un error, retornamos null
         return null;
     }
+
+
+    public static Product getProduct(JsonNode node, String[] attrs, IProductBusiness productBusiness) {
+        JsonNode productNode = node.get("product"); // Buscar el nodo padre "product"
+        if (productNode != null) {
+            String productName = null;
+
+            // Recorremos los atributos dentro del nodo "product"
+            for (String attr : attrs) {
+                if (productNode.get(attr) != null) {
+                    productName = productNode.get(attr).asText();
+                    break;
+                }
+            }
+
+            if (productName != null) {
+
+                try {
+                    return productBusiness.load(productName); // Cargar el producto desde el business
+                } catch (NotFoundException e) {
+                    // TODO tratar excepcion
+                } catch (BusinessException e) {
+                    // TODO tratar excepcion
+                }
+
+            }
+        }
+
+        return null;
+    }
+
 
 }
