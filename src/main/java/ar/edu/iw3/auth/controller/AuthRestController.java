@@ -24,7 +24,7 @@ import ar.edu.iw3.auth.User;
 import ar.edu.iw3.auth.custom.CustomAuthenticationManager;
 import ar.edu.iw3.auth.filters.AuthConstants;
 import ar.edu.iw3.controllers.BaseRestController;
-import ar.edu.iw3.controllers.Constants;
+import ar.edu.iw3.controllers.constants.Constants;
 import ar.edu.iw3.util.IStandartResponseBusiness;
 
 @RestController
@@ -36,7 +36,7 @@ public class AuthRestController extends BaseRestController {
     @Autowired
     private IStandartResponseBusiness response;
 
-    @PostMapping(value = Constants.URL_LOGIN, produces = MediaType.TEXT_PLAIN_VALUE)
+        @PostMapping(value = Constants.URL_LOGIN, produces = MediaType.TEXT_PLAIN_VALUE)
     public ResponseEntity<?> loginExternalOnlyToken(@RequestParam String username, @RequestParam String password) {
 
         Authentication auth = null;

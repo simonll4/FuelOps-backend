@@ -1,17 +1,17 @@
 package ar.edu.iw3.model.business.implementations;
 
+import ar.edu.iw3.model.Detail;
 import ar.edu.iw3.model.Order;
-import ar.edu.iw3.model.Product;
 import ar.edu.iw3.model.business.exceptions.BusinessException;
 import ar.edu.iw3.model.business.exceptions.FoundException;
 import ar.edu.iw3.model.business.exceptions.NotFoundException;
 import ar.edu.iw3.model.business.interfaces.IOrderBusiness;
 import ar.edu.iw3.model.persistence.OrderRepository;
-import ar.edu.iw3.model.persistence.ProductRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,12 +29,12 @@ public class OrderBusiness implements IOrderBusiness {
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             throw BusinessException.builder().ex(e).build();
-        }    }
+        }
+    }
 
     @Override
     public Order load(long id) throws NotFoundException, BusinessException {
         Optional<Order> orderFound;
-
         try {
             orderFound = orderDAO.findById(id);
         } catch (Exception e) {
@@ -67,19 +67,6 @@ public class OrderBusiness implements IOrderBusiness {
     @Override
     public Order update(Order order) throws NotFoundException, BusinessException, FoundException {
         load(order.getId());
-
-        Optional<Order> orderFound;
-        try {
-            orderFound = orderDAO.findByIdNot(order.getId());
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            throw BusinessException.builder().ex(e).build();
-        }
-
-        if (orderFound.isPresent()) {
-            throw FoundException.builder().message("Ya Existe una Orden con el Id =" + order.getId()).build();
-        }
-
         try {
             return orderDAO.save(order);
         } catch (Exception e) {
@@ -104,4 +91,56 @@ public class OrderBusiness implements IOrderBusiness {
             throw BusinessException.builder().ex(e).build();
         }
     }
+
+    @Override
+    public Order validatePassword(int password) throws NotFoundException, BusinessException {
+        Optional<Order> order;
+
+        // Lógica para validar la contraseña de activación
+        try {
+            order = orderDAO.findByActivatePassword(password);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            throw new BusinessException("Error al recuperar orden", e);
+        }
+
+        if (order.isEmpty()) {
+            throw new NotFoundException("Orden no econtrada");
+        }
+
+        // si la orden no esta en estado PESAJE_INICIAL_REGISTRADO rechazar la activación
+        checkOrderStatus(order.get());
+        return order.get();
+    }
+
+    @Override
+    public Order closeOrder(Long orderId) throws BusinessException, NotFoundException {
+        Optional<Order> order;
+
+        try {
+            order = orderDAO.findById(orderId);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            throw new BusinessException("Error al recuperar orden", e);
+        }
+        if (order.isEmpty()) {
+            throw new NotFoundException("Orden no econtrada");
+        }
+        checkOrderStatus(order.get());
+        order.get().setStatus(Order.Status.ORDER_CLOSED);
+        return orderDAO.save(order.get());
+    }
+
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////// UTILIDADES  ////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    private void checkOrderStatus(Order order) throws BusinessException {
+        if (order.getStatus() != Order.Status.REGISTERED_INITIAL_WEIGHING) {
+            throw new BusinessException("Estado de orden no válido");
+        }
+    }
+
 }
+

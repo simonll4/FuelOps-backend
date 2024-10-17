@@ -1,5 +1,7 @@
 package ar.edu.iw3.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,11 +21,12 @@ public class Detail {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_order", nullable = false)
+    @JsonIgnoreProperties("details")
     private Order order;
 
-    @Column(nullable = false)
+    // todo @Column(nullable = false)
     private Date timeStamp;
 
     @Column(nullable = false)

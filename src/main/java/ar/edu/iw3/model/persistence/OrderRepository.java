@@ -11,4 +11,8 @@ import java.util.Optional;
 public interface OrderRepository extends JpaRepository<Order, Long> {
 
     Optional<Order> findByIdNot(Long id);
+
+    Optional<Order> findByActivatePassword(int activatePassword);
+
+
 }

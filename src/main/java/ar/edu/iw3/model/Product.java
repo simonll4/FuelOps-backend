@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -24,11 +25,13 @@ public class Product {
     @Column(length = 100, unique = true)
     private String product;
 
-    @Column()
     private String description;
+
+    private float temperature;
 
     @Override
     public String toString() {
         return String.format("id=%s, product=%s, descripcion=%s", this.getId(), this.getProduct(), this.getDescription());
     }
+
 }

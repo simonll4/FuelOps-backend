@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 import java.util.Date;
 import java.util.Set;
 
@@ -18,25 +19,30 @@ import java.util.Set;
 public class Order {
 
     public enum Status {
-        ORDEN_RECIBIDA,
-        PESAJE_INICIAL_REGISTRADO,
-        ORDEN_CERRADA,
-        PESAJE_FINAL_REGISTRADO
+        ORDER_RECEIVED,
+        REGISTERED_INITIAL_WEIGHING,
+        ORDER_CLOSED,
+        REGISTERED_FINAL_WEIGHING
     }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+
     // TODO volver a colocar parametros en nullable = false
+
     @Enumerated(EnumType.STRING)
     @Column()
     private Status status;
 
-    @Column()
+    @Column(unique = true)
     private int activatePassword;
 
     @Column(nullable = false)
     private float preset;
+
+    @Column(columnDefinition = "tinyint default 1")
+    private boolean alarmAccepted = true;
 
     @Column()
     private float initialWeighing;
@@ -44,6 +50,7 @@ public class Order {
     @Column()
     private float finalWeighing;
 
+    // todo ver esto si usamos wrappers para poner null
     // Ultimo estado de carga
     @Column()
     private Date lastTimeStamp;
@@ -61,30 +68,30 @@ public class Order {
     private float lastFlowRate;
 
     // relaciones con otras entidades
-    @ManyToOne
-    @JoinColumn(name = "id_truck", nullable = false)
-    private Truck truck;
+//    @ManyToOne
+//    @JoinColumn(name = "id_truck", nullable = false)
+//    private Truck truck;
+//
+//    @ManyToOne
+//    @JoinColumn(name = "id_driver", nullable = false)
+//    private Driver driver;
+//
+//    @ManyToOne
+//    @JoinColumn(name = "id_customer", nullable = false)
+//    private Customer customer;
+//
+//    @ManyToOne
+//    @JoinColumn(name = "id_product", nullable = false)
+//    private Product product;
 
-    @ManyToOne
-    @JoinColumn(name = "id_driver", nullable = false)
-    private Driver driver;
+    @OneToMany(mappedBy = "order")
+    private Set<Detail> details;
 
-    @ManyToOne
-    @JoinColumn(name = "id_customer", nullable = false)
-    private Customer customer;
-
-    @ManyToOne
-    @JoinColumn(name = "id_product", nullable = false)
-    private Product product;
-
-    /*@OneToMany(mappedBy = "order")
-    private Set<Detail> details;*/
-
-    /*@OneToMany(mappedBy = "order")
-    private Set<Alarm> alarms;*/
+    @OneToMany(mappedBy = "order")
+    private Set<Alarm> alarms;
 
     // fechas y horas de los eventos durante el proceso
-    @Column(nullable = false)
+    @Column()
     private Date estimatedTime;
 
     @Column()
@@ -96,9 +103,11 @@ public class Order {
     @Column()
     private Date finalWeighingDate;
 
+    // fecha de primer detalle de carga
     @Column()
     private Date fuelingStartDate;
 
+    // fecha de ultimo detalle de carga
     @Column()
     private Date fuelingEndDate;
 }
