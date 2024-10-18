@@ -7,6 +7,7 @@ import ar.edu.iw3.model.Order;
 import ar.edu.iw3.model.business.exceptions.BusinessException;
 import ar.edu.iw3.model.business.exceptions.FoundException;
 import ar.edu.iw3.model.business.exceptions.NotFoundException;
+import ar.edu.iw3.model.business.exceptions.UnProcessableException;
 import ar.edu.iw3.model.business.interfaces.IDetailBusiness;
 import ar.edu.iw3.model.persistence.DetailRepository;
 import ar.edu.iw3.model.persistence.OrderRepository;
@@ -77,86 +78,5 @@ public class DetailBusiness implements IDetailBusiness {
         return detailsFound.get();
     }
 
-    @Autowired
-    private OrderBusiness orderBusiness;
 
-    @Autowired
-    private ApplicationEventPublisher applicationEventPublisher;
-
-    @Override
-    public void receiveDetails(Detail detail) throws NotFoundException, BusinessException, FoundException {
-        Order orderFound = orderBusiness.load(detail.getOrder().getId());
-
-        // todo crear excepciones personalizadas para estos casos?
-        if (detail.getFlowRate() < 0) {
-            throw new BusinessException("Caudal no válido");
-        }
-        if (detail.getAccumulatedMass() < orderFound.getLastAccumulatedMass()) {
-            throw new BusinessException("Masa acumulada no válida");
-        }
-        checkOrderStatus(orderFound);
-
-        if (detail.getTemperature() > temperaturaUmbral) {
-            if (orderFound.isAlarmAccepted()) {
-                orderFound.setAlarmAccepted(false);
-                orderBusiness.update(orderFound);
-                applicationEventPublisher.publishEvent(new AlarmEvent(detail, AlarmEvent.TypeEvent.TEMPERATURE_EXCEEDED));
-            }
-        }
-
-        // Actualizacion de cabecera de orden
-        orderFound.setLastTimeStamp(new Date(System.currentTimeMillis()));
-        orderFound.setLastAccumulatedMass(detail.getAccumulatedMass());
-        orderFound.setLastDensity(detail.getDensity());
-        orderFound.setLastTemperature(detail.getTemperature());
-        orderFound.setLastFlowRate(detail.getFlowRate());
-        orderBusiness.update(orderFound);
-
-        // Gurdardado de detalle en db
-        saveDetails(orderFound, detail);
-    }
-
-
-    private void saveDetails(Order orderFound, Detail detail) throws FoundException, BusinessException, NotFoundException {
-        long currentTime = System.currentTimeMillis();
-        Optional<List<Detail>> detailsOptional = detailDAO.findByOrderId(orderFound.getId());
-        if ((detailsOptional.isPresent() && !detailsOptional.get().isEmpty())) {
-            Date lastTimeStamp = orderFound.getFuelingEndDate();
-            if (checkFrequency(currentTime, lastTimeStamp)) {
-                detail.setTimeStamp(new Date(currentTime));
-                add(detail);
-                orderFound.setFuelingEndDate(new Date(System.currentTimeMillis()));
-                orderBusiness.update(orderFound);
-            } else {
-                throw BusinessException.builder().message("Detalle no guardado").build();
-            }
-        } else {
-            detail.setTimeStamp(new Date(currentTime));
-            add(detail);
-            orderFound.setFuelingStartDate(new Date(System.currentTimeMillis()));
-            orderFound.setFuelingEndDate(new Date(System.currentTimeMillis()));
-            orderBusiness.update(orderFound);
-        }
-    }
-
-
-    //////////////////////////////////////////////////////////////////////////////////////////////////////
-    //////////////////////////////////////////// UTILIDADES  ////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // todo donde definir temperatura umbral? por orden o por producto?
-    private float temperaturaUmbral = 40.0F;
-
-    private void checkOrderStatus(Order order) throws BusinessException {
-        if (order.getStatus() != Order.Status.REGISTERED_INITIAL_WEIGHING) {
-            throw new BusinessException("Estado de orden no válido");
-        }
-    }
-
-    // todo dar la posibildidad de cambiar la frecuencia de guardado
-    private static final long SAVE_INTERVAL_MS = 5000; // Frecuencia de guardado (5 segundos)
-
-    private boolean checkFrequency(long currentTime, Date lastTimeStamp) {
-        return currentTime - lastTimeStamp.getTime() >= SAVE_INTERVAL_MS;
-    }
 }

@@ -24,7 +24,7 @@ import ar.edu.iw3.auth.User;
 import ar.edu.iw3.auth.custom.CustomAuthenticationManager;
 import ar.edu.iw3.auth.filters.AuthConstants;
 import ar.edu.iw3.controllers.BaseRestController;
-import ar.edu.iw3.controllers.constants.Constants;
+import ar.edu.iw3.Constants;
 import ar.edu.iw3.util.IStandartResponseBusiness;
 
 @RestController

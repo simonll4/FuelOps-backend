@@ -5,6 +5,7 @@ import ar.edu.iw3.model.Order;
 import ar.edu.iw3.model.business.exceptions.BusinessException;
 import ar.edu.iw3.model.business.exceptions.FoundException;
 import ar.edu.iw3.model.business.exceptions.NotFoundException;
+import ar.edu.iw3.model.business.exceptions.UnProcessableException;
 
 import java.util.List;
 
@@ -17,8 +18,6 @@ public interface IDetailBusiness {
     public Detail load(long id) throws NotFoundException, BusinessException;
 
     public Detail add(Detail detail) throws FoundException, BusinessException;
-
-    public void receiveDetails(Detail detail) throws NotFoundException, BusinessException, FoundException;
 
     //public void saveDetails( Order orderFound,Detail detail) throws FoundException, BusinessException, NotFoundException;
 

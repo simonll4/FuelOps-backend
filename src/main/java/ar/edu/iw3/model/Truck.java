@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -27,4 +28,6 @@ public class Truck {
 
     @OneToMany(mappedBy = "truck")
     private Set<Tanker> tanks = new HashSet<>();
+
 }
+

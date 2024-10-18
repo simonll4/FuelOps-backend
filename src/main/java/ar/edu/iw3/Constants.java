@@ -1,4 +1,4 @@
-package ar.edu.iw3.controllers.constants;
+package ar.edu.iw3;
 
 public final class Constants {
 	public static final String URL_API = "/api";

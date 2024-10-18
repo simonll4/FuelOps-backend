@@ -1,6 +1,5 @@
 package ar.edu.iw3.model.business.interfaces;
 
-import ar.edu.iw3.model.Detail;
 import ar.edu.iw3.model.Order;
 import ar.edu.iw3.model.business.exceptions.BusinessException;
 import ar.edu.iw3.model.business.exceptions.FoundException;
@@ -22,7 +21,4 @@ public interface IOrderBusiness {
 
     public void delete(long id) throws NotFoundException, BusinessException;
 
-    public Order validatePassword(int password) throws NotFoundException, BusinessException;
-
-    public Order closeOrder(Long orderId) throws BusinessException, NotFoundException;
 }

@@ -1,6 +1,6 @@
 package ar.edu.iw3.controllers;
 
-import ar.edu.iw3.controllers.constants.Constants;
+import ar.edu.iw3.Constants;
 import ar.edu.iw3.model.Supplier;
 
 import ar.edu.iw3.model.business.exceptions.BusinessException;
