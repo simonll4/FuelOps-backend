@@ -1,4 +1,4 @@
-package ar.edu.iw3.integration.cli1.model.business.implementations;
+package ar.edu.iw3.integration.cli1.model.business;
 
 import java.util.List;
 import java.util.Optional;

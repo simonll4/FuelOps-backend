@@ -22,4 +22,5 @@ public class BusinessException extends Exception {
 	public BusinessException(Throwable ex) {
 		super(ex.getMessage(), ex);
 	}
+
 }
