@@ -5,6 +5,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import ar.edu.iw3.integration.cli1.model.business.interfaces.ICustomerCli1Business;
+import ar.edu.iw3.integration.cli1.model.business.interfaces.IDriverCli1Business;
+import ar.edu.iw3.integration.cli1.model.business.interfaces.ITruckCli1Business;
+import ar.edu.iw3.integration.cli1.util.Utils;
 import ar.edu.iw3.model.*;
 import ar.edu.iw3.model.business.exceptions.BusinessException;
 import ar.edu.iw3.model.business.exceptions.NotFoundException;
@@ -15,7 +19,10 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
-public class JsonUtiles {
+import static ar.edu.iw3.util.JsonAttributeConstants.*;
+
+
+public class JsonUtils {
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static ObjectMapper getObjectMapper(Class clazz, StdSerializer ser, String dateFormat) {
         ObjectMapper mapper = new ObjectMapper();
@@ -152,8 +159,19 @@ public class JsonUtiles {
         return parsedDate; // Si no se pudo parsear, devolver null
     }
 
-    public static Driver getDriver(JsonNode node, String[] attrs, IDriverBusiness driverBusiness) {
-        JsonNode driverNode = node.get("driver"); // Buscar el nodo padre "driver"
+    private static JsonNode getJsonNode(JsonNode node, String[] attrs) {
+        JsonNode r = null;
+        for (String attr : attrs) {
+            if (node.get(attr) != null) {
+                r = node.get(attr);
+                break;
+            }
+        }
+        return r;
+    }
+
+    public static Driver getDriver(JsonNode node, String[] attrs, IDriverCli1Business driverBusiness) {
+        JsonNode driverNode = getJsonNode(node,DRIVER_NODE_ATTRIBUTES); // Buscar el nodo padre "driver"
 
         if (driverNode != null) {
             String driverDocument = null;
@@ -177,15 +195,15 @@ public class JsonUtiles {
         return null;
     }
 
-    public static Truck getTruck(JsonNode node, String[] attrs, ITruckBusiness truckBusiness, ITankBusiness tankBusiness) {
-        JsonNode truckNode = node.get("truck"); // Buscar el nodo padre "truck"
+    public static Truck getTruck(JsonNode node, String[] attrs, ITruckCli1Business truckCli1Business, ITankBusiness tankBusiness) {
+        JsonNode truckNode = getJsonNode(node,TRUCK_NODE_ATTRIBUTES); // Buscar el nodo padre "truck"
         if (truckNode != null) {
             String truckLicensePlate = getString(truckNode, attrs, null);  // Obtener placa del camión desde los atributos
             if (truckLicensePlate != null) {
                 Truck truck = null; // Si se encuentra, cargar la entidad Truck desde el negocio
                 JsonNode tanksNode = truckNode.get("tanks");
                 try {
-                    truck = truckBusiness.loadOrCreate(Utils.buildTruck(truckNode, tanksNode));
+                    truck = truckCli1Business.loadOrCreate(Utils.buildTruck(truckNode, tanksNode));
                 } catch (BusinessException e) {
                     // TODO tratar excepcion
                 }
@@ -197,8 +215,8 @@ public class JsonUtiles {
         return null; // Si no se encuentra la placa, retorna null
     }
 
-    public static Customer getCustomer(JsonNode node, String[] attrs, ICustomerBusiness customerBusiness) {
-        JsonNode customerNode = node.get("customer"); // Buscar el nodo padre "customer"
+    public static Customer getCustomer(JsonNode node, String[] attrs, ICustomerCli1Business customerBusiness) {
+        JsonNode customerNode = getJsonNode(node,CUSTOMER_NODE_ATTRIBUTES); // Buscar el nodo padre "customer"
         if (customerNode != null) {
             String customerName = null;
 
@@ -226,7 +244,7 @@ public class JsonUtiles {
 
 
     public static Product getProduct(JsonNode node, String[] attrs, IProductBusiness productBusiness) {
-        JsonNode productNode = node.get("product"); // Buscar el nodo padre "product"
+        JsonNode productNode = getJsonNode(node,PRODUCT_NODE_ATTRIBUTES); // Buscar el nodo padre "product"
         if (productNode != null) {
             String productName = null;
 
@@ -254,6 +272,4 @@ public class JsonUtiles {
 
         return null;
     }
-
-
 }

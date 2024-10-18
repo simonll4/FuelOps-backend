@@ -27,7 +27,7 @@ public class Truck {
     private String description;
 
     @OneToMany(mappedBy = "truck")
-    private Set<Tanker> tanks = new HashSet<>();
+    private Set<Tanker> tankers = new HashSet<>();
 
 }
 

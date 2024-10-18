@@ -82,7 +82,7 @@ public class TruckBusiness implements ITruckBusiness {
 
         try {
             truck = truckDAO.save(truck);
-            truck.setTanks(processTankers(truck));
+            truck.setTankers(processTankers(truck));
             return truck;
 
         } catch (Exception e) {
@@ -144,7 +144,7 @@ public class TruckBusiness implements ITruckBusiness {
             findTruck = truckDAO.findByLicensePlate(truck.getLicensePlate());
             if (findTruck.isEmpty()){
                 truck = truckDAO.save(truck);
-                truck.setTanks(processTankers(truck));
+                truck.setTankers(processTankers(truck));
                 return truck;
             }
             return findTruck.get();
@@ -159,7 +159,7 @@ public class TruckBusiness implements ITruckBusiness {
 
     @Override
     public Set<Tanker> processTankers(Truck truck) throws BusinessException {
-        Set<Tanker> tankers = truck.getTanks();
+        Set<Tanker> tankers = truck.getTankers();
         Set<Tanker> newTankers = new HashSet<>();
         for (Tanker processedTanker : tankers) {
             try {
