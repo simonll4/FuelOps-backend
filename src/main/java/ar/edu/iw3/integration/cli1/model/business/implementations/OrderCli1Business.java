@@ -1,8 +1,12 @@
-package ar.edu.iw3.integration.cli1.model.business;
+package ar.edu.iw3.integration.cli1.model.business.implementations;
 
 import java.util.List;
 import java.util.Optional;
 
+import ar.edu.iw3.integration.cli1.model.business.interfaces.ICustomerCli1Business;
+import ar.edu.iw3.integration.cli1.model.business.interfaces.IDriverCli1Business;
+import ar.edu.iw3.integration.cli1.model.business.interfaces.IOrderCli1Business;
+import ar.edu.iw3.integration.cli1.model.business.interfaces.ITruckCli1Business;
 import ar.edu.iw3.model.business.implementations.TankBusiness;
 import ar.edu.iw3.model.business.interfaces.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +21,7 @@ import ar.edu.iw3.integration.cli1.model.persistence.OrderCli1Respository;
 import ar.edu.iw3.model.business.exceptions.BusinessException;
 import ar.edu.iw3.model.business.exceptions.FoundException;
 import ar.edu.iw3.model.business.exceptions.NotFoundException;
-import ar.edu.iw3.util.JsonUtiles;
+import ar.edu.iw3.util.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -79,10 +83,10 @@ public class OrderCli1Business implements IOrderCli1Business {
     }
 
     @Autowired
-    private ICustomerBusiness customerBusiness;
+    private ICustomerCli1Business customerBusiness;
 
     @Autowired
-    private ITruckBusiness truckBusiness;
+    private ITruckCli1Business truckBusiness;
 
     @Autowired
     private TankBusiness tankBusiness;
@@ -91,14 +95,14 @@ public class OrderCli1Business implements IOrderCli1Business {
     private IProductBusiness productBusiness;
 
     @Autowired
-    private IDriverBusiness driverBusiness;
+    private IDriverCli1Business driverBusiness;
 
 
     @Override
     public OrderCli1 addExternal(String json) throws FoundException, BusinessException {
-        ObjectMapper mapper = JsonUtiles.getObjectMapper(OrderCli1.class,
+        ObjectMapper mapper = JsonUtils.getObjectMapper(OrderCli1.class,
                 new OrderCli1JsonDeserializer(OrderCli1.class, driverBusiness, truckBusiness, customerBusiness, productBusiness, tankBusiness), null);
-        OrderCli1 order = null;
+        OrderCli1 order;
         try {
             order = mapper.readValue(json, OrderCli1.class);
         } catch (JsonProcessingException e) {

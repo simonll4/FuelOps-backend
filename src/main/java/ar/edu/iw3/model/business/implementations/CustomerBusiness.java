@@ -128,15 +128,4 @@ public class CustomerBusiness implements ICustomerBusiness {
             throw BusinessException.builder().ex(e).build();
         }
     }
-
-    @Override
-    public Customer loadOrCreate(Customer customer) throws BusinessException {
-        Optional<Customer> findCustomer;
-        try {
-            findCustomer = customerDAO.findByBusinessName(customer.getBusinessName());
-            return findCustomer.orElseGet(() -> customerDAO.save(customer));
-        }catch (Exception e){
-            throw BusinessException.builder().ex(e).build();
-        }
-    }
 }
