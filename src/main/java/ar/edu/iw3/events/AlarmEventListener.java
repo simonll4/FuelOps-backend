@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @Slf4j
@@ -36,21 +37,44 @@ public class AlarmEventListener implements ApplicationListener<AlarmEvent> {
 
     private void handleTemperatureExceeded(Detail detail) {
 
-        // guardado en db
+        // guardado de alerta en db
         Alarm alarm = new Alarm();
         alarm.setOrder(detail.getOrder());
         alarm.setTimeStamp(new Date(System.currentTimeMillis()));
         alarm.setTemperature(detail.getTemperature());
         alarm.setStatus(Alarm.Status.PENDING_REVIEW);
+
         try {
             alarmBusiness.add(alarm);
         } catch (BusinessException | FoundException e) {
             log.error(e.getMessage(), e);
         }
 
+        // Envio de mail de alerta
         String subject = "Temperatura Excedida Orden Nro " + detail.getOrder().getId();
-        String mensaje = String.format("El combustible abastecido en la orden %s, supero el umbral de temperatura al tener %.2f\u00B0C"
-                , detail.getOrder().getId(), detail.getTemperature());
+        String mensaje = String.format(
+                "ALERTA: Temperatura Excedida en la Orden Nro %s\n\n" +
+                        "Detalles de la Alerta:\n" +
+                        "---------------------------------\n" +
+                        "Orden ID: %s\n" +
+                        "Fecha/Hora del Evento: %s\n" +
+                        "Temperatura Registrada: %.2f °C\n" +
+                        "Masa Acumulada: %.2f kg\n" +
+                        "Densidad: %.2f kg/m³\n" +
+                        "Caudal: %.2f Kg/h\n" +
+                        "---------------------------------\n\n" +
+                        "Descripción: La temperatura del combustible ha superado el umbral establecido. " +
+                        "Por favor, revise esta alerta lo antes posible para evitar inconvenientes.\n\n" +
+                        "Atentamente,\n" +
+                        "Sistema de Monitoreo de Carga de Combustible",
+                detail.getOrder().getId(),
+                detail.getOrder().getId(),
+                new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(System.currentTimeMillis())),
+                detail.getTemperature(),
+                detail.getAccumulatedMass(),
+                detail.getDensity(),
+                detail.getFlowRate()
+        );
 
         log.info("Enviando mensaje '{}'", mensaje);
         try {
@@ -58,5 +82,6 @@ public class AlarmEventListener implements ApplicationListener<AlarmEvent> {
         } catch (BusinessException e) {
             log.error(e.getMessage(), e);
         }
+
     }
 }
