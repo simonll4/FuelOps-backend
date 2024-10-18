@@ -23,5 +23,5 @@ public interface ICustomerBusiness {
 
     public void delete(long id) throws NotFoundException, BusinessException;
 
-    public Customer loadOrCreate(Customer customer) throws BusinessException;
+
 }

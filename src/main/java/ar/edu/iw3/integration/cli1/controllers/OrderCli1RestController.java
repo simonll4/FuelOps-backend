@@ -2,7 +2,6 @@ package ar.edu.iw3.integration.cli1.controllers;
 
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -14,10 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ar.edu.iw3.controllers.BaseRestController;
 import ar.edu.iw3.controllers.Constants;
 import ar.edu.iw3.integration.cli1.model.OrderCli1;
-import ar.edu.iw3.integration.cli1.model.business.IOrderCli1Business;
-import ar.edu.iw3.model.business.exceptions.BusinessException;
-import ar.edu.iw3.model.business.exceptions.FoundException;
-import ar.edu.iw3.util.IStandartResponseBusiness;
+import ar.edu.iw3.integration.cli1.model.business.interfaces.IOrderCli1Business;
 
 @RestController
 @RequestMapping(Constants.URL_INTEGRATION_CLI1 + "/orders")
