@@ -3,7 +3,7 @@ package ar.edu.iw3.controllers;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import ar.edu.iw3.controllers.constants.Constants;
+import ar.edu.iw3.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

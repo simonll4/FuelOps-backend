@@ -2,7 +2,7 @@ package ar.edu.iw3.controllers;
 
 import java.util.Date;
 
-import ar.edu.iw3.controllers.constants.Constants;
+import ar.edu.iw3.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;

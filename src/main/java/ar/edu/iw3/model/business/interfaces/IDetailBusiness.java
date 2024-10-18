@@ -19,8 +19,6 @@ public interface IDetailBusiness {
 
     public Detail add(Detail detail) throws FoundException, BusinessException;
 
-    public void receiveDetails(Detail detail) throws NotFoundException, BusinessException, FoundException, UnProcessableException;
-
     //public void saveDetails( Order orderFound,Detail detail) throws FoundException, BusinessException, NotFoundException;
 
     // todo public Detail update(Detail detail) throws NotFoundException, BusinessException, FoundException;
