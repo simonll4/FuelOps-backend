@@ -1,6 +1,7 @@
 package ar.edu.iw3.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -36,8 +37,9 @@ public class Order {
     private Status status;
 
     @Column(unique = true)
-    private int activatePassword;
+    private Integer activatePassword;
 
+    @Min(value = 1, message = "El atributo 'preset' tiene que ser mayor a cero")
     @Column(nullable = false)
     private float preset;
 
@@ -68,21 +70,21 @@ public class Order {
     private float lastFlowRate;
 
     // relaciones con otras entidades
-//    @ManyToOne
-//    @JoinColumn(name = "id_truck", nullable = false)
-//    private Truck truck;
-//
-//    @ManyToOne
-//    @JoinColumn(name = "id_driver", nullable = false)
-//    private Driver driver;
-//
-//    @ManyToOne
-//    @JoinColumn(name = "id_customer", nullable = false)
-//    private Customer customer;
-//
-//    @ManyToOne
-//    @JoinColumn(name = "id_product", nullable = false)
-//    private Product product;
+    @ManyToOne
+    @JoinColumn(name = "id_truck", nullable = false)
+    private Truck truck;
+
+    @ManyToOne
+    @JoinColumn(name = "id_driver", nullable = false)
+    private Driver driver;
+
+    @ManyToOne
+    @JoinColumn(name = "id_customer", nullable = false)
+    private Customer customer;
+
+    @ManyToOne
+    @JoinColumn(name = "id_product", nullable = false)
+    private Product product;
 
     @OneToMany(mappedBy = "order")
     private Set<Detail> details;

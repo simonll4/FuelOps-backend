@@ -3,13 +3,10 @@ package ar.edu.iw3.util;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Locale;
-import java.util.Set;
 
 import ar.edu.iw3.model.*;
 import ar.edu.iw3.model.business.exceptions.BusinessException;
-import ar.edu.iw3.model.business.exceptions.FoundException;
 import ar.edu.iw3.model.business.exceptions.NotFoundException;
 import ar.edu.iw3.model.business.interfaces.*;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -157,6 +154,7 @@ public class JsonUtiles {
 
     public static Driver getDriver(JsonNode node, String[] attrs, IDriverBusiness driverBusiness) {
         JsonNode driverNode = node.get("driver"); // Buscar el nodo padre "driver"
+
         if (driverNode != null) {
             String driverDocument = null;
 
@@ -179,7 +177,7 @@ public class JsonUtiles {
         return null;
     }
 
-    public static Truck getTruck(JsonNode node, String[] attrs, ITruckBusiness truckBusiness, ITankBusiness tankBusiness)  {
+    public static Truck getTruck(JsonNode node, String[] attrs, ITruckBusiness truckBusiness, ITankBusiness tankBusiness) {
         JsonNode truckNode = node.get("truck"); // Buscar el nodo padre "truck"
         if (truckNode != null) {
             String truckLicensePlate = getString(truckNode, attrs, null);  // Obtener placa del camión desde los atributos
@@ -187,11 +185,10 @@ public class JsonUtiles {
                 Truck truck = null; // Si se encuentra, cargar la entidad Truck desde el negocio
                 JsonNode tanksNode = truckNode.get("tanks");
                 try {
-                    truck = truckBusiness.loadOrCreate(Utils.buildTruck(truckNode,tanksNode));
+                    truck = truckBusiness.loadOrCreate(Utils.buildTruck(truckNode, tanksNode));
                 } catch (BusinessException e) {
                     // TODO tratar excepcion
                 }
-
 
 
                 return truck;
@@ -232,6 +229,7 @@ public class JsonUtiles {
         JsonNode productNode = node.get("product"); // Buscar el nodo padre "product"
         if (productNode != null) {
             String productName = null;
+
 
             // Recorremos los atributos dentro del nodo "product"
             for (String attr : attrs) {

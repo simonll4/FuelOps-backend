@@ -8,11 +8,14 @@ import ar.edu.iw3.model.business.exceptions.FoundException;
 import ar.edu.iw3.model.business.exceptions.NotFoundException;
 import ar.edu.iw3.model.business.interfaces.ICategoryBusiness;
 import ar.edu.iw3.model.business.interfaces.IProductBusiness;
+import jakarta.validation.Valid;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import ar.edu.iw3.util.IStandartResponseBusiness;
@@ -27,81 +30,45 @@ public class ProductRestController extends BaseRestController {
     @Autowired
     private IStandartResponseBusiness response;
 
+    @SneakyThrows
     @GetMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> list() {
-        try {
-            return new ResponseEntity<>(productBusiness.list(), HttpStatus.OK);
-        } catch (BusinessException e) {
-            return new ResponseEntity<>(response.build(HttpStatus.INTERNAL_SERVER_ERROR, e, e.getMessage()),
-                    HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        return new ResponseEntity<>(productBusiness.list(), HttpStatus.OK);
     }
 
+    @SneakyThrows
     @GetMapping(value = "/{id}")
     public ResponseEntity<?> loadProduct(@PathVariable long id) {
-        try {
-            return new ResponseEntity<>(productBusiness.load(id), HttpStatus.OK);
-        } catch (BusinessException e) {
-            return new ResponseEntity<>(response.build(HttpStatus.INTERNAL_SERVER_ERROR, e, e.getMessage()),
-                    HttpStatus.INTERNAL_SERVER_ERROR);
-        } catch (NotFoundException e) {
-            return new ResponseEntity<>(response.build(HttpStatus.NOT_FOUND, e, e.getMessage()), HttpStatus.NOT_FOUND);
-        }
+        return new ResponseEntity<>(productBusiness.load(id), HttpStatus.OK);
     }
 
+    @SneakyThrows
     @GetMapping(value = "/by_name/{product}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> loadProduct(@PathVariable String product) {
-        try {
-            return new ResponseEntity<>(productBusiness.load(product), HttpStatus.OK);
-        } catch (BusinessException e) {
-            return new ResponseEntity<>(response.build(HttpStatus.INTERNAL_SERVER_ERROR, e, e.getMessage()),
-                    HttpStatus.INTERNAL_SERVER_ERROR);
-        } catch (NotFoundException e) {
-            return new ResponseEntity<>(response.build(HttpStatus.NOT_FOUND, e, e.getMessage()), HttpStatus.NOT_FOUND);
-        }
+        return new ResponseEntity<>(productBusiness.load(product), HttpStatus.OK);
     }
 
+    @SneakyThrows
     @PostMapping(value = "")
-    public ResponseEntity<?> addProduct(@RequestBody Product product) {
-        try {
-            Product response = productBusiness.add(product);
-            HttpHeaders responseHeaders = new HttpHeaders();
-            responseHeaders.set("location", Constants.URL_PRODUCTS + "/" + response.getId());
-            return new ResponseEntity<>(responseHeaders, HttpStatus.CREATED);
-        } catch (BusinessException e) {
-            return new ResponseEntity<>(response.build(HttpStatus.INTERNAL_SERVER_ERROR, e, e.getMessage()),
-                    HttpStatus.INTERNAL_SERVER_ERROR);
-        } catch (FoundException e) {
-            return new ResponseEntity<>(response.build(HttpStatus.FOUND, e, e.getMessage()), HttpStatus.FOUND);
-        }
+    public ResponseEntity<?> addProduct(@Valid @RequestBody Product product) {
+        Product response = productBusiness.add(product);
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.set("location", Constants.URL_PRODUCTS + "/" + response.getId());
+        return new ResponseEntity<>(responseHeaders, HttpStatus.CREATED);
     }
 
+    @SneakyThrows
     @PutMapping(value = "")
     public ResponseEntity<?> updateProduct(@RequestBody Product product) {
-        try {
-            productBusiness.update(product);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (BusinessException e) {
-            return new ResponseEntity<>(response.build(HttpStatus.INTERNAL_SERVER_ERROR, e, e.getMessage()),
-                    HttpStatus.INTERNAL_SERVER_ERROR);
-        } catch (NotFoundException e) {
-            return new ResponseEntity<>(response.build(HttpStatus.NOT_FOUND, e, e.getMessage()), HttpStatus.NOT_FOUND);
-        } catch (FoundException e) {
-            return new ResponseEntity<>(response.build(HttpStatus.FOUND, e, e.getMessage()), HttpStatus.FOUND);
-        }
+        productBusiness.update(product);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @SneakyThrows
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<?> deleteProduct(@PathVariable long id) {
-        try {
-            productBusiness.delete(id);
-            return new ResponseEntity<String>(HttpStatus.OK);
-        } catch (BusinessException e) {
-            return new ResponseEntity<>(response.build(HttpStatus.INTERNAL_SERVER_ERROR, e, e.getMessage()),
-                    HttpStatus.INTERNAL_SERVER_ERROR);
-        } catch (NotFoundException e) {
-            return new ResponseEntity<>(response.build(HttpStatus.NOT_FOUND, e, e.getMessage()), HttpStatus.NOT_FOUND);
-        }
+        productBusiness.delete(id);
+        return new ResponseEntity<String>(HttpStatus.OK);
     }
 
     @Autowired

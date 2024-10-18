@@ -3,10 +3,7 @@ package ar.edu.iw3.integration.cli1.model;
 import java.io.IOException;
 import java.util.Date;
 
-import ar.edu.iw3.model.Customer;
-import ar.edu.iw3.model.Driver;
-import ar.edu.iw3.model.Product;
-import ar.edu.iw3.model.Truck;
+import ar.edu.iw3.model.*;
 import ar.edu.iw3.model.business.interfaces.*;
 import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.core.JsonParser;
@@ -14,8 +11,6 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 
-import ar.edu.iw3.model.business.exceptions.BusinessException;
-import ar.edu.iw3.model.business.exceptions.NotFoundException;
 import ar.edu.iw3.util.JsonUtiles;
 
 public class OrderCli1JsonDeserializer extends StdDeserializer<OrderCli1> {
@@ -71,6 +66,9 @@ public class OrderCli1JsonDeserializer extends StdDeserializer<OrderCli1> {
             r.setTruck(truck);
         }
 
+        r.setStatus(Order.Status.ORDER_RECEIVED);
+
         return r;
+
     }
 }

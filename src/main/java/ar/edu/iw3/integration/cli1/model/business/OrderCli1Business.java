@@ -63,6 +63,7 @@ public class OrderCli1Business implements IOrderCli1Business {
             orderBaseBusiness.load(order.getId());
             throw FoundException.builder().message("Se encontró el Producto id=" + order.getId()).build();
         } catch (NotFoundException e) {
+            // log.trace(e.getMessage(), e);
         }
 
         if (orderDAO.findOneByOrderNumberCli1(order.getOrderNumberCli1()).isPresent()) {
@@ -96,7 +97,7 @@ public class OrderCli1Business implements IOrderCli1Business {
     @Override
     public OrderCli1 addExternal(String json) throws FoundException, BusinessException {
         ObjectMapper mapper = JsonUtiles.getObjectMapper(OrderCli1.class,
-                new OrderCli1JsonDeserializer(OrderCli1.class,driverBusiness,truckBusiness,customerBusiness,productBusiness,tankBusiness),null);
+                new OrderCli1JsonDeserializer(OrderCli1.class, driverBusiness, truckBusiness, customerBusiness, productBusiness, tankBusiness), null);
         OrderCli1 order = null;
         try {
             order = mapper.readValue(json, OrderCli1.class);

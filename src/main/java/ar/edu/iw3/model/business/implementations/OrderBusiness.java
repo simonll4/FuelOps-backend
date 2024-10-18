@@ -3,6 +3,7 @@ package ar.edu.iw3.model.business.implementations;
 import ar.edu.iw3.model.Detail;
 import ar.edu.iw3.model.Order;
 import ar.edu.iw3.model.business.exceptions.BusinessException;
+import ar.edu.iw3.model.business.exceptions.ConflictException;
 import ar.edu.iw3.model.business.exceptions.FoundException;
 import ar.edu.iw3.model.business.exceptions.NotFoundException;
 import ar.edu.iw3.model.business.interfaces.IOrderBusiness;
@@ -93,7 +94,7 @@ public class OrderBusiness implements IOrderBusiness {
     }
 
     @Override
-    public Order validatePassword(int password) throws NotFoundException, BusinessException {
+    public Order validatePassword(int password) throws NotFoundException, BusinessException,ConflictException {
         Optional<Order> order;
 
         // Lógica para validar la contraseña de activación
@@ -114,9 +115,8 @@ public class OrderBusiness implements IOrderBusiness {
     }
 
     @Override
-    public Order closeOrder(Long orderId) throws BusinessException, NotFoundException {
+    public void closeOrder(Long orderId) throws BusinessException, NotFoundException, ConflictException {
         Optional<Order> order;
-
         try {
             order = orderDAO.findById(orderId);
         } catch (Exception e) {
@@ -128,7 +128,8 @@ public class OrderBusiness implements IOrderBusiness {
         }
         checkOrderStatus(order.get());
         order.get().setStatus(Order.Status.ORDER_CLOSED);
-        return orderDAO.save(order.get());
+        order.get().setActivatePassword(null);
+        orderDAO.save(order.get());
     }
 
 
@@ -136,9 +137,9 @@ public class OrderBusiness implements IOrderBusiness {
     //////////////////////////////////////////// UTILIDADES  ////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    private void checkOrderStatus(Order order) throws BusinessException {
+    private void checkOrderStatus(Order order) throws ConflictException {
         if (order.getStatus() != Order.Status.REGISTERED_INITIAL_WEIGHING) {
-            throw new BusinessException("Estado de orden no válido");
+            throw new ConflictException("Estado de orden no válido");
         }
     }
 
