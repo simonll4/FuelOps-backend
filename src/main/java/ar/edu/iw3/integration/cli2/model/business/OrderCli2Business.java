@@ -111,7 +111,7 @@ public class OrderCli2Business {
                     product
             );
         } catch (DocumentException | IOException e) {
-            log.error("Error generando el PDF: " + e.getMessage(), e);
+            log.error("Error generando el PDF: {}", e.getMessage(), e);
             throw BusinessException.builder().message("Error al generar el reporte PDF").ex(e).build();
         }
     }

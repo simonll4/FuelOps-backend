@@ -1,6 +1,7 @@
 package ar.edu.iw3.auth.filters;
 
 import java.io.IOException;
+import java.nio.file.AccessDeniedException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -63,12 +64,12 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
             // Parseamos el token usando la librería
             DecodedJWT jwt=null;
             try {
+
                 jwt = JWT.require(Algorithm.HMAC512(AuthConstants.SECRET.getBytes())).build().verify(token);
                 log.trace("Token recibido por '{}'", byHeader ? "header" : "query param");
                 log.trace("Usuario logueado: " + jwt.getSubject());
                 log.trace("Roles: " + jwt.getClaim("roles"));
                 log.trace("Custom JWT Version: " + jwt.getClaim("version").asString());
-
 
                 Set<Role> roles=new HashSet<Role>();
 
@@ -91,7 +92,6 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
             } catch (Exception e) {
                 log.error(e.getMessage());
             }
-
 
             return null;
         }
