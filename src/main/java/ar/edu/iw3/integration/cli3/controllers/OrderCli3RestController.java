@@ -1,10 +1,19 @@
 package ar.edu.iw3.integration.cli3.controllers;
 
 import ar.edu.iw3.controllers.Constants;
+
+import ar.edu.iw3.integration.PdfService;
+import ar.edu.iw3.integration.cli3.OrderCli3SlimV1JsonSerializer;
+
 import ar.edu.iw3.integration.cli3.model.business.IDetailCli3Business;
 import ar.edu.iw3.integration.cli3.model.business.IOrderCli3Business;
 import ar.edu.iw3.model.Detail;
 import ar.edu.iw3.model.Order;
+
+import ar.edu.iw3.util.JsonUtils;
+import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import com.itextpdf.text.DocumentException;
+
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,12 +30,16 @@ public class OrderCli3RestController {
 
     // Endpoint para validar password y obtener id de la orden y preset de carga
     // todo pasar password por header?
-    // todo hacer serealizador
     @SneakyThrows
     @PostMapping(value = "/validate", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> validatePassword(@RequestBody String password) {
         Order order = orderCli3Business.validatePassword(Integer.parseInt(password));
-        return new ResponseEntity<>(order, HttpStatus.OK);
+
+        // Serializacion del resultado
+        StdSerializer<Order> ser = new OrderCli3SlimV1JsonSerializer(Order.class,false);
+        String result = JsonUtils.getObjectMapper(Order.class,ser, null).writeValueAsString(order);
+
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     // Endpoint para cerrar la orden
