@@ -9,5 +9,9 @@ import ar.edu.iw3.integration.cli1.model.OrderCli1;
 
 @Repository
 public interface OrderCli1Respository extends JpaRepository<OrderCli1, Long>{
+
     Optional<OrderCli1> findOneByOrderNumberCli1(String oderNumberCli1);
+
+    Optional<OrderCli1> findByActivatePassword(Integer activatePassword);
+
 }

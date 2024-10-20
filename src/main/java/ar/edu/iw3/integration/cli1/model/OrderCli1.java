@@ -23,4 +23,5 @@ public class OrderCli1 extends Order {
     private String orderNumberCli1;
 
     private boolean codCli1Temp=false;
+
 }
