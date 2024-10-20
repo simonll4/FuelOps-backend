@@ -28,6 +28,7 @@ public class DetailBusiness implements IDetailBusiness {
     @Autowired
     private DetailRepository detailDAO;
 
+
     @Override
     public Detail load(long id) throws NotFoundException, BusinessException {
         Optional<Detail> detailFound;
@@ -78,5 +79,19 @@ public class DetailBusiness implements IDetailBusiness {
         return detailsFound.get();
     }
 
+    public Float calculateAverageTemperature(Long orderId) {
+        Double avgTemp = detailDAO.findAverageTemperatureByOrderId(orderId);
+        return avgTemp != null ? avgTemp.floatValue() : 0.0f;
+    }
+
+    public Float calculateAverageDensity(Long orderId) {
+        Double avgDensity = detailDAO.findAverageDensityByOrderId(orderId);
+        return avgDensity != null ? avgDensity.floatValue() : 0.0f;
+    }
+
+    public Float calculateAverageFlowRate(Long orderId) {
+        Double avgFlow = detailDAO.findAverageFlowRateByOrderId(orderId);
+        return avgFlow != null ? avgFlow.floatValue() : 0.0f;
+    }
 
 }
