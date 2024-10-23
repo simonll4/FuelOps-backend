@@ -6,5 +6,21 @@
         <language minSize="56" name="Java" />
       </Languages>
     </inspection_tool>
+    <inspection_tool class="IncorrectHttpHeaderInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="customHeaders">
+        <set>
+          <option value="orderNumber" />
+          <option value="initialWeight" />
+          <option value="finalWeight" />
+          <option value="password" />
+          <option value="OrderNumber" />
+          <option value="FinalWeight" />
+          <option value="InitialWeight" />
+          <option value="Password" />
+          <option value="OrderId" />
+          <option value="LicensePlate" />
+        </set>
+      </option>
+    </inspection_tool>
   </profile>
 </component>

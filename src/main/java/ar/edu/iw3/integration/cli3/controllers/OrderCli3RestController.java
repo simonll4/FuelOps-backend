@@ -23,27 +23,21 @@ public class OrderCli3RestController {
 
     @Autowired
     private IOrderCli3Business orderBusiness;
-    ;
 
     // Endpoint para validar password y obtener id de la orden y preset de carga
-    // todo pasar password por header?
     @SneakyThrows
     @PostMapping(value = "/validate", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> validatePassword(@RequestBody String password) {
-        Order order = orderCli3Business.validatePassword(Integer.parseInt(password));
-
-        // Serializacion del resultado
+    public ResponseEntity<?> validatePassword(@RequestHeader("Password") Integer password) {
+        Order order = orderCli3Business.validatePassword(password);
         StdSerializer<Order> ser = new OrderCli3SlimV1JsonSerializer(Order.class, false);
         String result = JsonUtils.getObjectMapper(Order.class, ser, null).writeValueAsString(order);
-
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     // Endpoint para cerrar la orden
-    // todo pasar numero de orden por header?
     @SneakyThrows
     @PostMapping("/close")
-    public ResponseEntity<?> closeOrder(@RequestBody Long orderId) {
+    public ResponseEntity<?> closeOrder(@RequestHeader("OrderId") Long orderId) {
         orderCli3Business.closeOrder(orderId);
         return new ResponseEntity<>(HttpStatus.OK);
     }

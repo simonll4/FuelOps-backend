@@ -17,7 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ar.edu.iw3.integration.cli1.model.OrderCli1;
 import ar.edu.iw3.integration.cli1.model.OrderCli1JsonDeserializer;
-import ar.edu.iw3.integration.cli1.model.persistence.OrderCli1Respository;
+import ar.edu.iw3.integration.cli1.model.persistence.OrderCli1Repository;
 import ar.edu.iw3.model.business.exceptions.BusinessException;
 import ar.edu.iw3.model.business.exceptions.FoundException;
 import ar.edu.iw3.model.business.exceptions.NotFoundException;
@@ -29,7 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 public class OrderCli1Business implements IOrderCli1Business {
 
     @Autowired(required = false)
-    private OrderCli1Respository orderDAO;
+    private OrderCli1Repository orderDAO;
 
 
     @Override

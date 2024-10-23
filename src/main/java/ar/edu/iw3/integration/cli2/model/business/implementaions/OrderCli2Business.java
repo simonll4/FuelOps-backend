@@ -1,7 +1,7 @@
 package ar.edu.iw3.integration.cli2.model.business.implementaions;
 
 import ar.edu.iw3.integration.cli1.model.OrderCli1;
-import ar.edu.iw3.integration.cli1.model.persistence.OrderCli1Respository;
+import ar.edu.iw3.integration.cli1.model.persistence.OrderCli1Repository;
 import ar.edu.iw3.integration.cli2.model.business.interfaces.IOrderCli2Business;
 import ar.edu.iw3.model.Order;
 import ar.edu.iw3.model.Product;
@@ -28,7 +28,7 @@ public class OrderCli2Business implements IOrderCli2Business {
 
     private static final Logger log = LoggerFactory.getLogger(OrderCli2Business.class);
     @Autowired
-    private OrderCli1Respository orderCli1Respository;
+    private OrderCli1Repository orderCli1Respository;
 
     @Autowired
     private IOrderBusiness orderBusiness;
@@ -40,17 +40,17 @@ public class OrderCli2Business implements IOrderCli2Business {
     private PdfGenerator pdfGenerator;
 
     @Override
-    public Integer registerInitialWeighing(String orderNumber, float initialWeight) throws BusinessException, NotFoundException, FoundException, ConflictException {
+    public Integer registerInitialWeighing(String licensePlate, float initialWeight) throws BusinessException, NotFoundException, FoundException, ConflictException {
         Optional<OrderCli1> orderFound;
 
         try {
-            orderFound = orderCli1Respository.findOneByOrderNumberCli1(orderNumber);
+            orderFound = orderCli1Respository.findByTruck_LicensePlate(licensePlate);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             throw BusinessException.builder().ex(e).build();
         }
         if (orderFound.isEmpty()) {
-            throw NotFoundException.builder().message("No se encuentra la orden con el número " + orderNumber).build();
+            throw NotFoundException.builder().message("No se encuentra orden para camion con patente " + licensePlate).build();
         }
         if (orderFound.get().getStatus() != Order.Status.ORDER_RECEIVED) {
             throw new ConflictException("Estado de orden no válido");
@@ -70,17 +70,17 @@ public class OrderCli2Business implements IOrderCli2Business {
     }
 
     @Override
-    public byte[] registerFinalWeighing(String orderNumber, float finalWeight) throws BusinessException, NotFoundException, FoundException, ConflictException {
+    public byte[] registerFinalWeighing(String licensePlate, float finalWeight) throws BusinessException, NotFoundException, FoundException, ConflictException {
         Optional<OrderCli1> orderFound;
 
         try {
-            orderFound = orderCli1Respository.findOneByOrderNumberCli1(orderNumber);
+            orderFound = orderCli1Respository.findByTruck_LicensePlate(licensePlate);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             throw BusinessException.builder().ex(e).build();
         }
         if (orderFound.isEmpty()) {
-            throw NotFoundException.builder().message("No se encuentra la orden con el número " + orderNumber).build();
+            throw NotFoundException.builder().message("No se encuentra orden para camion con patente " + licensePlate).build();
         }
         if (orderFound.get().getStatus() != Order.Status.ORDER_CLOSED) {
             throw new ConflictException("Estado de orden no válido");
