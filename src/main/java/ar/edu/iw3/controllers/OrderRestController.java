@@ -25,15 +25,13 @@ public class OrderRestController extends BaseRestController {
     @GetMapping("/conciliation")
     public ResponseEntity<?> registerFinalWeighing(@RequestParam("idOrder") Long idOrder,
                                                    @RequestHeader(value = HttpHeaders.ACCEPT,
-                                                           defaultValue = MediaType.APPLICATION_PDF_VALUE)
+                                                           defaultValue = MediaType.APPLICATION_JSON_VALUE)
                                                    String acceptHeader) {
-
         // Respuesta en JSON
         Map<String, Object> conciliationData = orderBusiness.getConciliationJson(idOrder);
         if (acceptHeader.equals(MediaType.APPLICATION_JSON_VALUE)) {
             return new ResponseEntity<>(conciliationData, HttpStatus.OK);
         }
-
         // Respuesta en PDF
         byte[] pdfContent = orderBusiness.generateConciliationPdf(idOrder);
         HttpHeaders headers = new HttpHeaders();
