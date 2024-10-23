@@ -20,21 +20,21 @@ public class OrderCli2RestController {
     @SneakyThrows
     @PostMapping(value = "/inicial-weighing", produces = MediaType.TEXT_PLAIN_VALUE)
     public ResponseEntity<?> registerInitialWeighing(
-            @RequestHeader("orderNumber") String orderNumber,
-            @RequestHeader("initialWeight") float initialWeight) {
-        Integer pass = orderCli2Business.registerInitialWeighing(orderNumber, initialWeight);
+            @RequestHeader("LicensePlate") String licensePlate,
+            @RequestHeader("InitialWeight") float initialWeight) {
+        Integer pass = orderCli2Business.registerInitialWeighing(licensePlate, initialWeight);
         return new ResponseEntity<>(pass.toString(), HttpStatus.OK);
     }
 
     @SneakyThrows
     @PostMapping("/final-weighing")
     public ResponseEntity<byte[]> registerFinalWeighing(
-            @RequestHeader("orderNumber") String orderNumber,
-            @RequestHeader("finalWeight") float initialWeight) {
+            @RequestHeader("LicensePlate") String licensePlate,
+            @RequestHeader("FinalWeight") float initialWeight) {
         HttpHeaders headers = new HttpHeaders();
         headers.set(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_PDF_VALUE);
         headers.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"report.pdf\"");
-        byte[] pdfContent = orderCli2Business.registerFinalWeighing(orderNumber, initialWeight);
+        byte[] pdfContent = orderCli2Business.registerFinalWeighing(licensePlate, initialWeight);
         return new ResponseEntity<>(pdfContent, headers, HttpStatus.OK);
     }
 

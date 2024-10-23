@@ -13,13 +13,11 @@ public interface IDetailBusiness {
 
     //todo public List<Detail> list() throws BusinessException;
 
+    Detail add(Detail detail) throws FoundException, BusinessException;
+
     public List<Detail> listByOrder(long idOrder) throws NotFoundException, BusinessException;
 
     public Detail load(long id) throws NotFoundException, BusinessException;
-
-    public Detail add(Detail detail) throws FoundException, BusinessException;
-
-    //public void saveDetails( Order orderFound,Detail detail) throws FoundException, BusinessException, NotFoundException;
 
     // todo public Detail update(Detail detail) throws NotFoundException, BusinessException, FoundException;
 
