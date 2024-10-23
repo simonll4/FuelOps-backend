@@ -37,7 +37,7 @@ public class AlarmEventListener implements ApplicationListener<AlarmEvent> {
 
     private void handleTemperatureExceeded(Detail detail) {
 
-        // guardado de alerta en db
+        // Guardado de alerta en db
         Alarm alarm = new Alarm();
         alarm.setOrder(detail.getOrder());
         alarm.setTimeStamp(new Date(System.currentTimeMillis()));
@@ -50,7 +50,7 @@ public class AlarmEventListener implements ApplicationListener<AlarmEvent> {
             log.error(e.getMessage(), e);
         }
 
-        // Envio de mail de alerta
+        // Armado de mail de alerta
         String subject = "Temperatura Excedida Orden Nro " + detail.getOrder().getId();
         String mensaje = String.format(
                 "ALERTA: Temperatura Excedida en la Orden Nro %s\n\n" +

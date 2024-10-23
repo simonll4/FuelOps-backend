@@ -1,7 +1,8 @@
-package ar.edu.iw3.integration.cli2.model.business;
+package ar.edu.iw3.integration.cli2.model.business.implementaions;
 
 import ar.edu.iw3.integration.cli1.model.OrderCli1;
 import ar.edu.iw3.integration.cli1.model.persistence.OrderCli1Respository;
+import ar.edu.iw3.integration.cli2.model.business.interfaces.IOrderCli2Business;
 import ar.edu.iw3.model.Order;
 import ar.edu.iw3.model.Product;
 import ar.edu.iw3.model.business.exceptions.BusinessException;
@@ -23,7 +24,7 @@ import java.util.Date;
 import java.util.Optional;
 
 @Service
-public class OrderCli2Business {
+public class OrderCli2Business implements IOrderCli2Business {
 
     private static final Logger log = LoggerFactory.getLogger(OrderCli2Business.class);
     @Autowired
@@ -38,6 +39,7 @@ public class OrderCli2Business {
     @Autowired
     private PdfGenerator pdfGenerator;
 
+    @Override
     public Integer registerInitialWeighing(String orderNumber, float initialWeight) throws BusinessException, NotFoundException, FoundException, ConflictException {
         Optional<OrderCli1> orderFound;
 
@@ -67,6 +69,7 @@ public class OrderCli2Business {
         return password;
     }
 
+    @Override
     public byte[] registerFinalWeighing(String orderNumber, float finalWeight) throws BusinessException, NotFoundException, FoundException, ConflictException {
         Optional<OrderCli1> orderFound;
 
