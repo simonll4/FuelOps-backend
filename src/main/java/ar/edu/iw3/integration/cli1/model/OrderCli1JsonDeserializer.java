@@ -5,6 +5,7 @@ import java.util.Date;
 
 import ar.edu.iw3.integration.cli1.model.business.interfaces.ICustomerCli1Business;
 import ar.edu.iw3.integration.cli1.model.business.interfaces.IDriverCli1Business;
+import ar.edu.iw3.integration.cli1.model.business.interfaces.IProductCli1Business;
 import ar.edu.iw3.integration.cli1.model.business.interfaces.ITruckCli1Business;
 import ar.edu.iw3.integration.cli1.util.Utils;
 import ar.edu.iw3.model.*;
@@ -29,13 +30,13 @@ public class OrderCli1JsonDeserializer extends StdDeserializer<OrderCli1> {
     }
 
     private ICustomerCli1Business customerBusiness;
-    private IProductBusiness productBusiness;
+    private IProductCli1Business productBusiness;
     private IDriverCli1Business driverBusiness;
     private ITruckCli1Business truckBusiness;
     private ITankBusiness tankBusiness;
 
     public OrderCli1JsonDeserializer(Class<?> vc, IDriverCli1Business driverBusiness, ITruckCli1Business truckBusiness,
-                                     ICustomerCli1Business customerBusiness, IProductBusiness productBusiness, ITankBusiness tankBusiness) {
+                                     ICustomerCli1Business customerBusiness, IProductCli1Business productBusiness, ITankBusiness tankBusiness) {
         super(vc);
         this.driverBusiness = driverBusiness;
         this.truckBusiness = truckBusiness;

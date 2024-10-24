@@ -1,12 +1,11 @@
 package ar.edu.iw3.model.business.implementations;
 
 import ar.edu.iw3.model.Tanker;
-import ar.edu.iw3.model.Truck;
 import ar.edu.iw3.model.business.exceptions.BusinessException;
 import ar.edu.iw3.model.business.exceptions.FoundException;
 import ar.edu.iw3.model.business.exceptions.NotFoundException;
 import ar.edu.iw3.model.business.interfaces.ITankBusiness;
-import ar.edu.iw3.model.persistence.TankRepository;
+import ar.edu.iw3.model.persistence.TankerRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,10 +15,10 @@ import java.util.Optional;
 
 @Service
 @Slf4j
-public class TankBusiness implements ITankBusiness {
+public class TankerBusiness implements ITankBusiness {
 
     @Autowired
-    private TankRepository tankDAO;
+    private TankerRepository tankDAO;
 
     @Override
     public List<Tanker> list() throws BusinessException {
@@ -64,23 +63,23 @@ public class TankBusiness implements ITankBusiness {
     }
 
     @Override
-    public Tanker add(Tanker tank) throws FoundException, BusinessException {
+    public Tanker add(Tanker tanker) throws FoundException, BusinessException {
         try {
-            load(tank.getId());
-            throw FoundException.builder().message("Ya existe el Tanque id= " + tank.getId()).build();
+            load(tanker.getId());
+            throw FoundException.builder().message("Ya existe el Tanque id= " + tanker.getId()).build();
         } catch (NotFoundException e) {
             // log.trace(e.getMessage(), e);
         }
 
         try {
-            load(tank.getLicense());
-            throw FoundException.builder().message("Ya existe el Tanque con Patente " + tank.getLicense()).build();
+            load(tanker.getLicense());
+            throw FoundException.builder().message("Ya existe el Tanque con Patente " + tanker.getLicense()).build();
         } catch (NotFoundException e) {
             // log.trace(e.getMessage(), e);
         }
 
         try {
-            return tankDAO.save(tank);
+            return tankDAO.save(tanker);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             throw BusinessException.builder().message("Error al Crear Nuevo Tanque").build();
@@ -88,23 +87,23 @@ public class TankBusiness implements ITankBusiness {
     }
 
     @Override
-    public Tanker update(Tanker tank) throws NotFoundException, BusinessException, FoundException {
-        load(tank.getId());
+    public Tanker update(Tanker tanker) throws NotFoundException, BusinessException, FoundException {
+        load(tanker.getId());
 
         Optional<Tanker> tankFound;
         try {
-            tankFound = tankDAO.findByLicenseAndIdNot(tank.getLicense(), tank.getId());
+            tankFound = tankDAO.findByLicenseAndIdNot(tanker.getLicense(), tanker.getId());
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             throw BusinessException.builder().ex(e).build();
         }
 
         if (tankFound.isPresent()) {
-            throw FoundException.builder().message("Ya Existe un Tanque con Patente =" + tank.getLicense()).build();
+            throw FoundException.builder().message("Ya Existe un Tanque con Patente =" + tanker.getLicense()).build();
         }
 
         try {
-            return tankDAO.save(tank);
+            return tankDAO.save(tanker);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             throw BusinessException.builder().message("Error al Actualizar Camion").build();
@@ -112,8 +111,8 @@ public class TankBusiness implements ITankBusiness {
     }
 
     @Override
-    public void delete(Tanker tank) throws NotFoundException, BusinessException {
-        delete(tank.getId());
+    public void delete(Tanker tanker) throws NotFoundException, BusinessException {
+        delete(tanker.getId());
     }
 
     @Override
@@ -128,12 +127,12 @@ public class TankBusiness implements ITankBusiness {
     }
 
     @Override
-    public Tanker loadOrCreate(Tanker tank) throws BusinessException {
+    public Tanker loadOrCreate(Tanker tanker) throws BusinessException {
         Optional<Tanker> findTanker;
 
         try {
-            findTanker = tankDAO.findByLicense(tank.getLicense());
-            return findTanker.orElseGet(() -> tankDAO.save(tank));
+            findTanker = tankDAO.findByLicense(tanker.getLicense());
+            return findTanker.orElseGet(() -> tankDAO.save(tanker));
 
         } catch (Exception e) {
             throw BusinessException.builder().ex(e).build();

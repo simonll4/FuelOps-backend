@@ -136,7 +136,7 @@ public class TruckBusiness implements ITruckBusiness {
     }
 
     @Autowired
-    private TankBusiness tankBusiness;
+    private TankerBusiness tankerBusiness;
 
     @Override
     public Set<Tanker> processTankers(Truck truck) throws BusinessException {
@@ -145,7 +145,7 @@ public class TruckBusiness implements ITruckBusiness {
         for (Tanker processedTanker : tankers) {
             try {
                 processedTanker.setTruck(truck);
-                processedTanker = tankBusiness.loadOrCreate(processedTanker);
+                processedTanker = tankerBusiness.loadOrCreate(processedTanker);
                 newTankers.add(processedTanker); // agregamos el cisterna cargado en base de datos
             } catch (Exception e) {
                 log.error(e.getMessage(), e);

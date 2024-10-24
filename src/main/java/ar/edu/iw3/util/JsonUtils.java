@@ -5,12 +5,15 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import ar.edu.iw3.integration.cli1.model.TruckCli1;
 import ar.edu.iw3.integration.cli1.model.business.interfaces.ICustomerCli1Business;
 import ar.edu.iw3.integration.cli1.model.business.interfaces.IDriverCli1Business;
+import ar.edu.iw3.integration.cli1.model.business.interfaces.IProductCli1Business;
 import ar.edu.iw3.integration.cli1.model.business.interfaces.ITruckCli1Business;
 import ar.edu.iw3.integration.cli1.util.Utils;
 import ar.edu.iw3.model.*;
 import ar.edu.iw3.model.business.exceptions.BusinessException;
+import ar.edu.iw3.model.business.exceptions.FoundException;
 import ar.edu.iw3.model.business.exceptions.NotFoundException;
 import ar.edu.iw3.model.business.interfaces.*;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -170,7 +173,7 @@ public class JsonUtils {
         return r;
     }
 
-    public static Driver getDriver(JsonNode node, String[] attrs, IDriverCli1Business driverBusiness) {
+    public static Driver getDriver(JsonNode node, String[] attrs, IDriverCli1Business driverCli1Business) {
         JsonNode driverNode = getJsonNode(node,DRIVER_NODE_ATTRIBUTES); // Buscar el nodo padre "driver"
 
         if (driverNode != null) {
@@ -186,7 +189,7 @@ public class JsonUtils {
 
             if (driverDocument != null) {
                 try {
-                    return driverBusiness.loadOrCreate(Utils.buildDriver(driverNode)); // Cargar el driver desde el business
+                    return driverCli1Business.loadOrCreate(Utils.buildDriver(driverNode)); // Cargar el driver desde el business
                 } catch (BusinessException e) {
                     // TODO tratar excepcion
                 }
@@ -195,12 +198,12 @@ public class JsonUtils {
         return null;
     }
 
-    public static Truck getTruck(JsonNode node, String[] attrs, ITruckCli1Business truckCli1Business, ITankBusiness tankBusiness) {
+    public static TruckCli1 getTruck(JsonNode node, String[] attrs, ITruckCli1Business truckCli1Business, ITankBusiness tankBusiness) {
         JsonNode truckNode = getJsonNode(node,TRUCK_NODE_ATTRIBUTES); // Buscar el nodo padre "truck"
         if (truckNode != null) {
             String truckLicensePlate = getString(truckNode, attrs, null);  // Obtener placa del camión desde los atributos
             if (truckLicensePlate != null) {
-                Truck truck = null; // Si se encuentra, cargar la entidad Truck desde el negocio
+                TruckCli1 truck = null; // Si se encuentra, cargar la entidad Truck desde el negocio
                 JsonNode tanksNode = truckNode.get("tanks");
                 try {
                     truck = truckCli1Business.loadOrCreate(Utils.buildTruck(truckNode, tanksNode));
@@ -215,7 +218,7 @@ public class JsonUtils {
         return null; // Si no se encuentra la placa, retorna null
     }
 
-    public static Customer getCustomer(JsonNode node, String[] attrs, ICustomerCli1Business customerBusiness) {
+    public static Customer getCustomer(JsonNode node, String[] attrs, ICustomerCli1Business customerCli1Business) {
         JsonNode customerNode = getJsonNode(node,CUSTOMER_NODE_ATTRIBUTES); // Buscar el nodo padre "customer"
         if (customerNode != null) {
             String customerName = null;
@@ -231,7 +234,7 @@ public class JsonUtils {
             if (customerName != null) {
 
                 try {
-                    return customerBusiness.loadOrCreate(Utils.buildCustomer(customerNode)); // Cargar el customer desde el business
+                    return customerCli1Business.loadOrCreate(Utils.buildCustomer(customerNode)); // Cargar el customer desde el business
                 } catch (BusinessException e) {
                     // TODO tratar excepcion
                 }
@@ -243,7 +246,7 @@ public class JsonUtils {
     }
 
 
-    public static Product getProduct(JsonNode node, String[] attrs, IProductBusiness productBusiness) {
+    public static Product getProduct(JsonNode node, String[] attrs, IProductCli1Business productCli1Business) {
         JsonNode productNode = getJsonNode(node,PRODUCT_NODE_ATTRIBUTES); // Buscar el nodo padre "product"
         if (productNode != null) {
             String productName = null;
@@ -260,9 +263,7 @@ public class JsonUtils {
             if (productName != null) {
 
                 try {
-                    return productBusiness.load(productName); // Cargar el producto desde el business
-                } catch (NotFoundException e) {
-                    // TODO tratar excepcion
+                    return productCli1Business.map(Utils.buildProduct(productNode)); // Cargar el producto desde el business
                 } catch (BusinessException e) {
                     // TODO tratar excepcion
                 }

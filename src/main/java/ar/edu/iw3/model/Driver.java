@@ -8,6 +8,7 @@ import lombok.Setter;
 
 @Entity
 @Table(name = "drivers")
+@Inheritance(strategy = InheritanceType.JOINED)
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter

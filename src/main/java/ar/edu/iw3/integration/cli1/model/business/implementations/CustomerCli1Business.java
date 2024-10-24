@@ -1,6 +1,9 @@
 package ar.edu.iw3.integration.cli1.model.business.implementations;
 
+import ar.edu.iw3.integration.cli1.model.CustomerCli1;
 import ar.edu.iw3.integration.cli1.model.business.interfaces.ICustomerCli1Business;
+import ar.edu.iw3.integration.cli1.model.persistence.CustomerCli1Repository;
+import ar.edu.iw3.integration.cli1.model.persistence.TruckCli1Repository;
 import ar.edu.iw3.model.Customer;
 import ar.edu.iw3.model.business.exceptions.BusinessException;
 import ar.edu.iw3.model.business.exceptions.FoundException;
@@ -10,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -17,10 +21,59 @@ import java.util.Optional;
 public class CustomerCli1Business implements ICustomerCli1Business {
 
     @Autowired
-    private ICustomerBusiness baseCustomerBusiness;
+    private CustomerCli1Repository customerDAO;
 
     @Override
-    public Customer loadOrCreate(Customer customer) throws BusinessException {
+    public CustomerCli1 load(String idCli1) throws NotFoundException, BusinessException {
+        Optional<CustomerCli1> r;
+        try {
+            r = customerDAO.findOneByIdCli1(idCli1);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            throw BusinessException.builder().ex(e).build();
+        }
+        if (r.isEmpty()) {
+            throw NotFoundException.builder().message("No se encuentra el camion idCli1=" + idCli1).build();
+        }
+        return r.get();
+    }
+
+    @Override
+    public List<CustomerCli1> list() throws BusinessException {
+        try {
+            return customerDAO.findAll();
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            throw BusinessException.builder().ex(e).build();
+        }
+    }
+
+    @Autowired
+    private ICustomerBusiness baseCustomerBusiness;
+
+
+    @Override
+    public CustomerCli1 add(CustomerCli1 customer) throws FoundException, BusinessException {
+        try {
+            baseCustomerBusiness.load(customer.getId());
+            throw FoundException.builder().message("Se encontró el cliente id=" + customer.getId()).build();
+        } catch (NotFoundException ignored) {
+
+        }
+        if (customerDAO.findOneByIdCli1(customer.getIdCli1()).isPresent()) {
+            throw FoundException.builder().message("Se encontró el cliente idCli1=" + customer.getIdCli1()).build();
+        }
+        try {
+            return customerDAO.save(customer);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            throw BusinessException.builder().ex(e).build();
+        }
+    }
+
+
+    @Override
+    public CustomerCli1 loadOrCreate(CustomerCli1 customer) throws BusinessException {
         Optional<Customer> findCustomer = Optional.empty();
         try {
             findCustomer = Optional.ofNullable(baseCustomerBusiness.load(customer.getBusinessName()));
@@ -31,11 +84,11 @@ public class CustomerCli1Business implements ICustomerCli1Business {
 
         if (findCustomer.isEmpty()) {
             try {
-                return baseCustomerBusiness.add(customer);
+                return add(customer);
             } catch (FoundException ignored) {
                 // will not happen
             }
         }
-        return findCustomer.get();
+        return (CustomerCli1) findCustomer.get();
     }
 }
