@@ -1,11 +1,9 @@
 package ar.edu.iw3.integration.cli1.util;
 
-import ar.edu.iw3.integration.cli1.model.OrderCli1;
-import ar.edu.iw3.model.Customer;
-import ar.edu.iw3.model.Driver;
+
+import ar.edu.iw3.integration.cli1.model.*;
 import ar.edu.iw3.model.Tanker;
-import ar.edu.iw3.model.Truck;
-import ar.edu.iw3.model.business.exceptions.BusinessException;
+
 import ar.edu.iw3.util.JsonUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -15,52 +13,74 @@ import java.util.Set;
 import static ar.edu.iw3.util.JsonAttributeConstants.*;
 
 public class Utils {
-    public static Driver buildDriver(JsonNode driverNode) {
-        Driver newDriver = new Driver();
 
-        String name = JsonUtils.getString(driverNode, DRIVER_NAME_ATTRIBUTES,"");
-        if(name != null && !name.isEmpty()){
+    public static DriverCli1 buildDriver(JsonNode driverNode) {
+        DriverCli1 newDriver = new DriverCli1();
+
+        String idCli1 = JsonUtils.getString(driverNode, DRIVER_IDCLI1_ATTRIBUTES, "");
+        if (idCli1 != null && !idCli1.isEmpty()) {
+            newDriver.setIdCli1(idCli1);
+        }
+
+        String name = JsonUtils.getString(driverNode, DRIVER_NAME_ATTRIBUTES, "");
+        if (name != null && !name.isEmpty()) {
             newDriver.setName(name);
         }
 
-        String lastName = JsonUtils.getString(driverNode,DRIVER_LASTNAME_ATTRIBUTES,"");
-        if(lastName != null && !lastName.isEmpty()){
+        String lastName = JsonUtils.getString(driverNode, DRIVER_LASTNAME_ATTRIBUTES, "");
+        if (lastName != null && !lastName.isEmpty()) {
             newDriver.setLastName(lastName);
         }
 
-        String identityDocument = JsonUtils.getString(driverNode,DRIVER_DOCUMENT_ATTRIBUTES,"");
-        if(identityDocument != null && !identityDocument.isEmpty()){
+        String identityDocument = JsonUtils.getString(driverNode, DRIVER_DOCUMENT_ATTRIBUTES, "");
+        if (identityDocument != null && !identityDocument.isEmpty()) {
+
+
             newDriver.setDocument(identityDocument);
         }
 
         return newDriver;
     }
 
-    public static Truck buildTruck(JsonNode truckNode, JsonNode tanksNode) {
-        Truck newTruck = new Truck();
 
-        String licensePlate = JsonUtils.getString(truckNode,TRUCK_LICENSE_PLATE_ATTRIBUTES,"");
-        if(licensePlate != null && !licensePlate.isEmpty()){
+    public static TruckCli1 buildTruck(JsonNode truckNode, JsonNode tanksNode) {
+        TruckCli1 newTruck = new TruckCli1();
+
+        String idCli1 = JsonUtils.getString(truckNode, TRUCK_IDCLI1_ATTRIBUTES, "");
+        if (idCli1 != null && !idCli1.isEmpty()) {
+            newTruck.setIdCli1(idCli1);
+        }
+
+        String licensePlate = JsonUtils.getString(truckNode, TRUCK_LICENSE_PLATE_ATTRIBUTES, "");
+        if (licensePlate != null && !licensePlate.isEmpty()) {
             newTruck.setLicensePlate(licensePlate);
         }
 
-        String description = JsonUtils.getString(truckNode,TRUCK_DESCRIPTION_ATTRIBUTES,"");
-        if(description != null && !description.isEmpty()){
+        String description = JsonUtils.getString(truckNode, TRUCK_DESCRIPTION_ATTRIBUTES, "");
+        if (description != null && !description.isEmpty()) {
             newTruck.setDescription(description);
         }
 
         Set<Tanker> newTankers = new HashSet<>();
         if (tanksNode != null && tanksNode.isArray()) {
             for (JsonNode tankNode : tanksNode) {
-                Tanker tanker = new Tanker();
 
-                long capacityLiters = (long) JsonUtils.getValue(tankNode,TANKER_CAPACITY_ATTRIBUTES,0);
+                TankerCli1 tanker = new TankerCli1();
+
+                String tankerIdCli1 = JsonUtils.getString(tankNode, TANKER_IDCLI1_ATTRIBUTES, "");
+                if (tankerIdCli1 != null && !tankerIdCli1.isEmpty()) {
+                    tanker.setIdCli1(tankerIdCli1);
+                }
+
+                long capacityLiters = (long) JsonUtils.getValue(tankNode, TANKER_CAPACITY_ATTRIBUTES, 0);
+
                 if (capacityLiters > 0) {
                     tanker.setCapacity_liters(capacityLiters);
                 }
 
-                String license = JsonUtils.getString(tankNode,TANKER_LICENSE_ATTRIBUTES,"");
-                if(license != null && !license.isEmpty()){
+                String license = JsonUtils.getString(tankNode, TANKER_LICENSE_ATTRIBUTES, "");
+                if (license != null && !license.isEmpty()) {
+
                     tanker.setLicense(license);
                 }
 
@@ -73,19 +93,44 @@ public class Utils {
         return newTruck;
     }
 
-    public static Customer buildCustomer(JsonNode customerNode) {
-        Customer newCustomer = new Customer();
 
-        String businessName = JsonUtils.getString(customerNode,CUSTOMER_NAME_ATTRIBUTES, "");
-        if(businessName != null && !businessName.isEmpty()){
+    public static CustomerCli1 buildCustomer(JsonNode customerNode) {
+        CustomerCli1 newCustomer = new CustomerCli1();
+
+        String idCli1 = JsonUtils.getString(customerNode, CUSTOMER_IDCLI1_ATTRIBUTES, "");
+        if (idCli1 != null && !idCli1.isEmpty()) {
+            newCustomer.setIdCli1(idCli1);
+        }
+
+        String businessName = JsonUtils.getString(customerNode, CUSTOMER_NAME_ATTRIBUTES, "");
+        if (businessName != null && !businessName.isEmpty()) {
             newCustomer.setBusinessName(businessName);
         }
 
-        String email = JsonUtils.getString(customerNode,CUSTOMER_EMAIL_ATTRIBUTES,"");
-        if(email != null && !email.isEmpty()){
+        String email = JsonUtils.getString(customerNode, CUSTOMER_EMAIL_ATTRIBUTES, "");
+        if (email != null && !email.isEmpty()) {
+
             newCustomer.setEmail(email);
         }
 
         return newCustomer;
     }
+
+
+    public static ProductCli1 buildProduct(JsonNode productNode) {
+        ProductCli1 newProduct = new ProductCli1();
+
+        String idCli1 = JsonUtils.getString(productNode, PRODUCT_IDCLI1_ATTRIBUTES, "");
+        if (idCli1 != null && !idCli1.isEmpty()) {
+            newProduct.setIdCli1(idCli1);
+        }
+
+        String product = JsonUtils.getString(productNode, PRODUCT_NAME_ATTRIBUTES, "");
+        if (product != null && !product.isEmpty()) {
+            newProduct.setProduct(product);
+        }
+
+        return newProduct;
+    }
+
 }

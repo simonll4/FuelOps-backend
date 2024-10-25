@@ -1,6 +1,7 @@
 package ar.edu.iw3.util;
 
 public class JsonAttributeConstants {
+
     // Constantes para el nodo Order
     public static final String[] ORDER_NUMBER_ATTRIBUTES = {
             "number", "order_number", "order"
@@ -19,6 +20,12 @@ public class JsonAttributeConstants {
             "driver", "Driver", "choffer", "Choffer"
     };
 
+
+    public static final String[] DRIVER_IDCLI1_ATTRIBUTES = {
+            "id", "id_driver", "code", "driver_code"
+    };
+
+
     public static final String[] DRIVER_NAME_ATTRIBUTES = {
             "name", "driver_name", "driver"
     };
@@ -36,6 +43,11 @@ public class JsonAttributeConstants {
             "truck", "Truck", "vehicle", "Vehicle"
     };
 
+    public static final String[] TRUCK_IDCLI1_ATTRIBUTES = {
+            "id", "id_truck", "code", "truck_code"
+    };
+
+
     public static final String[] TRUCK_LICENSE_PLATE_ATTRIBUTES = {
             "truck_plate", "truck_plate_number", "license_plate", "truck_license_plate"
     };
@@ -49,6 +61,11 @@ public class JsonAttributeConstants {
             "capacity_liters", "capacity"
     };
 
+    public static final String[] TANKER_IDCLI1_ATTRIBUTES = {
+            "id", "id_tanker", "code", "tanker_code"
+    };
+
+
     public static final String[] TANKER_LICENSE_ATTRIBUTES = {
             "license", "license_plate", "plate"
     };
@@ -57,6 +74,11 @@ public class JsonAttributeConstants {
     public static final String[] CUSTOMER_NODE_ATTRIBUTES = {
             "customer", "Customer", "client", "Client"
     };
+
+    public static final String[] CUSTOMER_IDCLI1_ATTRIBUTES = {
+            "id", "id_customer", "code", "customer_code"
+    };
+
 
     public static final String[] CUSTOMER_NAME_ATTRIBUTES = {
             "name", "customer_name", "business_name", "customer"
@@ -68,8 +90,14 @@ public class JsonAttributeConstants {
 
     // Constantes para el nodo Product
     public static final String[] PRODUCT_NODE_ATTRIBUTES = {
-            "product","Product","gas","Gas","fuel","Fuel"
+
+            "product", "Product", "gas", "Gas", "fuel", "Fuel"
     };
+
+    public static final String[] PRODUCT_IDCLI1_ATTRIBUTES = {
+            "id", "id_product", "code", "product_code"
+    };
+
     public static final String[] PRODUCT_NAME_ATTRIBUTES = {
             "product", "product_name"
     };

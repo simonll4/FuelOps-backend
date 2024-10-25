@@ -11,6 +11,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "trucks")
+@Inheritance(strategy = InheritanceType.JOINED)
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter

@@ -24,8 +24,6 @@ public interface ITruckBusiness {
 
     public void delete(long id) throws NotFoundException, BusinessException;
 
-    public Truck loadOrCreate(Truck truck) throws BusinessException;
-
     public Set<Tanker> processTankers(Truck truck) throws BusinessException;
 
 }

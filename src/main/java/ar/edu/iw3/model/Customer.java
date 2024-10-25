@@ -8,6 +8,7 @@ import lombok.Setter;
 
 @Entity
 @Table(name = "customers")
+@Inheritance(strategy = InheritanceType.JOINED)
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
