@@ -5,6 +5,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import ar.edu.iw3.integration.cli1.model.CustomerCli1;
+import ar.edu.iw3.integration.cli1.model.DriverCli1;
+import ar.edu.iw3.integration.cli1.model.ProductCli1;
 import ar.edu.iw3.integration.cli1.model.TruckCli1;
 import ar.edu.iw3.integration.cli1.model.business.interfaces.ICustomerCli1Business;
 import ar.edu.iw3.integration.cli1.model.business.interfaces.IDriverCli1Business;
@@ -192,27 +195,28 @@ public class JsonUtils {
                     return driverCli1Business.loadOrCreate(Utils.buildDriver(driverNode)); // Cargar el driver desde el business
                 } catch (BusinessException e) {
                     // TODO tratar excepcion
+                } catch (NotFoundException ignored) {
+
                 }
             }
         }
         return null;
     }
 
-    public static TruckCli1 getTruck(JsonNode node, String[] attrs, ITruckCli1Business truckCli1Business, ITankBusiness tankBusiness) {
+    public static Truck getTruck(JsonNode node, String[] attrs, ITruckCli1Business truckCli1Business, ITankBusiness tankBusiness) {
         JsonNode truckNode = getJsonNode(node,TRUCK_NODE_ATTRIBUTES); // Buscar el nodo padre "truck"
         if (truckNode != null) {
             String truckLicensePlate = getString(truckNode, attrs, null);  // Obtener placa del camión desde los atributos
             if (truckLicensePlate != null) {
-                TruckCli1 truck = null; // Si se encuentra, cargar la entidad Truck desde el negocio
+
                 JsonNode tanksNode = truckNode.get("tanks");
                 try {
-                    truck = truckCli1Business.loadOrCreate(Utils.buildTruck(truckNode, tanksNode));
+                    return truckCli1Business.loadOrCreate(Utils.buildTruck(truckNode, tanksNode));
                 } catch (BusinessException e) {
                     // TODO tratar excepcion
+                } catch (NotFoundException ignored) {
+
                 }
-
-
-                return truck;
             }
         }
         return null; // Si no se encuentra la placa, retorna null
@@ -237,6 +241,8 @@ public class JsonUtils {
                     return customerCli1Business.loadOrCreate(Utils.buildCustomer(customerNode)); // Cargar el customer desde el business
                 } catch (BusinessException e) {
                     // TODO tratar excepcion
+                } catch (NotFoundException ignored) {
+
                 }
 
             }

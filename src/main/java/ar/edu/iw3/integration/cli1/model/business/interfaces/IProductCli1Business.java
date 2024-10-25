@@ -1,8 +1,8 @@
 package ar.edu.iw3.integration.cli1.model.business.interfaces;
 
 import ar.edu.iw3.integration.cli1.model.ProductCli1;
+import ar.edu.iw3.model.Product;
 import ar.edu.iw3.model.business.exceptions.BusinessException;
-import ar.edu.iw3.model.business.exceptions.FoundException;
 import ar.edu.iw3.model.business.exceptions.NotFoundException;
 
 import java.util.List;
@@ -13,5 +13,5 @@ public interface IProductCli1Business {
 
     public List<ProductCli1> list() throws BusinessException;
 
-    public ProductCli1 map(ProductCli1 product) throws BusinessException;
+    public Product map(ProductCli1 product) throws BusinessException;
 }

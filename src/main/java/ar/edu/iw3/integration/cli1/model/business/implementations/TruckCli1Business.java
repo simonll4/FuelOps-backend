@@ -1,8 +1,10 @@
 package ar.edu.iw3.integration.cli1.model.business.implementations;
 
+import ar.edu.iw3.integration.cli1.model.TankerCli1;
 import ar.edu.iw3.integration.cli1.model.TruckCli1;
 import ar.edu.iw3.integration.cli1.model.business.interfaces.ITruckCli1Business;
 import ar.edu.iw3.integration.cli1.model.persistence.TruckCli1Repository;
+import ar.edu.iw3.model.Tanker;
 import ar.edu.iw3.model.Truck;
 import ar.edu.iw3.model.business.exceptions.BusinessException;
 import ar.edu.iw3.model.business.exceptions.FoundException;
@@ -25,6 +27,8 @@ public class TruckCli1Business implements ITruckCli1Business {
 
     @Autowired
     private TruckBusiness baseTruckBusiness;
+    @Autowired
+    private TankerCli1Business tankerCli1Business;
 
 
     @Override
@@ -52,12 +56,17 @@ public class TruckCli1Business implements ITruckCli1Business {
         }
     }
 
+    @Autowired
+    private Mapper mapper;
+
     @Override
     public TruckCli1 add(TruckCli1 truck) throws FoundException, BusinessException {
+        // Si se llama desde LoadOrCreate, no se debe lanzar la excepción FoundException
         try {
-            baseTruckBusiness.load(truck.getId());
-            throw FoundException.builder().message("Se encontró el camion id=" + truck.getId()).build();
-        } catch (NotFoundException e) {
+            Truck baseTruck = baseTruckBusiness.load(truck.getLicensePlate());
+            mapper.map(truck, baseTruck); // si el camion base existe, se mapea el nuevo al existente
+            throw FoundException.builder().message("Se encontró el camion id=" + baseTruck.getId()).build();
+        } catch (NotFoundException ignored) {
             // log.trace(e.getMessage(), e);
         }
 
@@ -65,8 +74,14 @@ public class TruckCli1Business implements ITruckCli1Business {
             throw FoundException.builder().message("Se encontró el camion idCli1=" + truck.getIdCli1()).build();
         }
 
+        if (truckDAO.findOneByLicensePlateAndIdCli1Not(truck.getLicensePlate(), truck.getIdCli1()).isPresent()) {
+            throw FoundException.builder().message("Se encontró el camion con la patente " + truck.getLicensePlate()).build();
+        }
+
         try {
-            return truckDAO.save(truck);
+            TruckCli1 newTruck = truckDAO.save(truck);
+            newTruck.setTankers(baseTruckBusiness.processTankers(truck));
+            return newTruck;
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             throw BusinessException.builder().ex(e).build();
@@ -74,7 +89,7 @@ public class TruckCli1Business implements ITruckCli1Business {
     }
 
     @Override
-    public TruckCli1 loadOrCreate(TruckCli1 truck) throws BusinessException {
+    public Truck loadOrCreate(TruckCli1 truck) throws BusinessException, NotFoundException {
 
         Optional<Truck> findTruck = Optional.empty();
         try {
@@ -84,15 +99,31 @@ public class TruckCli1Business implements ITruckCli1Business {
         }
 
         if (findTruck.isEmpty()) {
+            Truck newTruck = new Truck();
             try {
-                truck = add(truck);
+                newTruck = baseTruckBusiness.load(add(truck).getId());
             } catch (FoundException ignored) {
                 // will not happen
             }
 
-            truck.setTankers(baseTruckBusiness.processTankers(truck));
-            return truck;
+            newTruck.setTankers(baseTruckBusiness.processTankers(truck));
+            return newTruck;
         }
-        return (TruckCli1) findTruck.get();
+
+        mapper.map(truck, findTruck.get());
+
+        // Si el camion ya existia, pero viene con tanques distintos
+        // comprobamos que los tanques del camion existan, en caso de no existir, los agregamos
+        for (Tanker tankerCli1 : truck.getTankers()) {
+            try {
+                tankerCli1.setTruck(findTruck.get());
+                tankerCli1Business.add((TankerCli1) tankerCli1);
+            } catch (FoundException ignored) {
+                // we ignore the exception because its kind a create or check if exists
+            }
+        }
+
+        return findTruck.get();
+
     }
 }

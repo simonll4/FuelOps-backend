@@ -3,7 +3,6 @@ package ar.edu.iw3.integration.cli1.model.business.implementations;
 import ar.edu.iw3.integration.cli1.model.CustomerCli1;
 import ar.edu.iw3.integration.cli1.model.business.interfaces.ICustomerCli1Business;
 import ar.edu.iw3.integration.cli1.model.persistence.CustomerCli1Repository;
-import ar.edu.iw3.integration.cli1.model.persistence.TruckCli1Repository;
 import ar.edu.iw3.model.Customer;
 import ar.edu.iw3.model.business.exceptions.BusinessException;
 import ar.edu.iw3.model.business.exceptions.FoundException;
@@ -51,11 +50,14 @@ public class CustomerCli1Business implements ICustomerCli1Business {
     @Autowired
     private ICustomerBusiness baseCustomerBusiness;
 
+    @Autowired
+    private Mapper mapper;
 
     @Override
     public CustomerCli1 add(CustomerCli1 customer) throws FoundException, BusinessException {
         try {
-            baseCustomerBusiness.load(customer.getId());
+            Customer baseCustomer = baseCustomerBusiness.load(customer.getBusinessName());
+            mapper.map(customer, baseCustomer);
             throw FoundException.builder().message("Se encontró el cliente id=" + customer.getId()).build();
         } catch (NotFoundException ignored) {
 
@@ -73,7 +75,7 @@ public class CustomerCli1Business implements ICustomerCli1Business {
 
 
     @Override
-    public CustomerCli1 loadOrCreate(CustomerCli1 customer) throws BusinessException {
+    public Customer loadOrCreate(CustomerCli1 customer) throws BusinessException, NotFoundException {
         Optional<Customer> findCustomer = Optional.empty();
         try {
             findCustomer = Optional.ofNullable(baseCustomerBusiness.load(customer.getBusinessName()));
@@ -84,11 +86,13 @@ public class CustomerCli1Business implements ICustomerCli1Business {
 
         if (findCustomer.isEmpty()) {
             try {
-                return add(customer);
+                return baseCustomerBusiness.load(add(customer).getId());
             } catch (FoundException ignored) {
                 // will not happen
             }
         }
-        return (CustomerCli1) findCustomer.get();
+        mapper.map(customer, findCustomer.get());
+        return findCustomer.get();
+
     }
 }

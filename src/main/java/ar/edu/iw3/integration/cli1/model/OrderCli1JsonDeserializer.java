@@ -59,7 +59,7 @@ public class OrderCli1JsonDeserializer extends StdDeserializer<OrderCli1> {
         r.setEstimatedTime(estimatedTime);
         r.setPreset(preset);
 
-        Driver driver = (JsonUtils.getDriver(node, DRIVER_DOCUMENT_ATTRIBUTES, driverBusiness));
+        Driver driver = JsonUtils.getDriver(node, DRIVER_DOCUMENT_ATTRIBUTES, driverBusiness);
 
         Truck truck = (JsonUtils.getTruck(node, TRUCK_LICENSE_PLATE_ATTRIBUTES, truckBusiness, tankBusiness));
 

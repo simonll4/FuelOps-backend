@@ -5,7 +5,6 @@ import ar.edu.iw3.integration.cli1.model.business.interfaces.IProductCli1Busines
 import ar.edu.iw3.integration.cli1.model.persistence.ProductCli1Repository;
 import ar.edu.iw3.model.Product;
 import ar.edu.iw3.model.business.exceptions.BusinessException;
-import ar.edu.iw3.model.business.exceptions.FoundException;
 import ar.edu.iw3.model.business.exceptions.NotFoundException;
 import ar.edu.iw3.model.business.implementations.ProductBusiness;
 import jakarta.transaction.Transactional;
@@ -55,7 +54,7 @@ public class ProductCli1Business implements IProductCli1Business {
 
     @Override
     @Transactional
-    public ProductCli1 map(ProductCli1 product) throws BusinessException {
+    public Product map(ProductCli1 product) throws BusinessException {
         Product findProduct;
         try {
             findProduct = baseProductBusiness.load(product.getProduct());
@@ -77,7 +76,7 @@ public class ProductCli1Business implements IProductCli1Business {
             product.setDescription(findProduct.getDescription());
             product.setTemperature(findProduct.getTemperature());
             productDAO.insertProductCli1(findProduct.getId(), product.getIdCli1());
-            return product;
+            return findProduct;
         } catch (DataIntegrityViolationException e) {
             // Manejo específico de la violación de la integridad de los datos
             throw BusinessException.builder().message("Error al insertar en la base de datos").ex(e).build();

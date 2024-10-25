@@ -1,7 +1,6 @@
 package ar.edu.iw3.integration.cli1.model.business.implementations;
 
 import ar.edu.iw3.integration.cli1.model.DriverCli1;
-import ar.edu.iw3.integration.cli1.model.TruckCli1;
 import ar.edu.iw3.integration.cli1.model.business.interfaces.IDriverCli1Business;
 import ar.edu.iw3.integration.cli1.model.persistence.DriverCli1Repository;
 import ar.edu.iw3.model.Driver;
@@ -51,10 +50,15 @@ public class DriverCli1Business implements IDriverCli1Business {
     @Autowired
     private DriverBusiness baseDriverBusiness;
 
+    @Autowired
+    private Mapper mapper;
+
     @Override
     public DriverCli1 add(DriverCli1 driver) throws FoundException, BusinessException {
+        // Si se llama desde LoadOrCreate, no se debe lanzar la excepción FoundException
         try{
-            baseDriverBusiness.load(driver.getId());
+            Driver baseDriver = baseDriverBusiness.load(driver.getDocument());
+            mapper.map(driver, baseDriver);
             throw FoundException.builder().message("Se encontró el conductor con id=" + driver.getId()).build();
         } catch (NotFoundException ignored) {
 
@@ -73,7 +77,7 @@ public class DriverCli1Business implements IDriverCli1Business {
     }
 
     @Override
-    public DriverCli1 loadOrCreate(DriverCli1 driver) throws BusinessException {
+    public Driver loadOrCreate(DriverCli1 driver) throws BusinessException, NotFoundException {
         Optional<Driver> findDriver = Optional.empty();
         try{
             findDriver = Optional.ofNullable(baseDriverBusiness.load(driver.getDocument()));
@@ -82,11 +86,12 @@ public class DriverCli1Business implements IDriverCli1Business {
         }
         if (findDriver.isEmpty()) {
             try {
-                return add(driver);
+                return baseDriverBusiness.load(add(driver).getId());
             } catch (FoundException ignored) {
                 // will not happen
             }
         }
-        return (DriverCli1) findDriver.get();
+        mapper.map(driver, findDriver.get());
+        return findDriver.get();
     }
 }

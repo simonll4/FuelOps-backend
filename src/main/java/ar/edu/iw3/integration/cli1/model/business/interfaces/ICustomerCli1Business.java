@@ -1,7 +1,6 @@
 package ar.edu.iw3.integration.cli1.model.business.interfaces;
 
 import ar.edu.iw3.integration.cli1.model.CustomerCli1;
-import ar.edu.iw3.integration.cli1.model.TruckCli1;
 import ar.edu.iw3.model.Customer;
 import ar.edu.iw3.model.business.exceptions.BusinessException;
 import ar.edu.iw3.model.business.exceptions.FoundException;
@@ -17,5 +16,5 @@ public interface ICustomerCli1Business {
 
     public CustomerCli1 add(CustomerCli1 customer) throws FoundException, BusinessException;
 
-    public CustomerCli1 loadOrCreate(CustomerCli1 customer) throws BusinessException;
+    public Customer loadOrCreate(CustomerCli1 customer) throws BusinessException, NotFoundException;
 }

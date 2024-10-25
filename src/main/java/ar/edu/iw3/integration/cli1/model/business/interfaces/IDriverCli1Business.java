@@ -1,7 +1,6 @@
 package ar.edu.iw3.integration.cli1.model.business.interfaces;
 
 import ar.edu.iw3.integration.cli1.model.DriverCli1;
-import ar.edu.iw3.integration.cli1.model.TruckCli1;
 import ar.edu.iw3.model.Driver;
 import ar.edu.iw3.model.business.exceptions.BusinessException;
 import ar.edu.iw3.model.business.exceptions.FoundException;
@@ -17,5 +16,5 @@ public interface IDriverCli1Business {
 
     public DriverCli1 add(DriverCli1 driver) throws FoundException, BusinessException;
 
-    public DriverCli1 loadOrCreate(DriverCli1 driver) throws BusinessException;
+    public Driver loadOrCreate(DriverCli1 driver) throws BusinessException, NotFoundException;
 }
