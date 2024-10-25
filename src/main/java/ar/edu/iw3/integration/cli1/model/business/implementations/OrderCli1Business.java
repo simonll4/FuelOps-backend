@@ -1,9 +1,13 @@
+
 package ar.edu.iw3.integration.cli1.model.business.implementations;
+
 
 import java.util.List;
 import java.util.Optional;
 
+
 import ar.edu.iw3.integration.cli1.model.business.interfaces.*;
+
 import ar.edu.iw3.model.business.interfaces.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,7 +17,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ar.edu.iw3.integration.cli1.model.OrderCli1;
 import ar.edu.iw3.integration.cli1.model.OrderCli1JsonDeserializer;
+
 import ar.edu.iw3.integration.cli1.model.persistence.OrderCli1Respository;
+
 import ar.edu.iw3.model.business.exceptions.BusinessException;
 import ar.edu.iw3.model.business.exceptions.FoundException;
 import ar.edu.iw3.model.business.exceptions.NotFoundException;
@@ -25,8 +31,8 @@ import lombok.extern.slf4j.Slf4j;
 public class OrderCli1Business implements IOrderCli1Business {
 
     @Autowired(required = false)
-    private OrderCli1Respository orderDAO;
 
+    private OrderCli1Respository orderDAO;
 
     @Override
     public OrderCli1 load(String orderNumberCli1) throws NotFoundException, BusinessException {
@@ -61,7 +67,9 @@ public class OrderCli1Business implements IOrderCli1Business {
 
         try {
             orderBaseBusiness.load(order.getId());
+          
             throw FoundException.builder().message("Se encontró la Orden id=" + order.getId()).build();
+
         } catch (NotFoundException e) {
             // log.trace(e.getMessage(), e);
         }
@@ -85,10 +93,12 @@ public class OrderCli1Business implements IOrderCli1Business {
     private ITruckCli1Business truckBusiness;
 
     @Autowired
+
     private ITankBusiness tankBusiness;
 
     @Autowired
     private IProductCli1Business productBusiness;
+
 
     @Autowired
     private IDriverCli1Business driverBusiness;

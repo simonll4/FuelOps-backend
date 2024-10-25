@@ -1,7 +1,9 @@
 package ar.edu.iw3.integration.cli1.util;
 
+
 import ar.edu.iw3.integration.cli1.model.*;
 import ar.edu.iw3.model.Tanker;
+
 import ar.edu.iw3.util.JsonUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -11,6 +13,7 @@ import java.util.Set;
 import static ar.edu.iw3.util.JsonAttributeConstants.*;
 
 public class Utils {
+
     public static DriverCli1 buildDriver(JsonNode driverNode) {
         DriverCli1 newDriver = new DriverCli1();
 
@@ -31,11 +34,14 @@ public class Utils {
 
         String identityDocument = JsonUtils.getString(driverNode, DRIVER_DOCUMENT_ATTRIBUTES, "");
         if (identityDocument != null && !identityDocument.isEmpty()) {
+
+
             newDriver.setDocument(identityDocument);
         }
 
         return newDriver;
     }
+
 
     public static TruckCli1 buildTruck(JsonNode truckNode, JsonNode tanksNode) {
         TruckCli1 newTruck = new TruckCli1();
@@ -58,6 +64,7 @@ public class Utils {
         Set<Tanker> newTankers = new HashSet<>();
         if (tanksNode != null && tanksNode.isArray()) {
             for (JsonNode tankNode : tanksNode) {
+
                 TankerCli1 tanker = new TankerCli1();
 
                 String tankerIdCli1 = JsonUtils.getString(tankNode, TANKER_IDCLI1_ATTRIBUTES, "");
@@ -66,12 +73,14 @@ public class Utils {
                 }
 
                 long capacityLiters = (long) JsonUtils.getValue(tankNode, TANKER_CAPACITY_ATTRIBUTES, 0);
+
                 if (capacityLiters > 0) {
                     tanker.setCapacity_liters(capacityLiters);
                 }
 
                 String license = JsonUtils.getString(tankNode, TANKER_LICENSE_ATTRIBUTES, "");
                 if (license != null && !license.isEmpty()) {
+
                     tanker.setLicense(license);
                 }
 
@@ -83,6 +92,7 @@ public class Utils {
         newTruck.setTankers(newTankers);
         return newTruck;
     }
+
 
     public static CustomerCli1 buildCustomer(JsonNode customerNode) {
         CustomerCli1 newCustomer = new CustomerCli1();
@@ -99,11 +109,13 @@ public class Utils {
 
         String email = JsonUtils.getString(customerNode, CUSTOMER_EMAIL_ATTRIBUTES, "");
         if (email != null && !email.isEmpty()) {
+
             newCustomer.setEmail(email);
         }
 
         return newCustomer;
     }
+
 
     public static ProductCli1 buildProduct(JsonNode productNode) {
         ProductCli1 newProduct = new ProductCli1();
@@ -120,4 +132,5 @@ public class Utils {
 
         return newProduct;
     }
+
 }

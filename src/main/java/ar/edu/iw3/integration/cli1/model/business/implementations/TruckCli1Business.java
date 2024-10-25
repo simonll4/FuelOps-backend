@@ -1,28 +1,32 @@
 package ar.edu.iw3.integration.cli1.model.business.implementations;
 
+
 import ar.edu.iw3.integration.cli1.model.TankerCli1;
 import ar.edu.iw3.integration.cli1.model.TruckCli1;
 import ar.edu.iw3.integration.cli1.model.business.interfaces.ITruckCli1Business;
 import ar.edu.iw3.integration.cli1.model.persistence.TruckCli1Repository;
+
 import ar.edu.iw3.model.Tanker;
 import ar.edu.iw3.model.Truck;
 import ar.edu.iw3.model.business.exceptions.BusinessException;
 import ar.edu.iw3.model.business.exceptions.FoundException;
 import ar.edu.iw3.model.business.exceptions.NotFoundException;
+
 import ar.edu.iw3.model.business.implementations.TruckBusiness;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+
 import java.util.List;
 import java.util.Optional;
-
 
 @Service
 @Slf4j
 public class TruckCli1Business implements ITruckCli1Business {
 
     @Autowired
+
     private TruckCli1Repository truckDAO;
 
     @Autowired
@@ -91,6 +95,7 @@ public class TruckCli1Business implements ITruckCli1Business {
     @Override
     public Truck loadOrCreate(TruckCli1 truck) throws BusinessException, NotFoundException {
 
+
         Optional<Truck> findTruck = Optional.empty();
         try {
             findTruck = Optional.ofNullable(baseTruckBusiness.load(truck.getLicensePlate()));
@@ -99,12 +104,15 @@ public class TruckCli1Business implements ITruckCli1Business {
         }
 
         if (findTruck.isEmpty()) {
+
             Truck newTruck = new Truck();
             try {
                 newTruck = baseTruckBusiness.load(add(truck).getId());
+
             } catch (FoundException ignored) {
                 // will not happen
             }
+
 
             newTruck.setTankers(baseTruckBusiness.processTankers(truck));
             return newTruck;
@@ -126,4 +134,5 @@ public class TruckCli1Business implements ITruckCli1Business {
         return findTruck.get();
 
     }
+
 }

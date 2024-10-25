@@ -1,5 +1,6 @@
 package ar.edu.iw3.integration.cli1.model.business.implementations;
 
+
 import ar.edu.iw3.integration.cli1.model.CustomerCli1;
 import ar.edu.iw3.integration.cli1.model.business.interfaces.ICustomerCli1Business;
 import ar.edu.iw3.integration.cli1.model.persistence.CustomerCli1Repository;
@@ -12,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+
 import java.util.List;
 import java.util.Optional;
 
@@ -20,6 +22,7 @@ import java.util.Optional;
 public class CustomerCli1Business implements ICustomerCli1Business {
 
     @Autowired
+
     private CustomerCli1Repository customerDAO;
 
     @Override
@@ -76,6 +79,7 @@ public class CustomerCli1Business implements ICustomerCli1Business {
 
     @Override
     public Customer loadOrCreate(CustomerCli1 customer) throws BusinessException, NotFoundException {
+
         Optional<Customer> findCustomer = Optional.empty();
         try {
             findCustomer = Optional.ofNullable(baseCustomerBusiness.load(customer.getBusinessName()));
@@ -86,13 +90,15 @@ public class CustomerCli1Business implements ICustomerCli1Business {
 
         if (findCustomer.isEmpty()) {
             try {
+
                 return baseCustomerBusiness.load(add(customer).getId());
+
             } catch (FoundException ignored) {
                 // will not happen
             }
         }
+
         mapper.map(customer, findCustomer.get());
         return findCustomer.get();
-
     }
 }

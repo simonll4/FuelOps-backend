@@ -20,9 +20,11 @@ public class JsonAttributeConstants {
             "driver", "Driver", "choffer", "Choffer"
     };
 
+
     public static final String[] DRIVER_IDCLI1_ATTRIBUTES = {
             "id", "id_driver", "code", "driver_code"
     };
+
 
     public static final String[] DRIVER_NAME_ATTRIBUTES = {
             "name", "driver_name", "driver"
@@ -45,6 +47,7 @@ public class JsonAttributeConstants {
             "id", "id_truck", "code", "truck_code"
     };
 
+
     public static final String[] TRUCK_LICENSE_PLATE_ATTRIBUTES = {
             "truck_plate", "truck_plate_number", "license_plate", "truck_license_plate"
     };
@@ -62,6 +65,7 @@ public class JsonAttributeConstants {
             "id", "id_tanker", "code", "tanker_code"
     };
 
+
     public static final String[] TANKER_LICENSE_ATTRIBUTES = {
             "license", "license_plate", "plate"
     };
@@ -75,6 +79,7 @@ public class JsonAttributeConstants {
             "id", "id_customer", "code", "customer_code"
     };
 
+
     public static final String[] CUSTOMER_NAME_ATTRIBUTES = {
             "name", "customer_name", "business_name", "customer"
     };
@@ -85,6 +90,7 @@ public class JsonAttributeConstants {
 
     // Constantes para el nodo Product
     public static final String[] PRODUCT_NODE_ATTRIBUTES = {
+
             "product", "Product", "gas", "Gas", "fuel", "Fuel"
     };
 
@@ -96,4 +102,3 @@ public class JsonAttributeConstants {
             "product", "product_name"
     };
 }
-

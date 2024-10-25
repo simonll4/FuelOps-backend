@@ -1,13 +1,19 @@
-package ar.edu.iw3.integration.cli3.model.business;
+package ar.edu.iw3.integration.cli3.model.business.implementations;
 
+import ar.edu.iw3.events.AlarmEvent;
+import ar.edu.iw3.events.DetailEvent;
+import ar.edu.iw3.integration.cli3.model.business.interfaces.IOrderCli3Business;
+import ar.edu.iw3.model.Detail;
 import ar.edu.iw3.model.Order;
-import ar.edu.iw3.model.business.exceptions.BusinessException;
-import ar.edu.iw3.model.business.exceptions.ConflictException;
-import ar.edu.iw3.model.business.exceptions.NotFoundException;
+import ar.edu.iw3.model.business.exceptions.*;
+import ar.edu.iw3.model.business.implementations.OrderBusiness;
 import ar.edu.iw3.model.persistence.OrderRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+
+import java.util.Date;
 import java.util.Optional;
 
 @Slf4j
@@ -16,6 +22,12 @@ public class OrderCli3Business implements IOrderCli3Business {
 
     @Autowired
     private OrderRepository orderDAO;
+
+    @Autowired
+    private OrderBusiness orderBusiness;
+
+    @Autowired
+    private ApplicationEventPublisher applicationEventPublisher;
 
     @Override
     public Order validatePassword(int password) throws NotFoundException, BusinessException, ConflictException {
@@ -38,6 +50,41 @@ public class OrderCli3Business implements IOrderCli3Business {
         return order.get();
     }
 
+    @Override
+    public void receiveDetails(Detail detail) throws NotFoundException, BusinessException, FoundException, UnProcessableException, ConflictException {
+        Order orderFound = orderBusiness.load(detail.getOrder().getId());
+
+        // Validaciones
+        if (orderFound.getStatus() != Order.Status.REGISTERED_INITIAL_WEIGHING) {
+            throw new ConflictException("Estado de orden no válido");
+        }
+        if (detail.getFlowRate() < 0) {
+            throw new UnProcessableException("Caudal no válido");
+        }
+        if (detail.getAccumulatedMass() < orderFound.getLastAccumulatedMass()) {
+            throw new UnProcessableException("Masa acumulada no válida");
+        }
+
+        // Validacion de alarma de temperatura
+        if (detail.getTemperature() > orderFound.getProduct().getTemperature()) {
+            if (orderFound.isAlarmAccepted()) {
+                orderFound.setAlarmAccepted(false);
+                orderBusiness.update(orderFound);
+                applicationEventPublisher.publishEvent(new AlarmEvent(detail, AlarmEvent.TypeEvent.TEMPERATURE_EXCEEDED));
+            }
+        }
+
+        // Guardado de detalle
+        applicationEventPublisher.publishEvent(new DetailEvent(detail, DetailEvent.TypeEvent.SAVE_DETAIL));
+
+        // Actualizacion de cabecera de orden
+        orderFound.setLastTimeStamp(new Date(System.currentTimeMillis()));
+        orderFound.setLastAccumulatedMass(detail.getAccumulatedMass());
+        orderFound.setLastDensity(detail.getDensity());
+        orderFound.setLastTemperature(detail.getTemperature());
+        orderFound.setLastFlowRate(detail.getFlowRate());
+        orderBusiness.update(orderFound);
+    }
 
     @Override
     public void closeOrder(Long orderId) throws BusinessException, NotFoundException, ConflictException {

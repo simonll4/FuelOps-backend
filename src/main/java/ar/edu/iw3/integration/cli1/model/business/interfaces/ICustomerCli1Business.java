@@ -17,4 +17,5 @@ public interface ICustomerCli1Business {
     public CustomerCli1 add(CustomerCli1 customer) throws FoundException, BusinessException;
 
     public Customer loadOrCreate(CustomerCli1 customer) throws BusinessException, NotFoundException;
+
 }

@@ -1,8 +1,10 @@
 package ar.edu.iw3.integration.cli1.model.business.implementations;
 
+
 import ar.edu.iw3.integration.cli1.model.DriverCli1;
 import ar.edu.iw3.integration.cli1.model.business.interfaces.IDriverCli1Business;
 import ar.edu.iw3.integration.cli1.model.persistence.DriverCli1Repository;
+
 import ar.edu.iw3.model.Driver;
 import ar.edu.iw3.model.business.exceptions.BusinessException;
 import ar.edu.iw3.model.business.exceptions.FoundException;
@@ -12,7 +14,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+
 import java.util.List;
+
 import java.util.Optional;
 
 @Service
@@ -78,6 +82,7 @@ public class DriverCli1Business implements IDriverCli1Business {
 
     @Override
     public Driver loadOrCreate(DriverCli1 driver) throws BusinessException, NotFoundException {
+
         Optional<Driver> findDriver = Optional.empty();
         try{
             findDriver = Optional.ofNullable(baseDriverBusiness.load(driver.getDocument()));
@@ -86,11 +91,14 @@ public class DriverCli1Business implements IDriverCli1Business {
         }
         if (findDriver.isEmpty()) {
             try {
+
                 return baseDriverBusiness.load(add(driver).getId());
+
             } catch (FoundException ignored) {
                 // will not happen
             }
         }
+
         mapper.map(driver, findDriver.get());
         return findDriver.get();
     }

@@ -1,17 +1,20 @@
 package ar.edu.iw3.model.business.implementations;
 
 import ar.edu.iw3.model.Order;
+import ar.edu.iw3.model.Product;
 import ar.edu.iw3.model.business.exceptions.BusinessException;
 import ar.edu.iw3.model.business.exceptions.FoundException;
 import ar.edu.iw3.model.business.exceptions.NotFoundException;
 import ar.edu.iw3.model.business.interfaces.IOrderBusiness;
 import ar.edu.iw3.model.persistence.OrderRepository;
+import ar.edu.iw3.util.PdfGenerator;
+import com.itextpdf.text.DocumentException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
+import java.io.IOException;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -90,5 +93,59 @@ public class OrderBusiness implements IOrderBusiness {
         }
     }
 
-}
+    @Autowired
+    DetailBusiness detailBusiness;
 
+    @Autowired
+    PdfGenerator pdfGenerator;
+
+    @Override
+    public byte[] generateConciliationPdf(Long idOrder) throws BusinessException, NotFoundException {
+        Order orderFound = load(idOrder);
+
+        float initialWeighing = orderFound.getInitialWeighing();
+        float productLoaded = orderFound.getLastAccumulatedMass();
+        float finalWeight = orderFound.getFinalWeighing();
+        float netWeight = finalWeight - initialWeighing;
+        float difference = netWeight - productLoaded;
+        float avgTemperature = detailBusiness.calculateAverageTemperature(orderFound.getId());
+        float avgDensity = detailBusiness.calculateAverageDensity(orderFound.getId());
+        float avgFlow = detailBusiness.calculateAverageFlowRate(orderFound.getId());
+        Product product = orderFound.getProduct();
+
+        try {
+            return pdfGenerator.generateFuelLoadingReconciliationReport(initialWeighing, finalWeight, productLoaded, netWeight, difference, avgTemperature, avgDensity, avgFlow, product);
+        } catch (DocumentException | IOException e) {
+            log.error("Error generando el PDF: {}", e.getMessage(), e);
+            throw BusinessException.builder().message("Error al generar el reporte PDF").ex(e).build();
+        }
+    }
+
+    @Override
+    public Map<String, Object> getConciliationJson(Long idOrder) throws BusinessException, NotFoundException {
+        Order orderFound = load(idOrder);
+
+        float initialWeighing = orderFound.getInitialWeighing();
+        float productLoaded = orderFound.getLastAccumulatedMass();
+        float finalWeight = orderFound.getFinalWeighing();
+        float netWeight = finalWeight - initialWeighing;
+        float difference = netWeight - productLoaded;
+        float avgTemperature = detailBusiness.calculateAverageTemperature(orderFound.getId());
+        float avgDensity = detailBusiness.calculateAverageDensity(orderFound.getId());
+        float avgFlow = detailBusiness.calculateAverageFlowRate(orderFound.getId());
+        Product product = orderFound.getProduct();
+
+        Map<String, Object> conciliationData = new HashMap<>();
+        conciliationData.put("initialWeighing", initialWeighing);
+        conciliationData.put("finalWeighing", finalWeight);
+        conciliationData.put("accumulatedMass", productLoaded);
+        conciliationData.put("netWeight", netWeight);
+        conciliationData.put("differenceWeight", difference);
+        conciliationData.put("averageTemperature", avgTemperature);
+        conciliationData.put("averageDensity", avgDensity);
+        conciliationData.put("averageFlowRate", avgFlow);
+        conciliationData.put("product", product != null ? product.getProduct() : "Unknown");
+        return conciliationData;
+    }
+
+}
