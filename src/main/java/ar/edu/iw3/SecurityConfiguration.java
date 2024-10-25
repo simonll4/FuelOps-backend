@@ -31,13 +31,26 @@ public class SecurityConfiguration {
 		return new BCryptPasswordEncoder();
 	}
 
+//	@Bean
+//	WebMvcConfigurer corsConfigurer() {
+//		// CORS: https://developer.mozilla.org/es/docs/Web/HTTP/CORS
+//		return new WebMvcConfigurer() {
+//			@Override
+//			public void addCorsMappings(CorsRegistry registry) {
+//				registry.addMapping("/**").allowedMethods("*").allowedHeaders("*").allowedOrigins("*");
+//			}
+//		};
+//	}
 	@Bean
-	WebMvcConfigurer corsConfigurer() {
-		// CORS: https://developer.mozilla.org/es/docs/Web/HTTP/CORS
+	public WebMvcConfigurer corsConfigurer() {
 		return new WebMvcConfigurer() {
 			@Override
 			public void addCorsMappings(CorsRegistry registry) {
-				registry.addMapping("/**").allowedMethods("*").allowedHeaders("*").allowedOrigins("*");
+				registry.addMapping("/**")
+						.allowedOrigins("http://localhost:3000")
+						.allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+						.allowedHeaders("*")
+						.allowCredentials(true);
 			}
 		};
 	}
