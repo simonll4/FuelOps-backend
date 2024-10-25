@@ -1,12 +1,13 @@
-package ar.edu.iw3.events;
+package ar.edu.iw3.events.listeners;
 
+import ar.edu.iw3.events.AlarmEvent;
 import ar.edu.iw3.model.Alarm;
 import ar.edu.iw3.model.Detail;
 import ar.edu.iw3.model.business.exceptions.BusinessException;
 import ar.edu.iw3.model.business.exceptions.FoundException;
 import ar.edu.iw3.model.business.implementations.AlarmBusiness;
 import ar.edu.iw3.util.EmailBusiness;
-import ar.edu.iw3.websockets.Notification;
+import ar.edu.iw3.websockets.wrappers.Notification;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -41,16 +42,15 @@ public class AlarmEventListener implements ApplicationListener<AlarmEvent> {
     private String to;
 
     private void handleTemperatureExceeded(Detail detail) {
-
         Date now = new Date(System.currentTimeMillis());
 
-        // Create notification object
+        // Envío de notificación de alerta a clientes (WebSocket)
         Notification notification = new Notification();
-        notification.setAlertMessage("Temperature exceeded for order " + detail.getOrder().getId());
+        notification.setAlertMessage("Temperatura excedida para orden " + detail.getOrder().getId());
         notification.setDetail(detail);
         notification.setTimestamp(now);
         try {
-            wSock.convertAndSend("/topic/alarms", notification);
+            wSock.convertAndSend("/topic/alarms/data", notification);
         } catch (Exception e) {
             log.error("Failed to send alert notification", e);
         }
@@ -98,12 +98,11 @@ public class AlarmEventListener implements ApplicationListener<AlarmEvent> {
                 detail.getFlowRate()
         );
 
-        log.info("Enviando mensaje '{}'", mensaje);
+        //log.info("Enviando mensaje '{}'", mensaje);
         try {
             emailBusiness.sendSimpleMessage(to, subject, mensaje);
         } catch (BusinessException e) {
             log.error(e.getMessage(), e);
         }
-
     }
 }

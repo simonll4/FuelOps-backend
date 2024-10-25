@@ -8,6 +8,7 @@ import ar.edu.iw3.model.business.implementations.DetailBusiness;
 import ar.edu.iw3.model.business.implementations.OrderBusiness;
 import ar.edu.iw3.model.persistence.DetailRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -26,6 +27,9 @@ public class DetailCli3Business implements IDetailCli3Business {
     @Autowired
     private DetailRepository detailDAO;
 
+    @Autowired
+    private SimpMessagingTemplate wSock;
+
     @Override
     public void add(Detail detail) throws FoundException, BusinessException, NotFoundException {
         long currentTime = System.currentTimeMillis();
@@ -39,6 +43,8 @@ public class DetailCli3Business implements IDetailCli3Business {
                 detailBusiness.add(detail);
                 orderFound.setFuelingEndDate(new Date(System.currentTimeMillis()));
                 orderBusiness.update(orderFound);
+                // Envío de detalle de carga a clientes (WebSocket)
+                wSock.convertAndSend("/topic/details/data", detail);
             }
         } else {
             detail.setTimeStamp(new Date(currentTime));
@@ -46,6 +52,8 @@ public class DetailCli3Business implements IDetailCli3Business {
             orderFound.setFuelingStartDate(new Date(System.currentTimeMillis()));
             orderFound.setFuelingEndDate(new Date(System.currentTimeMillis()));
             orderBusiness.update(orderFound);
+            // Envío de detalle de carga a clientes (WebSocket)
+            wSock.convertAndSend("/topic/details/data", detail);
         }
     }
 

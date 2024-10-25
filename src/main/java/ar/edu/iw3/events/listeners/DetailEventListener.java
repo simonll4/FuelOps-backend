@@ -1,5 +1,6 @@
-package ar.edu.iw3.events;
+package ar.edu.iw3.events.listeners;
 
+import ar.edu.iw3.events.DetailEvent;
 import ar.edu.iw3.integration.cli3.model.business.interfaces.IDetailCli3Business;
 import ar.edu.iw3.model.Detail;
 import ar.edu.iw3.model.business.exceptions.BusinessException;
@@ -8,6 +9,7 @@ import ar.edu.iw3.model.business.exceptions.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -32,7 +34,7 @@ public class DetailEventListener implements ApplicationListener<DetailEvent> {
         } catch (BusinessException e) {
             log.error("Error al guardar el detalle con id={}", detail.getId(), e);
         } catch (NotFoundException e) {
-            log.error("Error: ",e);
+            log.error("Error: ", e);
         }
     }
 

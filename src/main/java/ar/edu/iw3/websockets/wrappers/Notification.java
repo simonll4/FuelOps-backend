@@ -1,4 +1,4 @@
-package ar.edu.iw3.websockets;
+package ar.edu.iw3.websockets.wrappers;
 
 import ar.edu.iw3.model.Detail;
 import lombok.Getter;

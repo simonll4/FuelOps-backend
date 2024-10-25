@@ -1,14 +1,17 @@
 package ar.edu.iw3;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
+import org.springframework.web.socket.server.HandshakeInterceptor;
 
 @Configuration
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
+
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
 
@@ -20,7 +23,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         //Agrega un prefijo a los mensajes recibidos desde los publicadores, a esto lo definiremos en el
         //controlador con @MessageMapping("/algo"), por lo tanto el cliente que publique, deberá hacerlo en /ws/algo
         // publicador ---> broker (PUBLICACIONES)
-        config.setApplicationDestinationPrefixes("/ws");
+        //config.setApplicationDestinationPrefixes("/ws");
 
     }
 
@@ -34,10 +37,11 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         //registry.addEndpoint("/chat");
         //registry.addEndpoint("/chat").withSockJS();
         //registry.addEndpoint("/graph");
-       // registry.addEndpoint("/graph").withSockJS();
+        // registry.addEndpoint("/graph").withSockJS();
 
-        registry.addEndpoint("/alerts");
-        registry.addEndpoint("/alerts").withSockJS();
-        
+        registry.addEndpoint("/alarms").setAllowedOrigins("http://localhost:3000");
+        registry.addEndpoint("/alarms").withSockJS();
+
     }
+
 }
