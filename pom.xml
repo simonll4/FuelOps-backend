@@ -13,14 +13,11 @@
     <artifactId>iw3</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>${packaging.type}</packaging>
-
     <properties>
         <java.version>17</java.version>
         <tomcat.scope>runtime</tomcat.scope>
         <packaging.type>war</packaging.type>
-
     </properties>
-
     <name>Backend</name>
     <description>Proyecto IW3</description>
     <url/>
@@ -112,31 +109,14 @@
             <artifactId>spring-websocket</artifactId>
             <version>6.1.14</version>
         </dependency>
-
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-messaging</artifactId>
             <version>6.1.14</version>
         </dependency>
-
     </dependencies>
 
     <profiles>
-        <!-- Perfiles de ejecución  -->
-        <profile>
-            <id>cli1</id>
-            <properties>
-                <spring.profiles.active>cli1</spring.profiles.active>
-            </properties>
-        </profile>
-        <profile>
-            <id>cli2</id>
-            <properties>
-                <spring.profiles.active>cli2</spring.profiles.active>
-            </properties>
-        </profile>
-
-
         <!-- Perfiles de ejecución on start -->
         <profile>
             <id>mysqldev</id>
@@ -150,7 +130,6 @@
                 <spring.profiles.active>mysqlprod</spring.profiles.active>
             </properties>
         </profile>
-
         <!-- Perfiles de empaquetado -->
         <profile>
             <id>war-build</id>
@@ -204,9 +183,7 @@
                 </plugins>
             </build>
         </profile>
-
     </profiles>
-
 
     <build>
         <plugins>

@@ -10,7 +10,6 @@ import ar.edu.iw3.model.persistence.DetailRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
-
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -44,6 +43,7 @@ public class DetailCli3Business implements IDetailCli3Business {
                 orderFound.setFuelingEndDate(new Date(System.currentTimeMillis()));
                 orderBusiness.update(orderFound);
                 // Envío de detalle de carga a clientes (WebSocket)
+                // todo hacer wrapper para enviar datos
                 wSock.convertAndSend("/topic/details/data", detail);
             }
         } else {

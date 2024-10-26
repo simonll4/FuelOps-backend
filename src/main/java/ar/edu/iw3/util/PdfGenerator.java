@@ -6,17 +6,14 @@ import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.FontFactory;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.PdfWriter;
-import org.springframework.stereotype.Component;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-@Component
 public class PdfGenerator {
 
-    public byte[] generateSimpleTextPdf(String content) throws DocumentException, IOException {
+    public static byte[] generateSimpleTextPdf(String content) throws DocumentException, IOException {
         Document document = new Document();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
@@ -27,7 +24,7 @@ public class PdfGenerator {
         return baos.toByteArray();
     }
 
-    public byte[] generateFuelLoadingReconciliationReport(
+    public static byte[] generateFuelLoadingReconciliationReport(
             float initialWeighing,
             float finalWeighing,
             float productLoaded,

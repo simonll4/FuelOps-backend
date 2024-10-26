@@ -1,18 +1,14 @@
 package ar.edu.iw3.integration.cli1.util;
 
-
 import ar.edu.iw3.integration.cli1.model.*;
 import ar.edu.iw3.model.Tanker;
-
 import ar.edu.iw3.util.JsonUtils;
 import com.fasterxml.jackson.databind.JsonNode;
-
 import java.util.HashSet;
 import java.util.Set;
+import static ar.edu.iw3.integration.cli1.util.JsonAttributeConstants.*;
 
-import static ar.edu.iw3.util.JsonAttributeConstants.*;
-
-public class Utils {
+public class BuildEntityUtils {
 
     public static DriverCli1 buildDriver(JsonNode driverNode) {
         DriverCli1 newDriver = new DriverCli1();
@@ -34,8 +30,6 @@ public class Utils {
 
         String identityDocument = JsonUtils.getString(driverNode, DRIVER_DOCUMENT_ATTRIBUTES, "");
         if (identityDocument != null && !identityDocument.isEmpty()) {
-
-
             newDriver.setDocument(identityDocument);
         }
 
@@ -64,7 +58,6 @@ public class Utils {
         Set<Tanker> newTankers = new HashSet<>();
         if (tanksNode != null && tanksNode.isArray()) {
             for (JsonNode tankNode : tanksNode) {
-
                 TankerCli1 tanker = new TankerCli1();
 
                 String tankerIdCli1 = JsonUtils.getString(tankNode, TANKER_IDCLI1_ATTRIBUTES, "");
@@ -73,7 +66,6 @@ public class Utils {
                 }
 
                 long capacityLiters = (long) JsonUtils.getValue(tankNode, TANKER_CAPACITY_ATTRIBUTES, 0);
-
                 if (capacityLiters > 0) {
                     tanker.setCapacity_liters(capacityLiters);
                 }
@@ -83,12 +75,10 @@ public class Utils {
 
                     tanker.setLicense(license);
                 }
-
                 // Agregar al set
                 newTankers.add(tanker);
             }
         }
-
         newTruck.setTankers(newTankers);
         return newTruck;
     }
@@ -112,7 +102,6 @@ public class Utils {
 
             newCustomer.setEmail(email);
         }
-
         return newCustomer;
     }
 
@@ -129,7 +118,6 @@ public class Utils {
         if (product != null && !product.isEmpty()) {
             newProduct.setProduct(product);
         }
-
         return newProduct;
     }
 

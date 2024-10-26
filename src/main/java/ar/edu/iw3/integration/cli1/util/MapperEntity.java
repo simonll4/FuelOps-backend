@@ -1,22 +1,66 @@
-package ar.edu.iw3.integration.cli1.model.business.implementations;
+package ar.edu.iw3.integration.cli1.util;
 
 import ar.edu.iw3.integration.cli1.model.*;
+import ar.edu.iw3.integration.cli1.model.business.implementations.ProductCli1Business;
 import ar.edu.iw3.integration.cli1.model.persistence.*;
 import ar.edu.iw3.model.*;
 import ar.edu.iw3.model.business.exceptions.BusinessException;
+import ar.edu.iw3.model.business.exceptions.NotFoundException;
+import ar.edu.iw3.model.business.implementations.ProductBusiness;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 @Service
 @Slf4j
-public class Mapper {
+public class MapperEntity {
 
     @Autowired
     private TruckCli1Repository truckDAO;
+
+    @Autowired
+    private TankerCli1Repository tankerDAO;
+
+    @Autowired
+    private DriverCli1Repository driverDAO;
+
+    @Autowired
+    private CustomerCli1Repository customerDAO;
+
+    @Autowired
+    private ProductCli1Repository productDAO;
+
+    @Autowired
+    private ProductBusiness productBaseBusiness;
+
+    @Transactional
+    public Product map(ProductCli1 product) throws BusinessException, NotFoundException {
+
+        Optional<ProductCli1> productCli1 = productDAO.findOneByIdCli1(product.getIdCli1());
+        if (productCli1.isPresent()) {
+            //return productCli1Business.load(product.getIdCli1());
+            //return productDAO.findOneByIdCli1(product.getIdCli1()).get();
+            return productCli1.get();
+        }
+
+        Product findProduct;
+        findProduct = productBaseBusiness.load(product.getProduct());
+        try {
+            product.setId(findProduct.getId());
+            product.setProduct(findProduct.getProduct());
+            product.setDescription(findProduct.getDescription());
+            product.setTemperature(findProduct.getTemperature());
+            productDAO.insertProductCli1(findProduct.getId(), product.getIdCli1());
+            return findProduct;
+        } catch (DataIntegrityViolationException e) {
+            throw BusinessException.builder().ex(e).build();
+        }
+
+    }
 
     @Transactional
     public void map(TruckCli1 truckCli1, Truck truck) throws BusinessException {
@@ -30,9 +74,6 @@ public class Mapper {
         }
     }
 
-    @Autowired
-    private TankerCli1Repository tankerDAO;
-
     @Transactional
     public void map(TankerCli1 tankerCli1, Tanker tanker) throws BusinessException {
         if (tankerDAO.findOneByIdCli1(tankerCli1.getIdCli1()).isEmpty()) { // Comprobacion de que no exista el registro
@@ -45,9 +86,6 @@ public class Mapper {
         }
     }
 
-    @Autowired
-    private DriverCli1Repository driverDAO;
-
     @Transactional
     public void map(DriverCli1 driverCli1, Driver driver) throws BusinessException {
         if (driverDAO.findOneByIdCli1(driverCli1.getIdCli1()).isEmpty()) { // Comprobacion de que no exista el registro
@@ -59,9 +97,6 @@ public class Mapper {
             }
         }
     }
-
-    @Autowired
-    private CustomerCli1Repository customerDAO;
 
     @Transactional
     public void map(CustomerCli1 customerCli1, Customer customer) throws BusinessException {

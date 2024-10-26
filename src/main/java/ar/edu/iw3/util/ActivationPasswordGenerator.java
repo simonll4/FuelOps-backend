@@ -3,9 +3,7 @@ package ar.edu.iw3.util;
 import org.passay.CharacterRule;
 import org.passay.EnglishCharacterData;
 import org.passay.PasswordGenerator;
-import org.springframework.stereotype.Component;
 
-@Component
 public class ActivationPasswordGenerator {
 
     public static Integer generateActivationPassword() {

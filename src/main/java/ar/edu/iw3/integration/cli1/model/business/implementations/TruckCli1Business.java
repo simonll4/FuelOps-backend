@@ -6,6 +6,7 @@ import ar.edu.iw3.integration.cli1.model.TruckCli1;
 import ar.edu.iw3.integration.cli1.model.business.interfaces.ITruckCli1Business;
 import ar.edu.iw3.integration.cli1.model.persistence.TruckCli1Repository;
 
+import ar.edu.iw3.integration.cli1.util.MapperEntity;
 import ar.edu.iw3.model.Tanker;
 import ar.edu.iw3.model.Truck;
 import ar.edu.iw3.model.business.exceptions.BusinessException;
@@ -61,14 +62,14 @@ public class TruckCli1Business implements ITruckCli1Business {
     }
 
     @Autowired
-    private Mapper mapper;
+    private MapperEntity mapperEntity;
 
     @Override
     public TruckCli1 add(TruckCli1 truck) throws FoundException, BusinessException {
         // Si se llama desde LoadOrCreate, no se debe lanzar la excepción FoundException
         try {
             Truck baseTruck = baseTruckBusiness.load(truck.getLicensePlate());
-            mapper.map(truck, baseTruck); // si el camion base existe, se mapea el nuevo al existente
+            mapperEntity.map(truck, baseTruck); // si el camion base existe, se mapea el nuevo al existente
             throw FoundException.builder().message("Se encontró el camion id=" + baseTruck.getId()).build();
         } catch (NotFoundException ignored) {
             // log.trace(e.getMessage(), e);
@@ -95,31 +96,26 @@ public class TruckCli1Business implements ITruckCli1Business {
     @Override
     public Truck loadOrCreate(TruckCli1 truck) throws BusinessException, NotFoundException {
 
-
         Optional<Truck> findTruck = Optional.empty();
         try {
             findTruck = Optional.ofNullable(baseTruckBusiness.load(truck.getLicensePlate()));
         } catch (NotFoundException ignored) {
             // If the truck is not found, we create it
         }
-
         if (findTruck.isEmpty()) {
-
             Truck newTruck = new Truck();
             try {
                 newTruck = baseTruckBusiness.load(add(truck).getId());
-
             } catch (FoundException ignored) {
                 // will not happen
             }
-
-
             newTruck.setTankers(baseTruckBusiness.processTankers(truck));
             return newTruck;
         }
 
-        mapper.map(truck, findTruck.get());
+        mapperEntity.map(truck, findTruck.get());
 
+        // todo agregar campo para indentificar que cisternas usa en un momento
         // Si el camion ya existia, pero viene con tanques distintos
         // comprobamos que los tanques del camion existan, en caso de no existir, los agregamos
         for (Tanker tankerCli1 : truck.getTankers()) {
@@ -130,9 +126,6 @@ public class TruckCli1Business implements ITruckCli1Business {
                 // we ignore the exception because its kind a create or check if exists
             }
         }
-
         return findTruck.get();
-
     }
-
 }

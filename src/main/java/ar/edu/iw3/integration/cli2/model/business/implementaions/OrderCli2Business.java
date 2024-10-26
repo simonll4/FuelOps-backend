@@ -18,7 +18,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.io.IOException;
 import java.util.Date;
 import java.util.Optional;
@@ -36,8 +35,6 @@ public class OrderCli2Business implements IOrderCli2Business {
     @Autowired
     private DetailBusiness detailBusiness;
 
-    @Autowired
-    private PdfGenerator pdfGenerator;
 
     @Override
     public Integer registerInitialWeighing(String licensePlate, float initialWeight) throws BusinessException, NotFoundException, FoundException, ConflictException {
@@ -102,7 +99,7 @@ public class OrderCli2Business implements IOrderCli2Business {
         Product product = order.getProduct();
 
         try {
-            return pdfGenerator.generateFuelLoadingReconciliationReport(
+            return PdfGenerator.generateFuelLoadingReconciliationReport(
                     initialWeighing,
                     finalWeight,
                     productLoaded,

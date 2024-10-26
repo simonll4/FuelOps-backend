@@ -13,5 +13,6 @@ public interface IProductCli1Business {
 
     public List<ProductCli1> list() throws BusinessException;
 
-    public Product map(ProductCli1 product) throws BusinessException;
+    public Product load(ProductCli1 product) throws BusinessException, NotFoundException;
+
 }

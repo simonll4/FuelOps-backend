@@ -96,8 +96,6 @@ public class OrderBusiness implements IOrderBusiness {
     @Autowired
     DetailBusiness detailBusiness;
 
-    @Autowired
-    PdfGenerator pdfGenerator;
 
     @Override
     public byte[] generateConciliationPdf(Long idOrder) throws BusinessException, NotFoundException {
@@ -114,7 +112,7 @@ public class OrderBusiness implements IOrderBusiness {
         Product product = orderFound.getProduct();
 
         try {
-            return pdfGenerator.generateFuelLoadingReconciliationReport(initialWeighing, finalWeight, productLoaded, netWeight, difference, avgTemperature, avgDensity, avgFlow, product);
+            return PdfGenerator.generateFuelLoadingReconciliationReport(initialWeighing, finalWeight, productLoaded, netWeight, difference, avgTemperature, avgDensity, avgFlow, product);
         } catch (DocumentException | IOException e) {
             log.error("Error generando el PDF: {}", e.getMessage(), e);
             throw BusinessException.builder().message("Error al generar el reporte PDF").ex(e).build();

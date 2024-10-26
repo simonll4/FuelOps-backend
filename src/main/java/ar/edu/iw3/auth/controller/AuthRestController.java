@@ -51,7 +51,6 @@ public class AuthRestController extends BaseRestController {
         }
 
         // en principal tenemos la version simplificada de User
-        // todo manejar esto en un util JWT
         User user = (User) auth.getPrincipal();
         String token = JWT.create().withSubject(user.getUsername())
                 .withClaim("internalid", user.getId())
@@ -60,7 +59,6 @@ public class AuthRestController extends BaseRestController {
                 .withClaim("version", "1.0.0")
                 .withExpiresAt(new Date(System.currentTimeMillis() + AuthConstants.EXPIRATION_TIME))
                 .sign(Algorithm.HMAC512(AuthConstants.SECRET.getBytes()));
-
         return new ResponseEntity<String>(token, HttpStatus.OK);
     }
 

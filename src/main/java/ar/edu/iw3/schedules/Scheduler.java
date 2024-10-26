@@ -19,12 +19,15 @@ import lombok.extern.slf4j.Slf4j;
 @EnableAsync
 @Slf4j
 public class Scheduler {
+
+    // todo implementar envio de reporte semanal de las ordenes que fueron atentidas
+
     // fixedDelay e initialDelay se miden por defecto en milisegundos, lo varía
     // timeUnit
-    @Scheduled(fixedDelay = 5, initialDelay = 3, timeUnit = TimeUnit.SECONDS)
-    public void schedule1() {
-        log.trace("Evento calendarizado cada 5 segundos, 3 iniciales");
-    }
+//    @Scheduled(fixedDelay = 5, initialDelay = 3, timeUnit = TimeUnit.SECONDS)
+//    public void schedule1() {
+//        log.trace("Evento calendarizado cada 5 segundos, 3 iniciales");
+//    }
 
     /**
      * A cron-like expression, extending the usual UN*X definition to include
@@ -34,24 +37,24 @@ public class Scheduler {
      * The fields read from left to right are interpreted as follows.
      * second / minute / hour / day of month / month / day of week
      */
-    @Scheduled(cron="0 3 10 * * *")
-    public void schedule2() {
-        log.info("Evento calendarizado a las 10:03 AM de cada día");
-    }
+//    @Scheduled(cron="0 3 10 * * *")
+//    public void schedule2() {
+//        log.info("Evento calendarizado a las 10:03 AM de cada día");
+//    }
 
     //@Autowired(required = false)
     //private IProductCli2Business productBusiness;
 
-    @Autowired
-    private EmailBusiness emailBusiness;
-
-    // todo poner nuestro mail
-    @Value("${expired.product.send.to:aca-va-mail}")
-    private String expiredProductSendTo;
+//    @Autowired
+//    private EmailBusiness emailBusiness;
+//
+//    // todo poner nuestro mail
+//    @Value("${expired.product.send.to:aca-va-mail}")
+//    private String expiredProductSendTo;
 
     // @Async
     // @Scheduled(fixedDelayString = "${verify.product.expired:120}", initialDelay = 5, timeUnit = TimeUnit.SECONDS);
-    public void expired() {
+//    public void expired() {
 //        if(productBusiness!=null) {
 //            log.info("Verificando productos expirados...");
 //            Calendar c = Calendar.getInstance();
@@ -76,5 +79,5 @@ public class Scheduler {
 //                log.error("{}.expired() Error: '{}'",this.getClass().getName(),e.getMessage());
 //            }
 //        }
-    }
+//    }
 }
