@@ -12,4 +12,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     Optional<Order> findByActivatePassword(int activatePassword);
 
+    Optional<Order> findByTruck_LicensePlateAndStatus(String licensePlate, Order.Status status);
+
+
 }

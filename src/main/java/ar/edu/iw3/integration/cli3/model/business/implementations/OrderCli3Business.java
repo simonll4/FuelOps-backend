@@ -51,7 +51,7 @@ public class OrderCli3Business implements IOrderCli3Business {
     }
 
     @Override
-    public void receiveDetails(Detail detail) throws NotFoundException, BusinessException, FoundException, UnProcessableException, ConflictException {
+    public Order receiveDetails(Detail detail) throws NotFoundException, BusinessException, FoundException, UnProcessableException, ConflictException {
         Order orderFound = orderBusiness.load(detail.getOrder().getId());
 
         // Validaciones
@@ -83,11 +83,11 @@ public class OrderCli3Business implements IOrderCli3Business {
         orderFound.setLastDensity(detail.getDensity());
         orderFound.setLastTemperature(detail.getTemperature());
         orderFound.setLastFlowRate(detail.getFlowRate());
-        orderBusiness.update(orderFound);
+        return orderBusiness.update(orderFound);
     }
 
     @Override
-    public void closeOrder(Long orderId) throws BusinessException, NotFoundException, ConflictException {
+    public Order closeOrder(Long orderId) throws BusinessException, NotFoundException, ConflictException {
         Optional<Order> order;
         try {
             order = orderDAO.findById(orderId);
@@ -101,7 +101,7 @@ public class OrderCli3Business implements IOrderCli3Business {
         checkOrderStatus(order.get());
         order.get().setStatus(Order.Status.ORDER_CLOSED);
         order.get().setActivatePassword(null);
-        orderDAO.save(order.get());
+        return orderDAO.save(order.get());
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////

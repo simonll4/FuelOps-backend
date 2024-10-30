@@ -1,5 +1,15 @@
 package ar.edu.iw3.integration.cli1.controllers;
 
+import ar.edu.iw3.util.StandartResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.headers.Header;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -17,55 +27,33 @@ import ar.edu.iw3.integration.cli1.model.business.interfaces.IOrderCli1Business;
 
 @RestController
 @RequestMapping(Constants.URL_INTEGRATION_CLI1 + "/orders")
+@Tag(description = "API para Gestionar Ordenes desde Sistema Externo Administracion", name = "Cli1/Order")
 public class OrderCli1RestController extends BaseRestController {
 
     @Autowired
     private IOrderCli1Business orderBusiness;
 
-    // todo se borra?
-    /*@GetMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> list() {
-        try {
-            return new ResponseEntity<>(productBusiness.list(), HttpStatus.OK);
-        } catch (BusinessException e) {
-            return new ResponseEntity<>(response.build(HttpStatus.INTERNAL_SERVER_ERROR, e, e.getMessage()),
-                    HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+    @Operation(
+            operationId = "add-external-order",
+            summary = "Registra orden de carga",
+            description = "Registra los datos de una orden de carga externa.")
 
-    @GetMapping(value = "/{codCli1}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> loadByCode(@PathVariable("codCli1") String codCli1) {
-        try {
-            return new ResponseEntity<>(productBusiness.load(codCli1), HttpStatus.OK);
-        } catch (BusinessException e) {
-            return new ResponseEntity<>(response.build(HttpStatus.INTERNAL_SERVER_ERROR, e, e.getMessage()),
-                    HttpStatus.INTERNAL_SERVER_ERROR);
-        } catch (NotFoundException e) {
-            return new ResponseEntity<>(response.build(HttpStatus.NOT_FOUND, e, e.getMessage()), HttpStatus.NOT_FOUND);
-        }
-    }
-
-    @PostMapping(value = "")
-    public ResponseEntity<?> add(@RequestBody OrderCli1 product) {
-        try {
-            OrderCli1 response = productBusiness.add(product);
-            HttpHeaders responseHeaders = new HttpHeaders();
-            responseHeaders.set("location", Constants.URL_INTEGRATION_CLI1 + "/products/" + response.getCodCli1());
-            return new ResponseEntity<>(responseHeaders, HttpStatus.CREATED);
-        } catch (BusinessException e) {
-            return new ResponseEntity<>(response.build(HttpStatus.INTERNAL_SERVER_ERROR, e, e.getMessage()),
-                    HttpStatus.INTERNAL_SERVER_ERROR);
-        } catch (FoundException e) {
-            return new ResponseEntity<>(response.build(HttpStatus.FOUND, e, e.getMessage()), HttpStatus.FOUND);
-        }
-    }*/
-
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Pesaje registrado exitosamente.", headers = {
+                    @Header(name = "Order-IdCli1", description = "Numero de orden", schema = @Schema(type = "string"))}),
+            @ApiResponse(responseCode = "403", description = "No posee autorización para consumir este servicio", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
+            @ApiResponse(responseCode = "404", description = "No se encuentra la orden para el camion informado", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
+            @ApiResponse(responseCode = "500", description = "Error interno", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
+    })
     @SneakyThrows
     @PostMapping(value = "/b2b")
     public ResponseEntity<?> addExternal(HttpEntity<String> httpEntity) {
         OrderCli1 response = orderBusiness.addExternal(httpEntity.getBody());
         HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.set("location", Constants.URL_INTEGRATION_CLI1 + "/orders/" + response.getOrderNumberCli1());
+        responseHeaders.set("Order-IdCli1", response.getOrderNumberCli1());
         return new ResponseEntity<>(responseHeaders, HttpStatus.CREATED);
     }
 

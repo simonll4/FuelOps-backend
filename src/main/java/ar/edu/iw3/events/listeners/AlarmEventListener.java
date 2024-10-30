@@ -7,7 +7,7 @@ import ar.edu.iw3.model.business.exceptions.BusinessException;
 import ar.edu.iw3.model.business.exceptions.FoundException;
 import ar.edu.iw3.model.business.implementations.AlarmBusiness;
 import ar.edu.iw3.util.EmailBusiness;
-import ar.edu.iw3.websockets.wrappers.Notification;
+import ar.edu.iw3.websockets.wrappers.NotificationWsWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -45,7 +45,7 @@ public class AlarmEventListener implements ApplicationListener<AlarmEvent> {
         Date now = new Date(System.currentTimeMillis());
 
         // Envío de notificación de alerta a clientes (WebSocket)
-        Notification notification = new Notification();
+        NotificationWsWrapper notification = new NotificationWsWrapper();
         notification.setAlertMessage("Temperatura excedida para orden " + detail.getOrder().getId());
         notification.setDetail(detail);
         notification.setTimestamp(now);

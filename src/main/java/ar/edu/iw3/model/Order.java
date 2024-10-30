@@ -1,5 +1,6 @@
 package ar.edu.iw3.model;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
@@ -26,12 +27,12 @@ public class Order {
         REGISTERED_FINAL_WEIGHING
     }
 
+    @Schema(hidden = true)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    // TODO volver a colocar parametros en nullable = false
-
+    @Schema(hidden = true)
     @Enumerated(EnumType.STRING)
     @Column()
     private Status status;

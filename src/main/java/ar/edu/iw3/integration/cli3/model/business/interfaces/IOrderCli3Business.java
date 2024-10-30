@@ -8,7 +8,7 @@ public interface IOrderCli3Business {
 
     public Order validatePassword(int password) throws NotFoundException, BusinessException, ConflictException;
 
-    public void receiveDetails(Detail detail) throws NotFoundException, BusinessException, FoundException, UnProcessableException, ConflictException;
+    public Order receiveDetails(Detail detail) throws NotFoundException, BusinessException, FoundException, UnProcessableException, ConflictException;
 
-    public void closeOrder(Long orderId) throws BusinessException, NotFoundException, ConflictException;
+    public Order closeOrder(Long orderId) throws BusinessException, NotFoundException, ConflictException;
 }
