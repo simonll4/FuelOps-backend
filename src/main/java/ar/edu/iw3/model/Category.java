@@ -1,5 +1,6 @@
 package ar.edu.iw3.model;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -11,6 +12,7 @@ import lombok.*;
 @Setter
 public class Category {
 
+    @Schema(hidden = true)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;

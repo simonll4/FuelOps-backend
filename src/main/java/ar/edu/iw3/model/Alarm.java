@@ -1,6 +1,7 @@
 package ar.edu.iw3.model;
 
 import ar.edu.iw3.auth.User;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,6 +24,7 @@ public class Alarm {
         CONFIRMED_ISSUE, // La alarma ha sido revisada y se ha confirmado que hay un problema.
     }
 
+    @Schema(hidden = true)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;

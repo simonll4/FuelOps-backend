@@ -1,15 +1,12 @@
 package ar.edu.iw3.model;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
 @Table(name = "products")
@@ -20,6 +17,7 @@ import java.util.Set;
 @Setter
 public class Product {
 
+    @Schema(hidden = true)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -30,7 +28,7 @@ public class Product {
 
     private String description;
 
-    private float temperature;
+    private float thresholdTemperature;
 
     @Override
     public String toString() {

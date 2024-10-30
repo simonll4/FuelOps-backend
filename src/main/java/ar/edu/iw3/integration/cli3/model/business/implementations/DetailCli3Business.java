@@ -7,6 +7,7 @@ import ar.edu.iw3.model.business.exceptions.*;
 import ar.edu.iw3.model.business.implementations.DetailBusiness;
 import ar.edu.iw3.model.business.implementations.OrderBusiness;
 import ar.edu.iw3.model.persistence.DetailRepository;
+import ar.edu.iw3.websockets.wrappers.DetailWsWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
@@ -35,6 +36,13 @@ public class DetailCli3Business implements IDetailCli3Business {
         Order orderFound = orderBusiness.load(detail.getOrder().getId());
         Optional<List<Detail>> detailsOptional = detailDAO.findByOrderId(detail.getOrder().getId());
 
+        DetailWsWrapper detailWsWrapper = new DetailWsWrapper();
+        detailWsWrapper.setTimeStamp(detail.getTimeStamp());
+        detailWsWrapper.setAccumulatedMass(detail.getAccumulatedMass());
+        detailWsWrapper.setDensity(detail.getDensity());
+        detailWsWrapper.setTemperature(detail.getTemperature());
+        detailWsWrapper.setFlowRate(detail.getFlowRate());
+
         if ((detailsOptional.isPresent() && !detailsOptional.get().isEmpty())) {
             Date lastTimeStamp = orderFound.getFuelingEndDate();
             if (checkFrequency(currentTime, lastTimeStamp)) {
@@ -43,8 +51,7 @@ public class DetailCli3Business implements IDetailCli3Business {
                 orderFound.setFuelingEndDate(new Date(System.currentTimeMillis()));
                 orderBusiness.update(orderFound);
                 // Envío de detalle de carga a clientes (WebSocket)
-                // todo hacer wrapper para enviar datos
-                wSock.convertAndSend("/topic/details/data", detail);
+                wSock.convertAndSend("/topic/details/data", detailWsWrapper);
             }
         } else {
             detail.setTimeStamp(new Date(currentTime));
@@ -53,7 +60,7 @@ public class DetailCli3Business implements IDetailCli3Business {
             orderFound.setFuelingEndDate(new Date(System.currentTimeMillis()));
             orderBusiness.update(orderFound);
             // Envío de detalle de carga a clientes (WebSocket)
-            wSock.convertAndSend("/topic/details/data", detail);
+            wSock.convertAndSend("/topic/details/data", detailWsWrapper);
         }
     }
 

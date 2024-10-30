@@ -41,6 +41,7 @@ public class SecurityConfiguration {
 //			}
 //		};
 //	}
+
 	@Bean
 	public WebMvcConfigurer corsConfigurer() {
 		return new WebMvcConfigurer() {
@@ -65,7 +66,6 @@ public class SecurityConfiguration {
 
 	@Bean
 	SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-		// CSRF: https://developer.mozilla.org/es/docs/Glossary/CSRF
 		http.csrf(AbstractHttpConfigurer::disable);
 		http.authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.POST, Constants.URL_LOGIN).permitAll()
 				.requestMatchers("/v3/api-docs/**").permitAll().requestMatchers("/swagger-ui.html").permitAll()
