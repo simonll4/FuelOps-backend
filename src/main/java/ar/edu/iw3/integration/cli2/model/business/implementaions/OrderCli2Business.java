@@ -1,12 +1,9 @@
 package ar.edu.iw3.integration.cli2.model.business.implementaions;
 
-import ar.edu.iw3.integration.cli1.model.OrderCli1;
-import ar.edu.iw3.integration.cli1.model.persistence.OrderCli1Repository;
 import ar.edu.iw3.integration.cli2.model.business.interfaces.IOrderCli2Business;
 import ar.edu.iw3.model.Order;
 import ar.edu.iw3.model.Product;
 import ar.edu.iw3.model.business.exceptions.BusinessException;
-import ar.edu.iw3.model.business.exceptions.ConflictException;
 import ar.edu.iw3.model.business.exceptions.FoundException;
 import ar.edu.iw3.model.business.exceptions.NotFoundException;
 import ar.edu.iw3.model.business.implementations.DetailBusiness;
@@ -19,7 +16,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.io.IOException;
 import java.util.Date;
 import java.util.Optional;
@@ -49,7 +45,7 @@ public class OrderCli2Business implements IOrderCli2Business {
             throw BusinessException.builder().ex(e).build();
         }
         if (orderFound.isEmpty()) {
-            throw NotFoundException.builder().message("No se encuentra orden: camion con patente " + licensePlate).build();
+            throw NotFoundException.builder().message("No se encuentra orden para cargar en camion con patente " + licensePlate).build();
         }
         // todo esto se puede sacar
 //        if (orderFound.get().getStatus() != Order.Status.ORDER_RECEIVED) {
@@ -58,7 +54,7 @@ public class OrderCli2Business implements IOrderCli2Business {
 
         int password;
         do {
-            password = ActivationPasswordGenerator.generateActivationPassword();
+            password = Integer.parseInt(ActivationPasswordGenerator.generateActivationPassword());
         } while (orderRepository.findByActivatePassword(password).isPresent());
 
         orderFound.get().setActivatePassword(password);
@@ -70,7 +66,7 @@ public class OrderCli2Business implements IOrderCli2Business {
     }
 
     @Override
-    public byte[] registerFinalWeighing(String licensePlate, float finalWeight) throws BusinessException, NotFoundException, FoundException, ConflictException {
+    public byte[] registerFinalWeighing(String licensePlate, float finalWeight) throws BusinessException, NotFoundException, FoundException {
         Optional<Order> orderFound;
 
         try {

@@ -1,7 +1,6 @@
 package ar.edu.iw3.integration.cli1.util;
 
 import ar.edu.iw3.integration.cli1.model.*;
-import ar.edu.iw3.integration.cli1.model.business.implementations.ProductCli1Business;
 import ar.edu.iw3.integration.cli1.model.persistence.*;
 import ar.edu.iw3.model.*;
 import ar.edu.iw3.model.business.exceptions.BusinessException;
@@ -53,7 +52,7 @@ public class MapperEntity {
             product.setId(findProduct.getId());
             product.setProduct(findProduct.getProduct());
             product.setDescription(findProduct.getDescription());
-            product.setTemperature(findProduct.getTemperature());
+            product.setThresholdTemperature(findProduct.getThresholdTemperature());
             productDAO.insertProductCli1(findProduct.getId(), product.getIdCli1());
             return findProduct;
         } catch (DataIntegrityViolationException e) {

@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationListener;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -45,12 +44,12 @@ public class AlarmEventListener implements ApplicationListener<AlarmEvent> {
         Date now = new Date(System.currentTimeMillis());
 
         // Envío de notificación de alerta a clientes (WebSocket)
-        NotificationWsWrapper notification = new NotificationWsWrapper();
-        notification.setAlertMessage("Temperatura excedida para orden " + detail.getOrder().getId());
-        notification.setDetail(detail);
-        notification.setTimestamp(now);
+        NotificationWsWrapper notificationWsWrapper = new NotificationWsWrapper();
+        notificationWsWrapper.setAlertMessage("Temperatura excedida para orden " + detail.getOrder().getId());
+        notificationWsWrapper.setDetail(detail);
+        notificationWsWrapper.setTimestamp(now);
         try {
-            wSock.convertAndSend("/topic/alarms/data", notification);
+            wSock.convertAndSend("/topic/alarms/data", notificationWsWrapper);
         } catch (Exception e) {
             log.error("Failed to send alert notification", e);
         }

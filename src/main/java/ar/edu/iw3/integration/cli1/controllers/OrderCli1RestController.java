@@ -1,9 +1,8 @@
 package ar.edu.iw3.integration.cli1.controllers;
 
+import ar.edu.iw3.Constants;
 import ar.edu.iw3.util.StandartResponse;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -21,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import ar.edu.iw3.controllers.BaseRestController;
-import ar.edu.iw3.controllers.Constants;
 import ar.edu.iw3.integration.cli1.model.OrderCli1;
 import ar.edu.iw3.integration.cli1.model.business.interfaces.IOrderCli1Business;
 

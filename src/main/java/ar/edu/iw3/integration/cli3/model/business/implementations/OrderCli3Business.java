@@ -66,7 +66,7 @@ public class OrderCli3Business implements IOrderCli3Business {
         }
 
         // Validacion de alarma de temperatura
-        if (detail.getTemperature() > orderFound.getProduct().getTemperature()) {
+        if (detail.getTemperature() > orderFound.getProduct().getThresholdTemperature()) {
             if (orderFound.isAlarmAccepted()) {
                 orderFound.setAlarmAccepted(false);
                 orderBusiness.update(orderFound);
@@ -74,16 +74,18 @@ public class OrderCli3Business implements IOrderCli3Business {
             }
         }
 
-        // Guardado de detalle
-        applicationEventPublisher.publishEvent(new DetailEvent(detail, DetailEvent.TypeEvent.SAVE_DETAIL));
-
         // Actualizacion de cabecera de orden
         orderFound.setLastTimeStamp(new Date(System.currentTimeMillis()));
         orderFound.setLastAccumulatedMass(detail.getAccumulatedMass());
         orderFound.setLastDensity(detail.getDensity());
         orderFound.setLastTemperature(detail.getTemperature());
         orderFound.setLastFlowRate(detail.getFlowRate());
-        return orderBusiness.update(orderFound);
+        orderDAO.save(orderFound);
+
+        // Evento para manejar el almacenamiento de detalle
+        applicationEventPublisher.publishEvent(new DetailEvent(detail, DetailEvent.TypeEvent.SAVE_DETAIL));
+
+        return orderFound;
     }
 
     @Override

@@ -50,7 +50,7 @@ public class PdfGenerator {
         document.add(new Paragraph("Información del Producto Cargado:", FontFactory.getFont(FontFactory.HELVETICA_BOLD, 14)));
         document.add(new Paragraph("Producto: " + product.getProduct()));
         document.add(new Paragraph("Descripción: " + product.getDescription()));
-        document.add(new Paragraph("Temperatura del Producto: " + product.getTemperature() + " °C"));
+        document.add(new Paragraph("Temperatura del Producto: " + product.getThresholdTemperature() + " °C"));
         document.add(new Paragraph(" "));
 
         // Datos de pesaje
