@@ -47,10 +47,6 @@ public class OrderCli2Business implements IOrderCli2Business {
         if (orderFound.isEmpty()) {
             throw NotFoundException.builder().message("No se encuentra orden para cargar en camion con patente " + licensePlate).build();
         }
-        // todo esto se puede sacar
-//        if (orderFound.get().getStatus() != Order.Status.ORDER_RECEIVED) {
-//            throw new ConflictException("Estado de orden no válido");
-//        }
 
         int password;
         do {
@@ -78,10 +74,6 @@ public class OrderCli2Business implements IOrderCli2Business {
         if (orderFound.isEmpty()) {
             throw NotFoundException.builder().message("No se encuentra orden para camion con patente " + licensePlate).build();
         }
-        // todo esto se puede sacar
-//        if (orderFound.get().getStatus() != Order.Status.ORDER_CLOSED) {
-//            throw new ConflictException("Estado de orden no válido");
-//        }
 
         Order order = orderFound.get();
         order.setFinalWeighing(finalWeight);

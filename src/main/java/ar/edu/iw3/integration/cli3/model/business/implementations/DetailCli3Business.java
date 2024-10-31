@@ -69,7 +69,7 @@ public class DetailCli3Business implements IDetailCli3Business {
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // todo dar la posibildidad de cambiar la frecuencia de guardado
-    private static final long SAVE_INTERVAL_MS = 5000; // Frecuencia de guardado (5 segundos)
+    private static final long SAVE_INTERVAL_MS = 5000;
 
     private boolean checkFrequency(long currentTime, Date lastTimeStamp) {
         return currentTime - lastTimeStamp.getTime() >= SAVE_INTERVAL_MS;

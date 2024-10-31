@@ -26,22 +26,6 @@ public class OrderCli1Business implements IOrderCli1Business {
     @Autowired(required = false)
     private OrderCli1Repository orderDAO;
 
-    @Autowired
-    private ICustomerCli1Business customerBusiness;
-
-    @Autowired
-    private ITruckCli1Business truckBusiness;
-
-    @Autowired
-
-    private ITankBusiness tankBusiness;
-
-    @Autowired
-    private IProductCli1Business productBusiness;
-
-    @Autowired
-    private IDriverCli1Business driverBusiness;
-
     @Override
     public OrderCli1 load(String orderNumberCli1) throws NotFoundException, BusinessException {
         Optional<OrderCli1> r;
@@ -92,6 +76,22 @@ public class OrderCli1Business implements IOrderCli1Business {
             throw BusinessException.builder().ex(e).build();
         }
     }
+
+    @Autowired
+    private ICustomerCli1Business customerBusiness;
+
+    @Autowired
+    private ITruckCli1Business truckBusiness;
+
+    @Autowired
+
+    private ITankBusiness tankBusiness;
+
+    @Autowired
+    private IProductCli1Business productBusiness;
+
+    @Autowired
+    private IDriverCli1Business driverBusiness;
 
     @Override
     public OrderCli1 addExternal(String json) throws FoundException, BusinessException {

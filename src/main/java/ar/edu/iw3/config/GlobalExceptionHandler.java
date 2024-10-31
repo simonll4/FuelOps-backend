@@ -1,7 +1,7 @@
-package ar.edu.iw3.model.business.exceptions;
+package ar.edu.iw3.config;
 
+import ar.edu.iw3.model.business.exceptions.*;
 import ar.edu.iw3.util.IStandartResponseBusiness;
-import com.fasterxml.jackson.core.JacksonException;
 import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -11,11 +11,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 

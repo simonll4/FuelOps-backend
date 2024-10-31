@@ -19,11 +19,13 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+@Tag(description = "API para Gestionar Ordenes desde Sistema Externo Balanza", name = "Cli2/Order")
 @RestController
 @RequestMapping(Constants.URL_INTEGRATION_CLI2 + "/orders")
-@Tag(description = "API para Gestionar Ordenes desde Sistema Externo Balanza", name = "Cli2/Order")
+@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLI2')")
 public class OrderCli2RestController {
 
     @Autowired
@@ -38,9 +40,13 @@ public class OrderCli2RestController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Pesaje registrado exitosamente.", headers = {
                     @Header(name = "Order-Id", description = "Numero de orden", schema = @Schema(type = "string"))}),
-            @ApiResponse(responseCode = "403", description = "No posee autorización para consumir este servicio", content = {
+            @ApiResponse(responseCode = "401", description = "Autenticación requerida.", content = {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
-            @ApiResponse(responseCode = "500", description = "Error interno", content = {
+            @ApiResponse(responseCode = "403", description = "Permisos insuficientes para acceder al recurso.", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
+            @ApiResponse(responseCode = "404", description = "Recurso no encontrado.", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
+            @ApiResponse(responseCode = "500", description = "Error interno.", content = {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
     })
     @SneakyThrows

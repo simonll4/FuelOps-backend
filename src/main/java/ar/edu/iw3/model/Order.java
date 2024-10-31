@@ -53,7 +53,6 @@ public class Order {
     @Column()
     private float finalWeighing;
 
-    // todo ver esto si usamos wrappers para poner null
     // Ultimo estado de carga
     @Column()
     private Date lastTimeStamp;

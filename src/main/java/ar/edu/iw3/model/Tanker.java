@@ -33,6 +33,7 @@ public class Tanker {
     @Column(nullable = false)
     private String license ;
 }
+
 // todo forma de cheqear la validez de los datos
 //@NotBlank(message = "El atributo 'patente' es obligatorio")
 //@Pattern(regexp = "[A-Z]{2}[0-9]{3}[A-Z]{2}", message = "El atributo 'patente' tiene un mal formato")

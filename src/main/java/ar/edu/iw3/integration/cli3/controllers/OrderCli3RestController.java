@@ -23,11 +23,13 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+@Tag(description = "API para Gestionar Ordenes desde Sistema Externo de Carga de Combustible", name = "Cli3/Order")
 @RestController
 @RequestMapping(Constants.URL_INTEGRATION_CLI3 + "/orders")
-@Tag(description = "API para Gestionar Ordenes desde Sistema Externo de Carga de Combustible", name = "Cli3/Order")
+@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLI3')")
 public class OrderCli3RestController {
 
     @Autowired
@@ -49,9 +51,11 @@ public class OrderCli3RestController {
                                     }
                                     """))
             }),
-            @ApiResponse(responseCode = "403", description = "No posee autorización para consumir este servicio", content = {
+            @ApiResponse(responseCode = "401", description = "Autenticación requerida.", content = {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
-            @ApiResponse(responseCode = "404", description = "No se encuentra la orden para el identificador informado", content = {
+            @ApiResponse(responseCode = "403", description = "Permisos insuficientes para acceder al recurso.", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
+            @ApiResponse(responseCode = "404", description = "Recurso no encontrado.", content = {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
             @ApiResponse(responseCode = "409", description = "La orden no posse un estado valido.", content = {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),

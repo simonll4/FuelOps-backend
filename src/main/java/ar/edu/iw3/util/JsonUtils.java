@@ -139,7 +139,7 @@ public class JsonUtils {
                         return parsedDate; // Si parsea el default, devolverlo
                     }
                 } catch (ParseException e) {
-                    // TODO Si falla el default, seguir intentando con otros formatos
+                    //  Si falla el default, seguir intentando con otros formatos
                 }
             }
         }

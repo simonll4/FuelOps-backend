@@ -48,7 +48,7 @@ public class Scheduler {
 //    @Autowired
 //    private EmailBusiness emailBusiness;
 //
-//    // todo poner nuestro mail
+//
 //    @Value("${expired.product.send.to:aca-va-mail}")
 //    private String expiredProductSendTo;
 

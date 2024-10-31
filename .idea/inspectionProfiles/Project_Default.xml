@@ -19,6 +19,10 @@
           <option value="Password" />
           <option value="OrderId" />
           <option value="LicensePlate" />
+          <option value="License-Plate" />
+          <option value="Initial-Weight" />
+          <option value="Order-Id" />
+          <option value="Final-Weight" />
         </set>
       </option>
     </inspection_tool>

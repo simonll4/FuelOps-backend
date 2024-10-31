@@ -29,6 +29,7 @@ public class Alarm {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    @Schema(hidden = true)
     @ManyToOne
     @JoinColumn(name = "id_order", nullable = false)
     private Order order;

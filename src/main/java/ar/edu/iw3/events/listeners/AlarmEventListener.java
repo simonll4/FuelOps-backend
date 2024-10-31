@@ -7,7 +7,7 @@ import ar.edu.iw3.model.business.exceptions.BusinessException;
 import ar.edu.iw3.model.business.exceptions.FoundException;
 import ar.edu.iw3.model.business.implementations.AlarmBusiness;
 import ar.edu.iw3.util.EmailBusiness;
-import ar.edu.iw3.websockets.wrappers.NotificationWsWrapper;
+import ar.edu.iw3.websockets.wrappers.AlarmWsWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -44,12 +44,12 @@ public class AlarmEventListener implements ApplicationListener<AlarmEvent> {
         Date now = new Date(System.currentTimeMillis());
 
         // Envío de notificación de alerta a clientes (WebSocket)
-        NotificationWsWrapper notificationWsWrapper = new NotificationWsWrapper();
-        notificationWsWrapper.setAlertMessage("Temperatura excedida para orden " + detail.getOrder().getId());
-        notificationWsWrapper.setDetail(detail);
-        notificationWsWrapper.setTimestamp(now);
+        AlarmWsWrapper alarmWsWrapper = new AlarmWsWrapper();
+        alarmWsWrapper.setAlertMessage("Temperatura excedida para orden " + detail.getOrder().getId());
+        alarmWsWrapper.setDetail(detail);
+        alarmWsWrapper.setTimestamp(now);
         try {
-            wSock.convertAndSend("/topic/alarms/data", notificationWsWrapper);
+            wSock.convertAndSend("/topic/alarms/data", alarmWsWrapper);
         } catch (Exception e) {
             log.error("Failed to send alert notification", e);
         }
