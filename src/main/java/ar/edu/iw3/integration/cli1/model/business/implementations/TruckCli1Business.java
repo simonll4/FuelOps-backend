@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 
 @Service
@@ -60,22 +61,36 @@ public class TruckCli1Business implements ITruckCli1Business {
     private Mapper mapper;
 
     @Override
-    public TruckCli1 add(TruckCli1 truck) throws FoundException, BusinessException {
-        // Si se llama desde LoadOrCreate, no se debe lanzar la excepción FoundException
+    public TruckCli1 add(TruckCli1 truck) throws FoundException, BusinessException, NotFoundException {
+
+        // Si el camion recibido ya existe en la base de datos, se actualiza
+        Optional<TruckCli1> findTruck = truckDAO.findOneByIdCli1(truck.getIdCli1());
+        if (findTruck.isPresent()) {
+            // Actualizamos los valores en caso de cambios
+            findTruck.get().setDescription(truck.getDescription());
+            findTruck.get().setTankers(truck.getTankers());
+
+            // Procesado del cisternado
+            // todo seguir esta parte
+            Set<Tanker> newTankers = baseTruckBusiness.processTankers(findTruck.get());
+            findTruck.get().setTankers(newTankers);
+
+            baseTruckBusiness.update(findTruck.get());
+            return load(truck.getIdCli1());
+        }
+
+        // Si el camion ya existe en base de datos, se mapea
         try {
             Truck baseTruck = baseTruckBusiness.load(truck.getLicensePlate());
+<<<<<<< Updated upstream
             mapper.map(truck, baseTruck); // si el camion base existe, se mapea el nuevo al existente
             throw FoundException.builder().message("Se encontró el camion id=" + baseTruck.getId()).build();
+=======
+            mapperEntity.map(truck, baseTruck);
+            return truck;
+>>>>>>> Stashed changes
         } catch (NotFoundException ignored) {
             // log.trace(e.getMessage(), e);
-        }
-
-        if (truckDAO.findOneByIdCli1(truck.getIdCli1()).isPresent()) {
-            throw FoundException.builder().message("Se encontró el camion idCli1=" + truck.getIdCli1()).build();
-        }
-
-        if (truckDAO.findOneByLicensePlateAndIdCli1Not(truck.getLicensePlate(), truck.getIdCli1()).isPresent()) {
-            throw FoundException.builder().message("Se encontró el camion con la patente " + truck.getLicensePlate()).build();
         }
 
         try {
@@ -88,6 +103,7 @@ public class TruckCli1Business implements ITruckCli1Business {
         }
     }
 
+<<<<<<< Updated upstream
     @Override
     public Truck loadOrCreate(TruckCli1 truck) throws BusinessException, NotFoundException {
 
@@ -126,4 +142,6 @@ public class TruckCli1Business implements ITruckCli1Business {
         return findTruck.get();
 
     }
+=======
+>>>>>>> Stashed changes
 }

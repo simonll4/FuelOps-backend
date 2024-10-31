@@ -54,21 +54,46 @@ public class DriverCli1Business implements IDriverCli1Business {
     private Mapper mapper;
 
     @Override
+<<<<<<< Updated upstream
     public DriverCli1 add(DriverCli1 driver) throws FoundException, BusinessException {
         // Si se llama desde LoadOrCreate, no se debe lanzar la excepción FoundException
         try{
             Driver baseDriver = baseDriverBusiness.load(driver.getDocument());
             mapper.map(driver, baseDriver);
             throw FoundException.builder().message("Se encontró el conductor con id=" + driver.getId()).build();
+=======
+    public DriverCli1 add(DriverCli1 driver) throws FoundException, BusinessException, NotFoundException {
+
+        // Si el conductor recibido ya existe en la base de datos, se actualiza
+        Optional<DriverCli1> findDriver = driverDAO.findOneByIdCli1(driver.getIdCli1());
+        if (findDriver.isPresent()) {
+            // Actualizamos los valores en caso de modificaciones
+            findDriver.get().setName(driver.getName());
+            findDriver.get().setLastName(driver.getLastName());
+            driverBaseBusiness.update(findDriver.get());
+            return load(driver.getIdCli1());
+        }
+
+        // Si el conductor recibido ya existe en la base de datos base, se mapea
+        try {
+            Driver baseDriver = driverBaseBusiness.load(driver.getDocument());
+            mapperEntity.map(driver, baseDriver);
+            return driver;
+>>>>>>> Stashed changes
         } catch (NotFoundException ignored) {
 
         }
 
+<<<<<<< Updated upstream
         if(driverDAO.findOneByIdCli1(driver.getIdCli1()).isPresent()){
             throw FoundException.builder().message("Se encontró el conductor con id=" + driver.getIdCli1()).build();
         }
 
         try{
+=======
+        // En caso de no existir, se agrega
+        try {
+>>>>>>> Stashed changes
             return driverDAO.save(driver);
         } catch (Exception e){
             log.error(e.getMessage(), e);
@@ -76,6 +101,7 @@ public class DriverCli1Business implements IDriverCli1Business {
         }
     }
 
+<<<<<<< Updated upstream
     @Override
     public Driver loadOrCreate(DriverCli1 driver) throws BusinessException, NotFoundException {
         Optional<Driver> findDriver = Optional.empty();
@@ -94,4 +120,6 @@ public class DriverCli1Business implements IDriverCli1Business {
         mapper.map(driver, findDriver.get());
         return findDriver.get();
     }
+=======
+>>>>>>> Stashed changes
 }

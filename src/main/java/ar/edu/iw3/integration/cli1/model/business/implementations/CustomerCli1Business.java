@@ -54,17 +54,41 @@ public class CustomerCli1Business implements ICustomerCli1Business {
     private Mapper mapper;
 
     @Override
+<<<<<<< Updated upstream
     public CustomerCli1 add(CustomerCli1 customer) throws FoundException, BusinessException {
         try {
             Customer baseCustomer = baseCustomerBusiness.load(customer.getBusinessName());
             mapper.map(customer, baseCustomer);
             throw FoundException.builder().message("Se encontró el cliente id=" + customer.getId()).build();
+=======
+    public CustomerCli1 add(CustomerCli1 customer) throws BusinessException, NotFoundException, FoundException {
+
+        // Si el cliente recibido ya existe en la base de datos base, se actualiza
+        Optional<CustomerCli1> findCustomer = customerDAO.findOneByIdCli1(customer.getIdCli1());
+        if (findCustomer.isPresent()) {
+            // Actualizamos los valores en caso de que hayan cambiado
+            findCustomer.get().setBusinessName(customer.getBusinessName());
+            findCustomer.get().setEmail(customer.getEmail());
+            customerBaseBusiness.update(findCustomer.get());
+            return load(customer.getIdCli1());
+        }
+
+        // Si el cliente recibido ya existe en la base de datos base, se mapea
+        try {
+            Customer customerBase = customerBaseBusiness.load(customer.getBusinessName());
+            mapperEntity.map(customer, customerBase);
+            return customer;
+>>>>>>> Stashed changes
         } catch (NotFoundException ignored) {
 
+<<<<<<< Updated upstream
         }
         if (customerDAO.findOneByIdCli1(customer.getIdCli1()).isPresent()) {
             throw FoundException.builder().message("Se encontró el cliente idCli1=" + customer.getIdCli1()).build();
         }
+=======
+        // En caso de no existir, se agrega
+>>>>>>> Stashed changes
         try {
             return customerDAO.save(customer);
         } catch (Exception e) {
@@ -73,6 +97,7 @@ public class CustomerCli1Business implements ICustomerCli1Business {
         }
     }
 
+<<<<<<< Updated upstream
 
     @Override
     public Customer loadOrCreate(CustomerCli1 customer) throws BusinessException, NotFoundException {
@@ -95,4 +120,6 @@ public class CustomerCli1Business implements ICustomerCli1Business {
         return findCustomer.get();
 
     }
+=======
+>>>>>>> Stashed changes
 }
