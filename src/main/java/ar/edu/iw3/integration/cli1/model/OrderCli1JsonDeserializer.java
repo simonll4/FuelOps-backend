@@ -2,6 +2,7 @@ package ar.edu.iw3.integration.cli1.model;
 
 import java.io.Serial;
 import java.util.Date;
+
 import ar.edu.iw3.integration.cli1.model.business.interfaces.ICustomerCli1Business;
 import ar.edu.iw3.integration.cli1.model.business.interfaces.IDriverCli1Business;
 import ar.edu.iw3.integration.cli1.model.business.interfaces.IProductCli1Business;

@@ -1,7 +1,6 @@
 package ar.edu.iw3.auth.custom;
 
 import java.util.Collection;
-
 import org.springframework.security.authentication.AccountExpiredException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
@@ -14,7 +13,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
 import ar.edu.iw3.auth.IUserBusiness;
 import ar.edu.iw3.auth.User;
 import ar.edu.iw3.model.business.exceptions.BusinessException;

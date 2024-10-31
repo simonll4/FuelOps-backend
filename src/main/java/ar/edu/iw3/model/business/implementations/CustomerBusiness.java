@@ -1,7 +1,6 @@
 package ar.edu.iw3.model.business.implementations;
 
 import ar.edu.iw3.model.Customer;
-import ar.edu.iw3.model.Product;
 import ar.edu.iw3.model.business.exceptions.BusinessException;
 import ar.edu.iw3.model.business.exceptions.FoundException;
 import ar.edu.iw3.model.business.exceptions.NotFoundException;
@@ -83,7 +82,7 @@ public class CustomerBusiness implements ICustomerBusiness {
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             //throw BusinessException.builder().ex(e).build();
-            throw BusinessException.builder().message("Error al Crear Nuevo Producto").build();
+            throw BusinessException.builder().message("Error al Crear Nuevo Cliente").build();
         }
     }
 
@@ -107,8 +106,7 @@ public class CustomerBusiness implements ICustomerBusiness {
             return customerDAO.save(customer);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            //throw BusinessException.builder().ex(e).build();
-            throw BusinessException.builder().message("Error al Actualizar Producto").build();
+            throw BusinessException.builder().message("Error al Actualizar Cliente").build();
         }
     }
 

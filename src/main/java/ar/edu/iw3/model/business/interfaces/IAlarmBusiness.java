@@ -17,6 +17,8 @@ public interface IAlarmBusiness {
 
     public Alarm add(Alarm alarm) throws FoundException, BusinessException;
 
+    Alarm update(Alarm alarm) throws NotFoundException, BusinessException;
+
     // public Alarm update(Alarm alarm) throws NotFoundException, BusinessException, FoundException;
 
     //public void delete(Alarm alarm) throws NotFoundException, BusinessException;

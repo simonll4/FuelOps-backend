@@ -21,12 +21,13 @@ public class Driver {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    @Column(length = 100, unique = true, nullable = false)
+    String document;
+
     @Column(nullable = false,length = 100)
     String name;
 
     @Column(nullable = false, length = 100)
     String lastName;
 
-    @Column(length = 100, unique = true, nullable = false)
-    String document;
 }

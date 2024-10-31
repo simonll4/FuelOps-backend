@@ -2,7 +2,6 @@ package ar.edu.iw3.model.business.implementations;
 
 
 import ar.edu.iw3.model.Alarm;
-import ar.edu.iw3.model.Category;
 import ar.edu.iw3.model.business.exceptions.BusinessException;
 import ar.edu.iw3.model.business.exceptions.FoundException;
 import ar.edu.iw3.model.business.exceptions.NotFoundException;
@@ -53,17 +52,28 @@ public class AlarmBusiness implements IAlarmBusiness {
 
         try {
             load(alarm.getId());
-            throw FoundException.builder().message("Ya existe la Categoria id = " + alarm.getId()).build();
+            throw FoundException.builder().message("Ya existe la Alarma id = " + alarm.getId()).build();
         } catch (NotFoundException e) {
             // log.trace(e.getMessage(), e);
         }
         try {
             load(alarm.getId());
-            throw FoundException.builder().message("Ya existe la Cateogoria = " + alarm.getId()).build();
+            throw FoundException.builder().message("Ya existe la Alarma = " + alarm.getId()).build();
         } catch (NotFoundException e) {
             // log.trace(e.getMessage(), e);
 
         }
+        try {
+            return alarmDAO.save(alarm);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            throw BusinessException.builder().ex(e).build();
+        }
+    }
+
+    @Override
+    public Alarm update(Alarm alarm) throws NotFoundException, BusinessException {
+        load(alarm.getId());
         try {
             return alarmDAO.save(alarm);
         } catch (Exception e) {

@@ -29,7 +29,7 @@ public class Detail {
     @JsonIgnoreProperties("details")
     private Order order;
 
-    // todo @Column(nullable = false)
+    @Column(nullable = false)
     private Date timeStamp;
 
     @Column(nullable = false)

@@ -8,7 +8,8 @@ import java.util.Date;
 
 @Getter
 @Setter
-public class NotificationWsWrapper {
+public class AlarmWsWrapper {
+    private long id;
     private String alertMessage;
     private Detail detail;
     private Date timestamp;

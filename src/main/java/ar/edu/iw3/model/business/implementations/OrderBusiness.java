@@ -1,8 +1,12 @@
 package ar.edu.iw3.model.business.implementations;
 
+import ar.edu.iw3.auth.IUserBusiness;
+import ar.edu.iw3.auth.User;
+import ar.edu.iw3.model.Alarm;
 import ar.edu.iw3.model.Order;
 import ar.edu.iw3.model.Product;
 import ar.edu.iw3.model.business.exceptions.BusinessException;
+import ar.edu.iw3.model.business.exceptions.ConflictException;
 import ar.edu.iw3.model.business.exceptions.FoundException;
 import ar.edu.iw3.model.business.exceptions.NotFoundException;
 import ar.edu.iw3.model.business.interfaces.IOrderBusiness;
@@ -12,7 +16,6 @@ import com.itextpdf.text.DocumentException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.io.IOException;
 import java.util.*;
 
@@ -22,6 +25,12 @@ public class OrderBusiness implements IOrderBusiness {
 
     @Autowired
     private OrderRepository orderDAO;
+
+    @Autowired
+    DetailBusiness detailBusiness;
+
+    @Autowired
+    AlarmBusiness alarmBusiness;
 
     @Override
     public List<Order> list() throws BusinessException {
@@ -66,7 +75,7 @@ public class OrderBusiness implements IOrderBusiness {
     }
 
     @Override
-    public Order update(Order order) throws NotFoundException, BusinessException, FoundException {
+    public Order update(Order order) throws NotFoundException, BusinessException {
         load(order.getId());
         try {
             return orderDAO.save(order);
@@ -94,8 +103,45 @@ public class OrderBusiness implements IOrderBusiness {
     }
 
     @Autowired
-    DetailBusiness detailBusiness;
+    IUserBusiness userBusiness;
 
+    @Override
+    public Order acknowledgeAlarm(Long idAlarm, User user) throws BusinessException, NotFoundException, ConflictException {
+        Alarm alarmFound = alarmBusiness.load(idAlarm);
+        Order orderFound = load(alarmFound.getOrder().getId());
+        User userFound = userBusiness.load(user.getUsername());
+
+        if (orderFound.isAlarmAccepted()) {
+            throw ConflictException.builder().message("La alarma ya fue aceptada").build();
+        }
+        if (orderFound.getStatus() != Order.Status.REGISTERED_INITIAL_WEIGHING) {
+            throw ConflictException.builder().message("La orden no se encuentra en estado de carga").build();
+        }
+        alarmFound.setStatus(Alarm.Status.ACKNOWLEDGED);
+        alarmFound.setUser(userFound);
+        alarmBusiness.update(alarmFound);
+        orderFound.setAlarmAccepted(true);
+        return update(orderFound);
+    }
+
+    @Override
+    public Order confirmIssueAlarm(Long idAlarm, User user) throws BusinessException, NotFoundException, ConflictException {
+        Alarm alarmFound = alarmBusiness.load(idAlarm);
+        Order orderFound = load(alarmFound.getOrder().getId());
+        User userFound = userBusiness.load(user.getUsername());
+
+        if (orderFound.isAlarmAccepted()) {
+            throw ConflictException.builder().message("La alarma ya fue aceptada").build();
+        }
+        if (orderFound.getStatus() != Order.Status.REGISTERED_INITIAL_WEIGHING) {
+            throw ConflictException.builder().message("La orden no se encuentra en estado de carga").build();
+        }
+        alarmFound.setStatus(Alarm.Status.CONFIRMED_ISSUE);
+        alarmFound.setUser(userFound);
+        alarmBusiness.update(alarmFound);
+        orderFound.setAlarmAccepted(true);
+        return update(orderFound);
+    }
 
     @Override
     public byte[] generateConciliationPdf(Long idOrder) throws BusinessException, NotFoundException {
@@ -133,6 +179,7 @@ public class OrderBusiness implements IOrderBusiness {
         float avgFlow = detailBusiness.calculateAverageFlowRate(orderFound.getId());
         Product product = orderFound.getProduct();
 
+        // todo revisar este json si cumple con la consigna
         Map<String, Object> conciliationData = new HashMap<>();
         conciliationData.put("initialWeighing", initialWeighing);
         conciliationData.put("finalWeighing", finalWeight);

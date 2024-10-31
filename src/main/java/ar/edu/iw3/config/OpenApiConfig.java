@@ -1,4 +1,4 @@
-package ar.edu.iw3;
+package ar.edu.iw3.config;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;

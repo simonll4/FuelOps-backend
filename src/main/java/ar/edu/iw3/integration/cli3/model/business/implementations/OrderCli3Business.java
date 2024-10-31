@@ -33,7 +33,6 @@ public class OrderCli3Business implements IOrderCli3Business {
     public Order validatePassword(int password) throws NotFoundException, BusinessException, ConflictException {
         Optional<Order> order;
 
-        // Lógica para validar la contraseña de activación
         try {
             order = orderDAO.findByActivatePassword(password);
         } catch (Exception e) {
@@ -44,8 +43,6 @@ public class OrderCli3Business implements IOrderCli3Business {
         if (order.isEmpty()) {
             throw new NotFoundException("Orden no econtrada");
         }
-
-        // si la orden no esta en estado PESAJE_INICIAL_REGISTRADO rechazar la activación
         checkOrderStatus(order.get());
         return order.get();
     }
@@ -69,7 +66,7 @@ public class OrderCli3Business implements IOrderCli3Business {
         if (detail.getTemperature() > orderFound.getProduct().getThresholdTemperature()) {
             if (orderFound.isAlarmAccepted()) {
                 orderFound.setAlarmAccepted(false);
-                orderBusiness.update(orderFound);
+                //orderBusiness.update(orderFound);
                 applicationEventPublisher.publishEvent(new AlarmEvent(detail, AlarmEvent.TypeEvent.TEMPERATURE_EXCEEDED));
             }
         }
