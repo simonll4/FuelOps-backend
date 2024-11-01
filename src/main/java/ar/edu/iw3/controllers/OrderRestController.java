@@ -2,6 +2,7 @@ package ar.edu.iw3.controllers;
 
 import ar.edu.iw3.Constants;
 import ar.edu.iw3.auth.User;
+import ar.edu.iw3.model.Alarm;
 import ar.edu.iw3.model.Order;
 import ar.edu.iw3.model.business.interfaces.IOrderBusiness;
 import ar.edu.iw3.util.StandartResponse;
@@ -77,7 +78,7 @@ public class OrderRestController extends BaseRestController {
     @SneakyThrows
     @GetMapping("/conciliation")
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')  or hasRole('ROLE_CLI1') or hasRole('ROLE_CLI2') or hasRole('ROLE_CLI3')")
-    public ResponseEntity<?> registerFinalWeighing(@RequestParam("idOrder") Long idOrder,
+    public ResponseEntity<?> registerFinalWeighing(@RequestParam("idOrder") Long idOrder, // todo cambiar a @PathVariable
                                                    @RequestHeader(value = HttpHeaders.ACCEPT,
                                                            defaultValue = MediaType.APPLICATION_JSON_VALUE)
                                                    String acceptHeader) {
@@ -95,23 +96,25 @@ public class OrderRestController extends BaseRestController {
     }
 
 
+    //todo armar doc
     @SneakyThrows
     @PostMapping("/acknowledge-alarm")
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
-    public ResponseEntity<?> acknowledgeAlarm(@RequestParam("idAlarm") Long idAlarm) {
+    public ResponseEntity<?> acknowledgeAlarm(@RequestBody Alarm alarm) {
         User user = getUserLogged();
-        Order order = orderBusiness.acknowledgeAlarm(idAlarm, user);
+        Order order = orderBusiness.acknowledgeAlarm(alarm, user);
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set("Location", Constants.URL_ORDERS + "/orders/acknowledge-alarm/" + order.getId());
         return new ResponseEntity<>(responseHeaders, HttpStatus.CREATED);
     }
 
+    // todo armar doc
     @SneakyThrows
     @PostMapping("/issue-alarm")
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
-    public ResponseEntity<?> confirmIssueAlarm(@RequestParam("idAlarm") Long idAlarm) {
+    public ResponseEntity<?> confirmIssueAlarm(@RequestBody Alarm alarm) {
         User user = getUserLogged();
-        Order order = orderBusiness.confirmIssueAlarm(idAlarm, user);
+        Order order = orderBusiness.confirmIssueAlarm(alarm, user);
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set("Location", Constants.URL_ORDERS + "/orders/issue-alarm/" + order.getId());
         return new ResponseEntity<>(responseHeaders, HttpStatus.CREATED);

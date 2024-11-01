@@ -1,6 +1,7 @@
 package ar.edu.iw3.model.business.interfaces;
 
 import ar.edu.iw3.auth.User;
+import ar.edu.iw3.model.Alarm;
 import ar.edu.iw3.model.Order;
 import ar.edu.iw3.model.business.exceptions.BusinessException;
 import ar.edu.iw3.model.business.exceptions.ConflictException;
@@ -24,9 +25,9 @@ public interface IOrderBusiness {
 
     public void delete(long id) throws NotFoundException, BusinessException;
 
-    public Order acknowledgeAlarm(Long idAlarm, User user) throws BusinessException, NotFoundException, ConflictException;
+    public Order acknowledgeAlarm(Alarm alarm, User user) throws BusinessException, NotFoundException, ConflictException;
 
-    public Order confirmIssueAlarm(Long idAlarm, User user) throws BusinessException, NotFoundException, ConflictException;
+    public Order confirmIssueAlarm(Alarm alarm, User user) throws BusinessException, NotFoundException, ConflictException;
 
     public byte[] generateConciliationPdf(Long orderNumber) throws BusinessException, NotFoundException;
 

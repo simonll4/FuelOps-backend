@@ -30,6 +30,9 @@ public class Product {
 
     private float thresholdTemperature;
 
+    @Column(columnDefinition = "tinyint default 1")
+    private boolean stock = true;
+
     @Override
     public String toString() {
         return String.format("id=%s, product=%s, descripcion=%s", this.getId(), this.getProduct(), this.getDescription());

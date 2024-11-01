@@ -48,7 +48,7 @@ public class OrderCli3Business implements IOrderCli3Business {
     }
 
     @Override
-    public Order receiveDetails(Detail detail) throws NotFoundException, BusinessException, FoundException, UnProcessableException, ConflictException {
+    public Order receiveDetails(Detail detail) throws NotFoundException, BusinessException, UnProcessableException, ConflictException {
         Order orderFound = orderBusiness.load(detail.getOrder().getId());
 
         // Validaciones

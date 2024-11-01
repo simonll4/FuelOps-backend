@@ -16,6 +16,7 @@ import com.itextpdf.text.DocumentException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.io.IOException;
 import java.util.*;
 
@@ -105,36 +106,44 @@ public class OrderBusiness implements IOrderBusiness {
     @Autowired
     IUserBusiness userBusiness;
 
+    // todo reutilizar codigo entre este metodo y el de abajo
     @Override
-    public Order acknowledgeAlarm(Long idAlarm, User user) throws BusinessException, NotFoundException, ConflictException {
-        Alarm alarmFound = alarmBusiness.load(idAlarm);
+    public Order acknowledgeAlarm(Alarm alarm, User user) throws BusinessException, NotFoundException, ConflictException {
+        Alarm alarmFound = alarmBusiness.load(alarm.getId());
         Order orderFound = load(alarmFound.getOrder().getId());
         User userFound = userBusiness.load(user.getUsername());
 
-        if (orderFound.isAlarmAccepted()) {
-            throw ConflictException.builder().message("La alarma ya fue aceptada").build();
+        if (alarmFound.getStatus() != Alarm.Status.PENDING_REVIEW) {
+            throw ConflictException.builder().message("La alarma ya fue manejada").build();
         }
         if (orderFound.getStatus() != Order.Status.REGISTERED_INITIAL_WEIGHING) {
             throw ConflictException.builder().message("La orden no se encuentra en estado de carga").build();
         }
+        if (!(alarm.getObservation() == null || alarm.getObservation().isEmpty())) {
+            alarmFound.setObservation(alarm.getObservation());
+        }
         alarmFound.setStatus(Alarm.Status.ACKNOWLEDGED);
         alarmFound.setUser(userFound);
         alarmBusiness.update(alarmFound);
+        // todo hay veces que el cuando se guardan los ultimos detalles pisan a este valor con el viejo y no se actualiza
         orderFound.setAlarmAccepted(true);
         return update(orderFound);
     }
 
     @Override
-    public Order confirmIssueAlarm(Long idAlarm, User user) throws BusinessException, NotFoundException, ConflictException {
-        Alarm alarmFound = alarmBusiness.load(idAlarm);
+    public Order confirmIssueAlarm(Alarm alarm, User user) throws BusinessException, NotFoundException, ConflictException {
+        Alarm alarmFound = alarmBusiness.load(alarm.getId());
         Order orderFound = load(alarmFound.getOrder().getId());
         User userFound = userBusiness.load(user.getUsername());
 
-        if (orderFound.isAlarmAccepted()) {
-            throw ConflictException.builder().message("La alarma ya fue aceptada").build();
+        if (alarmFound.getStatus() != Alarm.Status.PENDING_REVIEW) {
+            throw ConflictException.builder().message("La alarma ya fue manejada").build();
         }
         if (orderFound.getStatus() != Order.Status.REGISTERED_INITIAL_WEIGHING) {
             throw ConflictException.builder().message("La orden no se encuentra en estado de carga").build();
+        }
+        if (!(alarm.getObservation() == null || alarm.getObservation().isEmpty())) {
+            alarmFound.setObservation(alarm.getObservation());
         }
         alarmFound.setStatus(Alarm.Status.CONFIRMED_ISSUE);
         alarmFound.setUser(userFound);

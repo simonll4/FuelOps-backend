@@ -48,7 +48,6 @@ public class ProductCli1Business implements IProductCli1Business {
         return mapperEntity.map(product);
     }
 
-    // todo pa que se usa este?
     @Override
     public List<ProductCli1> list() throws BusinessException {
         try {

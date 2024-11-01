@@ -1,6 +1,6 @@
 package ar.edu.iw3.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -24,7 +24,7 @@ public class Tanker {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_truck", nullable = false)
-    @JsonIgnoreProperties("tanks")
+    @JsonIgnore
     private Truck truck;
 
     @Column(nullable = false)

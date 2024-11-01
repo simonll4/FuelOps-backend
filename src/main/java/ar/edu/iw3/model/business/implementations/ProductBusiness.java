@@ -18,7 +18,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ProductBusiness implements IProductBusiness {
 
-    // IoC
     @Autowired
     private ProductRepository productDAO;
 
