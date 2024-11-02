@@ -14,12 +14,6 @@ public interface ICustomerCli1Business {
 
     public List<CustomerCli1> list() throws BusinessException;
 
-<<<<<<< Updated upstream
-    public CustomerCli1 add(CustomerCli1 customer) throws FoundException, BusinessException;
-
-    public Customer loadOrCreate(CustomerCli1 customer) throws BusinessException, NotFoundException;
-=======
     public CustomerCli1 add(CustomerCli1 customer) throws FoundException, BusinessException, NotFoundException;
 
->>>>>>> Stashed changes
 }

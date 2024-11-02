@@ -1,9 +1,9 @@
 package ar.edu.iw3.integration.cli1.model.business.implementations;
 
-import ar.edu.iw3.integration.cli1.model.DriverCli1;
 import ar.edu.iw3.integration.cli1.model.TankerCli1;
 import ar.edu.iw3.integration.cli1.model.business.interfaces.ITankerCli1Business;
 import ar.edu.iw3.integration.cli1.model.persistence.TankerCli1Repository;
+import ar.edu.iw3.integration.cli1.util.MapperEntity;
 import ar.edu.iw3.model.Tanker;
 import ar.edu.iw3.model.business.exceptions.BusinessException;
 import ar.edu.iw3.model.business.exceptions.FoundException;
@@ -52,13 +52,13 @@ public class TankerCli1Business implements ITankerCli1Business {
     private TankerBusiness baseTankerBusiness;
 
     @Autowired
-    private Mapper mapper;
+    private MapperEntity mapperEntity;
 
     @Override
     public TankerCli1 add(TankerCli1 tanker) throws FoundException, BusinessException {
         try {
             Tanker baseTanker = baseTankerBusiness.load(tanker.getLicense());
-            mapper.map(tanker, baseTanker);
+            mapperEntity.map(tanker, baseTanker);
             throw FoundException.builder().message("Se encontró el cisterna con id=" + tanker.getId()).build();
         } catch (NotFoundException ignored) {
 
@@ -75,4 +75,3 @@ public class TankerCli1Business implements ITankerCli1Business {
         }
     }
 }
-// TODO Revisar que anden los mapper

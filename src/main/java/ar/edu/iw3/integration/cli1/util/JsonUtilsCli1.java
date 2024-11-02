@@ -92,7 +92,7 @@ public class JsonUtilsCli1 {
                 }
             }
             if (productName != null) {
-                return productCli1Business.load(BuildEntityUtils.buildProduct(productNode)); // Cargar el producto desde el business
+                return productCli1Business.map(BuildEntityUtils.buildProduct(productNode)); // Cargar el producto desde el business
             }
         }
         return null;

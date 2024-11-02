@@ -7,9 +7,8 @@ import ar.edu.iw3.integration.cli1.model.business.interfaces.ICustomerCli1Busine
 import ar.edu.iw3.integration.cli1.model.business.interfaces.IDriverCli1Business;
 import ar.edu.iw3.integration.cli1.model.business.interfaces.IProductCli1Business;
 import ar.edu.iw3.integration.cli1.model.business.interfaces.ITruckCli1Business;
-import ar.edu.iw3.integration.cli1.util.Utils;
+import ar.edu.iw3.integration.cli1.util.JsonUtilsCli1;
 import ar.edu.iw3.model.*;
-import ar.edu.iw3.model.business.exceptions.BusinessException;
 import ar.edu.iw3.model.business.interfaces.*;
 import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.core.JsonParser;
@@ -18,8 +17,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 
 import ar.edu.iw3.util.JsonUtils;
+import lombok.SneakyThrows;
 
-import static ar.edu.iw3.util.JsonAttributeConstants.*;
+import static ar.edu.iw3.integration.cli1.util.JsonAttributeConstants.*;
 
 public class OrderCli1JsonDeserializer extends StdDeserializer<OrderCli1> {
 
@@ -45,39 +45,34 @@ public class OrderCli1JsonDeserializer extends StdDeserializer<OrderCli1> {
         this.tankBusiness = tankBusiness;
     }
 
+
+    @SneakyThrows
     @Override
-    public OrderCli1 deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JacksonException {
+    public OrderCli1 deserialize(JsonParser jp, DeserializationContext ctxt) {
 
         OrderCli1 r = new OrderCli1();
         JsonNode node = jp.getCodec().readTree(jp);
 
+        float preset = JsonUtils.getValue(node, ORDER_PRESET_ATTRIBUTES, 0);
         String orderNumber = JsonUtils.getString(node, ORDER_NUMBER_ATTRIBUTES, "");
         Date estimatedTime = JsonUtils.getDate(node, ORDER_ESTIMATED_DATE_ATTRIBUTES, String.valueOf(new Date()));
-        float preset = JsonUtils.getValue(node, ORDER_PRESET_ATTRIBUTES, 0);
+        Driver driver = JsonUtilsCli1.getDriver(node, DRIVER_DOCUMENT_ATTRIBUTES, driverBusiness);
+        Truck truck = (JsonUtilsCli1.getTruck(node, TRUCK_LICENSE_PLATE_ATTRIBUTES, truckBusiness, tankBusiness));
+        Customer customer = (JsonUtilsCli1.getCustomer(node, CUSTOMER_NAME_ATTRIBUTES, customerBusiness));
+        Product product = JsonUtilsCli1.getProduct(node, PRODUCT_NAME_ATTRIBUTES, productBusiness);
 
         r.setOrderNumberCli1(orderNumber);
         r.setEstimatedTime(estimatedTime);
+        r.setExternalReceptionDate(new Date(System.currentTimeMillis()));
         r.setPreset(preset);
-
-        Driver driver = JsonUtils.getDriver(node, DRIVER_DOCUMENT_ATTRIBUTES, driverBusiness);
-
-        Truck truck = (JsonUtils.getTruck(node, TRUCK_LICENSE_PLATE_ATTRIBUTES, truckBusiness, tankBusiness));
-
-        Customer customer = (JsonUtils.getCustomer(node,CUSTOMER_NAME_ATTRIBUTES, customerBusiness));
-
-        Product product = JsonUtils.getProduct(node, PRODUCT_NAME_ATTRIBUTES, productBusiness);
-
         if (product != null && customer != null && truck != null && driver != null) {
             r.setCustomer(customer);
             r.setDriver(driver);
             r.setProduct(product);
             r.setTruck(truck);
         }
-
         r.setAlarmAccepted(true);
         r.setStatus(Order.Status.ORDER_RECEIVED);
-
         return r;
-
     }
 }

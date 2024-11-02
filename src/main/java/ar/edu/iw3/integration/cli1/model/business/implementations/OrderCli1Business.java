@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import ar.edu.iw3.integration.cli1.model.business.interfaces.*;
+import ar.edu.iw3.model.Order;
 import ar.edu.iw3.model.business.interfaces.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,8 @@ import ar.edu.iw3.model.business.exceptions.FoundException;
 import ar.edu.iw3.model.business.exceptions.NotFoundException;
 import ar.edu.iw3.util.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
+
+import static ar.edu.iw3.model.Order.Status.ORDER_CANCELLED;
 
 @Service
 @Slf4j
@@ -106,5 +109,20 @@ public class OrderCli1Business implements IOrderCli1Business {
             throw BusinessException.builder().ex(e).build();
         }
         return add(order);
+    }
+
+    @Override
+    public OrderCli1 cancelExternal(String orderNumberCli1) throws BusinessException {
+        Optional<OrderCli1> order = orderDAO.findOneByOrderNumberCli1(orderNumberCli1);
+        if(order.isPresent() && order.get().getStatus().equals(Order.Status.ORDER_RECEIVED)) {
+            order.get().setStatus(ORDER_CANCELLED);
+            orderDAO.save(order.get());
+            return order.get();
+        }
+        else if (order.isEmpty()){
+            throw new BusinessException("No se encuentra la orden orderNumberCli1=" + orderNumberCli1);
+        }
+
+        throw new BusinessException("No se puede cancelar la orden, estado actual: " + order.get().getStatus());
     }
 }

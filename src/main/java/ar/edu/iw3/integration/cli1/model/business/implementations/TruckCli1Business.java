@@ -1,9 +1,9 @@
 package ar.edu.iw3.integration.cli1.model.business.implementations;
 
-import ar.edu.iw3.integration.cli1.model.TankerCli1;
 import ar.edu.iw3.integration.cli1.model.TruckCli1;
 import ar.edu.iw3.integration.cli1.model.business.interfaces.ITruckCli1Business;
 import ar.edu.iw3.integration.cli1.model.persistence.TruckCli1Repository;
+import ar.edu.iw3.integration.cli1.util.MapperEntity;
 import ar.edu.iw3.model.Tanker;
 import ar.edu.iw3.model.Truck;
 import ar.edu.iw3.model.business.exceptions.BusinessException;
@@ -58,7 +58,7 @@ public class TruckCli1Business implements ITruckCli1Business {
     }
 
     @Autowired
-    private Mapper mapper;
+    private MapperEntity mapperEntity;
 
     @Override
     public TruckCli1 add(TruckCli1 truck) throws FoundException, BusinessException, NotFoundException {
@@ -71,7 +71,6 @@ public class TruckCli1Business implements ITruckCli1Business {
             findTruck.get().setTankers(truck.getTankers());
 
             // Procesado del cisternado
-            // todo seguir esta parte
             Set<Tanker> newTankers = baseTruckBusiness.processTankers(findTruck.get());
             findTruck.get().setTankers(newTankers);
 
@@ -82,13 +81,8 @@ public class TruckCli1Business implements ITruckCli1Business {
         // Si el camion ya existe en base de datos, se mapea
         try {
             Truck baseTruck = baseTruckBusiness.load(truck.getLicensePlate());
-<<<<<<< Updated upstream
-            mapper.map(truck, baseTruck); // si el camion base existe, se mapea el nuevo al existente
-            throw FoundException.builder().message("Se encontró el camion id=" + baseTruck.getId()).build();
-=======
             mapperEntity.map(truck, baseTruck);
             return truck;
->>>>>>> Stashed changes
         } catch (NotFoundException ignored) {
             // log.trace(e.getMessage(), e);
         }
@@ -102,46 +96,4 @@ public class TruckCli1Business implements ITruckCli1Business {
             throw BusinessException.builder().ex(e).build();
         }
     }
-
-<<<<<<< Updated upstream
-    @Override
-    public Truck loadOrCreate(TruckCli1 truck) throws BusinessException, NotFoundException {
-
-        Optional<Truck> findTruck = Optional.empty();
-        try {
-            findTruck = Optional.ofNullable(baseTruckBusiness.load(truck.getLicensePlate()));
-        } catch (NotFoundException ignored) {
-            // If the truck is not found, we create it
-        }
-
-        if (findTruck.isEmpty()) {
-            Truck newTruck = new Truck();
-            try {
-                newTruck = baseTruckBusiness.load(add(truck).getId());
-            } catch (FoundException ignored) {
-                // will not happen
-            }
-
-            newTruck.setTankers(baseTruckBusiness.processTankers(truck));
-            return newTruck;
-        }
-
-        mapper.map(truck, findTruck.get());
-
-        // Si el camion ya existia, pero viene con tanques distintos
-        // comprobamos que los tanques del camion existan, en caso de no existir, los agregamos
-        for (Tanker tankerCli1 : truck.getTankers()) {
-            try {
-                tankerCli1.setTruck(findTruck.get());
-                tankerCli1Business.add((TankerCli1) tankerCli1);
-            } catch (FoundException ignored) {
-                // we ignore the exception because its kind a create or check if exists
-            }
-        }
-
-        return findTruck.get();
-
-    }
-=======
->>>>>>> Stashed changes
 }

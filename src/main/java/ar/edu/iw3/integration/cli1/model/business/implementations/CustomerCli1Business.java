@@ -3,6 +3,7 @@ package ar.edu.iw3.integration.cli1.model.business.implementations;
 import ar.edu.iw3.integration.cli1.model.CustomerCli1;
 import ar.edu.iw3.integration.cli1.model.business.interfaces.ICustomerCli1Business;
 import ar.edu.iw3.integration.cli1.model.persistence.CustomerCli1Repository;
+import ar.edu.iw3.integration.cli1.util.MapperEntity;
 import ar.edu.iw3.model.Customer;
 import ar.edu.iw3.model.business.exceptions.BusinessException;
 import ar.edu.iw3.model.business.exceptions.FoundException;
@@ -48,19 +49,12 @@ public class CustomerCli1Business implements ICustomerCli1Business {
     }
 
     @Autowired
-    private ICustomerBusiness baseCustomerBusiness;
+    private ICustomerBusiness customerBaseBusiness;
 
     @Autowired
-    private Mapper mapper;
+    private MapperEntity mapperEntity;
 
     @Override
-<<<<<<< Updated upstream
-    public CustomerCli1 add(CustomerCli1 customer) throws FoundException, BusinessException {
-        try {
-            Customer baseCustomer = baseCustomerBusiness.load(customer.getBusinessName());
-            mapper.map(customer, baseCustomer);
-            throw FoundException.builder().message("Se encontró el cliente id=" + customer.getId()).build();
-=======
     public CustomerCli1 add(CustomerCli1 customer) throws BusinessException, NotFoundException, FoundException {
 
         // Si el cliente recibido ya existe en la base de datos base, se actualiza
@@ -78,17 +72,13 @@ public class CustomerCli1Business implements ICustomerCli1Business {
             Customer customerBase = customerBaseBusiness.load(customer.getBusinessName());
             mapperEntity.map(customer, customerBase);
             return customer;
->>>>>>> Stashed changes
+
         } catch (NotFoundException ignored) {
 
-<<<<<<< Updated upstream
+
         }
-        if (customerDAO.findOneByIdCli1(customer.getIdCli1()).isPresent()) {
-            throw FoundException.builder().message("Se encontró el cliente idCli1=" + customer.getIdCli1()).build();
-        }
-=======
+
         // En caso de no existir, se agrega
->>>>>>> Stashed changes
         try {
             return customerDAO.save(customer);
         } catch (Exception e) {
@@ -96,30 +86,4 @@ public class CustomerCli1Business implements ICustomerCli1Business {
             throw BusinessException.builder().ex(e).build();
         }
     }
-
-<<<<<<< Updated upstream
-
-    @Override
-    public Customer loadOrCreate(CustomerCli1 customer) throws BusinessException, NotFoundException {
-        Optional<Customer> findCustomer = Optional.empty();
-        try {
-            findCustomer = Optional.ofNullable(baseCustomerBusiness.load(customer.getBusinessName()));
-
-        } catch (NotFoundException ignored) {
-            // If the customer is not found, we create it
-        }
-
-        if (findCustomer.isEmpty()) {
-            try {
-                return baseCustomerBusiness.load(add(customer).getId());
-            } catch (FoundException ignored) {
-                // will not happen
-            }
-        }
-        mapper.map(customer, findCustomer.get());
-        return findCustomer.get();
-
-    }
-=======
->>>>>>> Stashed changes
 }

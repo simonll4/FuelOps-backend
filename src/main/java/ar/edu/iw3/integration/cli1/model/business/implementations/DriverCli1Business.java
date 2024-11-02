@@ -3,6 +3,7 @@ package ar.edu.iw3.integration.cli1.model.business.implementations;
 import ar.edu.iw3.integration.cli1.model.DriverCli1;
 import ar.edu.iw3.integration.cli1.model.business.interfaces.IDriverCli1Business;
 import ar.edu.iw3.integration.cli1.model.persistence.DriverCli1Repository;
+import ar.edu.iw3.integration.cli1.util.MapperEntity;
 import ar.edu.iw3.model.Driver;
 import ar.edu.iw3.model.business.exceptions.BusinessException;
 import ar.edu.iw3.model.business.exceptions.FoundException;
@@ -48,20 +49,12 @@ public class DriverCli1Business implements IDriverCli1Business {
     }
 
     @Autowired
-    private DriverBusiness baseDriverBusiness;
+    private DriverBusiness driverBaseBusiness;
 
     @Autowired
-    private Mapper mapper;
+    private MapperEntity mapperEntity;
 
     @Override
-<<<<<<< Updated upstream
-    public DriverCli1 add(DriverCli1 driver) throws FoundException, BusinessException {
-        // Si se llama desde LoadOrCreate, no se debe lanzar la excepción FoundException
-        try{
-            Driver baseDriver = baseDriverBusiness.load(driver.getDocument());
-            mapper.map(driver, baseDriver);
-            throw FoundException.builder().message("Se encontró el conductor con id=" + driver.getId()).build();
-=======
     public DriverCli1 add(DriverCli1 driver) throws FoundException, BusinessException, NotFoundException {
 
         // Si el conductor recibido ya existe en la base de datos, se actualiza
@@ -79,47 +72,16 @@ public class DriverCli1Business implements IDriverCli1Business {
             Driver baseDriver = driverBaseBusiness.load(driver.getDocument());
             mapperEntity.map(driver, baseDriver);
             return driver;
->>>>>>> Stashed changes
+
         } catch (NotFoundException ignored) {
 
         }
 
-<<<<<<< Updated upstream
-        if(driverDAO.findOneByIdCli1(driver.getIdCli1()).isPresent()){
-            throw FoundException.builder().message("Se encontró el conductor con id=" + driver.getIdCli1()).build();
-        }
-
-        try{
-=======
-        // En caso de no existir, se agrega
         try {
->>>>>>> Stashed changes
             return driverDAO.save(driver);
         } catch (Exception e){
             log.error(e.getMessage(), e);
             throw BusinessException.builder().ex(e).build();
         }
     }
-
-<<<<<<< Updated upstream
-    @Override
-    public Driver loadOrCreate(DriverCli1 driver) throws BusinessException, NotFoundException {
-        Optional<Driver> findDriver = Optional.empty();
-        try{
-            findDriver = Optional.ofNullable(baseDriverBusiness.load(driver.getDocument()));
-        } catch (NotFoundException ignored) {
-            // If the driver is not found, we create it
-        }
-        if (findDriver.isEmpty()) {
-            try {
-                return baseDriverBusiness.load(add(driver).getId());
-            } catch (FoundException ignored) {
-                // will not happen
-            }
-        }
-        mapper.map(driver, findDriver.get());
-        return findDriver.get();
-    }
-=======
->>>>>>> Stashed changes
 }

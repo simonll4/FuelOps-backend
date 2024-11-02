@@ -15,5 +15,4 @@ public interface ITruckCli1Business {
 
     public TruckCli1 add(TruckCli1 truck) throws FoundException, BusinessException, NotFoundException;
 
-
 }

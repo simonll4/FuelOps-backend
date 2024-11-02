@@ -20,6 +20,7 @@ import java.util.Set;
 public class Order {
 
     public enum Status {
+        ORDER_CANCELLED,
         ORDER_RECEIVED,
         REGISTERED_INITIAL_WEIGHING,
         ORDER_CLOSED,

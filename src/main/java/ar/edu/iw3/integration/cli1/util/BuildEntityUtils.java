@@ -8,9 +8,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashSet;
 import java.util.Set;
 
-import static ar.edu.iw3.util.JsonAttributeConstants.*;
+import static ar.edu.iw3.integration.cli1.util.JsonAttributeConstants.*;
 
-public class Utils {
+public class BuildEntityUtils {
     public static DriverCli1 buildDriver(JsonNode driverNode) {
         DriverCli1 newDriver = new DriverCli1();
 

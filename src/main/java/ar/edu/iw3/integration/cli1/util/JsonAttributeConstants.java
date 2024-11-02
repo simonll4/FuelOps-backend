@@ -1,4 +1,4 @@
-package ar.edu.iw3.util;
+package ar.edu.iw3.integration.cli1.util;
 
 public class JsonAttributeConstants {
 

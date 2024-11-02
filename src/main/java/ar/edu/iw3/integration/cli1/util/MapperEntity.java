@@ -1,4 +1,4 @@
-package ar.edu.iw3.integration.cli1.model.business.implementations;
+package ar.edu.iw3.integration.cli1.util;
 
 import ar.edu.iw3.integration.cli1.model.*;
 import ar.edu.iw3.integration.cli1.model.persistence.*;
@@ -9,11 +9,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
 @Slf4j
-public class Mapper {
+public class MapperEntity {
 
     @Autowired
     private TruckCli1Repository truckDAO;
