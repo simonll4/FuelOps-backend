@@ -3,9 +3,9 @@ package ar.edu.iw3.integration.cli1.model.business.implementations;
 
 import java.util.List;
 import java.util.Optional;
-
 import ar.edu.iw3.integration.cli1.model.business.interfaces.*;
 import ar.edu.iw3.integration.cli1.model.persistence.OrderCli1Repository;
+import ar.edu.iw3.model.Order;
 import ar.edu.iw3.model.business.interfaces.*;
 import ar.edu.iw3.util.JsonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,10 +84,6 @@ public class OrderCli1Business implements IOrderCli1Business {
     private ITruckCli1Business truckBusiness;
 
     @Autowired
-
-    private ITankBusiness tankBusiness;
-
-    @Autowired
     private IProductCli1Business productBusiness;
 
     @Autowired
@@ -96,7 +92,7 @@ public class OrderCli1Business implements IOrderCli1Business {
     @Override
     public OrderCli1 addExternal(String json) throws FoundException, BusinessException {
         ObjectMapper mapper = JsonUtils.getObjectMapper(OrderCli1.class, new OrderCli1JsonDeserializer(
-                OrderCli1.class, driverBusiness, truckBusiness, customerBusiness, productBusiness, tankBusiness), null);
+                OrderCli1.class, driverBusiness, truckBusiness, customerBusiness, productBusiness), null);
         OrderCli1 order;
         try {
             order = mapper.readValue(json, OrderCli1.class);
@@ -106,4 +102,20 @@ public class OrderCli1Business implements IOrderCli1Business {
         }
         return add(order);
     }
+
+    @Override
+    public OrderCli1 cancelExternal(String orderNumberCli1) throws BusinessException {
+        Optional<OrderCli1> orderFound = orderDAO.findOneByOrderNumberCli1(orderNumberCli1);
+        if(orderFound.isPresent() && orderFound.get().getStatus().equals(Order.Status.ORDER_RECEIVED)) {
+            orderFound.get().setStatus(Order.Status.ORDER_CANCELLED);
+            orderDAO.save(orderFound.get());
+            return orderFound.get();
+        }
+        else if (orderFound.isEmpty()){
+            throw new BusinessException("No se encuentra la orden orderNumberCli1=" + orderNumberCli1);
+        }
+        throw new BusinessException("No se puede cancelar la orden, estado actual: " + orderFound.get().getStatus());
+    }
+
+
 }

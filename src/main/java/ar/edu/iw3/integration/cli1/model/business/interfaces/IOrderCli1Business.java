@@ -17,4 +17,6 @@ public interface IOrderCli1Business {
     public OrderCli1 add(OrderCli1 order) throws FoundException, BusinessException;
 
     public OrderCli1 addExternal(String json) throws FoundException, BusinessException, BadRequestException;
+
+    OrderCli1 cancelExternal(String orderNumberCli1) throws BusinessException;
 }

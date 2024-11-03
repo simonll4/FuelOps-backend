@@ -27,6 +27,20 @@ public class OrderCli1RestController extends BaseRestController {
     @Autowired
     private IOrderCli1Business orderCli1Business;
 
+    // todo falta doc
+    @SneakyThrows
+    @GetMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> list() {
+        return new ResponseEntity<>(orderCli1Business.list(), HttpStatus.OK);
+    }
+
+    // todo falta doc
+    @SneakyThrows
+    @GetMapping(value = "/{orderNumberCli1}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> loadByCode(@PathVariable(value = "orderNumberCli1", required = true) String orderNumberCli1) {
+        return new ResponseEntity<>(orderCli1Business.load(orderNumberCli1), HttpStatus.OK);
+    }
+
     @Operation(
             operationId = "add-external-order",
             summary = "Registra orden de carga",
@@ -52,16 +66,16 @@ public class OrderCli1RestController extends BaseRestController {
         return new ResponseEntity<>(responseHeaders, HttpStatus.CREATED);
     }
 
+    //todo falta doc
     @SneakyThrows
-    @GetMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> list() {
-        return new ResponseEntity<>(orderCli1Business.list(), HttpStatus.OK);
+    @PostMapping(value = "/cancel")
+    public ResponseEntity<?> cancelExternal(@RequestHeader("order") String orderNumberCli1) {
+        OrderCli1 response = orderCli1Business.cancelExternal(orderNumberCli1);
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.set("location", Constants.URL_INTEGRATION_CLI1 + "/orders/" + response.getOrderNumberCli1());
+        return new ResponseEntity<>(responseHeaders, HttpStatus.CREATED);
     }
 
-    @SneakyThrows
-    @GetMapping(value = "/{orderNumberCli1}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> loadByCode(@PathVariable(value = "orderNumberCli1", required = true) String orderNumberCli1) {
-        return new ResponseEntity<>(orderCli1Business.load(orderNumberCli1), HttpStatus.OK);
-    }
+
 
 }

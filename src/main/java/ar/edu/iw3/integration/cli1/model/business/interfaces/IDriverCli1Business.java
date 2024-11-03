@@ -15,8 +15,6 @@ public interface IDriverCli1Business {
 
     public List<DriverCli1> list() throws BusinessException;
 
-    public DriverCli1 add(DriverCli1 driver) throws FoundException, BusinessException;
-
-    public Driver loadOrCreate(DriverCli1 driver) throws BusinessException, NotFoundException;
+    public Driver addExternal(DriverCli1 driver) throws FoundException, BusinessException, NotFoundException;
 
 }

@@ -1,6 +1,7 @@
 package ar.edu.iw3.integration.cli1.model.business.implementations;
 
 import ar.edu.iw3.integration.cli1.model.CustomerCli1;
+import ar.edu.iw3.integration.cli1.model.DriverCli1;
 import ar.edu.iw3.integration.cli1.model.business.interfaces.ICustomerCli1Business;
 import ar.edu.iw3.integration.cli1.model.persistence.CustomerCli1Repository;
 import ar.edu.iw3.integration.cli1.util.MapperEntity;
@@ -56,46 +57,39 @@ public class CustomerCli1Business implements ICustomerCli1Business {
     }
 
     @Override
-    public CustomerCli1 add(CustomerCli1 customer) throws FoundException, BusinessException {
+    public CustomerCli1 addExternal(CustomerCli1 customer) throws BusinessException, NotFoundException, FoundException {
+        Optional<CustomerCli1> foundCustomer;
 
+        // si el Cliente recibido ya existe en la db con otro id externo, se lanza una excepcion
         try {
-            Customer customerBase = customerBaseBusiness.load(customer.getBusinessName());
-            mapperEntity.map(customer, customerBase);
-            throw FoundException.builder().message("Se encontró el cliente id=" + customer.getId()).build();
-        } catch (NotFoundException ignored) {
+           foundCustomer = customerDAO.findByBusinessNameAndIdCli1Not(customer.getBusinessName(), customer.getIdCli1());
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            throw BusinessException.builder().ex(e).build();
+        }
+        if (foundCustomer.isPresent()) {
+            throw FoundException.builder().message("Ya existe un cliente con razon social:" + customer.getBusinessName()).build();
         }
 
-        if (customerDAO.findOneByIdCli1(customer.getIdCli1()).isPresent()) {
-            throw FoundException.builder().message("Se encontró el cliente idCli1=" + customer.getIdCli1()).build();
+        // si el cliente recibido ya existe en la db con el mismo id externo,se actualiza si hay camabios
+        foundCustomer = customerDAO.findOneByIdCli1(customer.getIdCli1());
+        if (foundCustomer.isPresent()) {
+            if (customer.equals(foundCustomer.get())) {
+                return foundCustomer.get();
+            }
+            // Actualizamos los valores en caso de que hayan cambiado
+            foundCustomer.get().setBusinessName(customer.getBusinessName());
+            foundCustomer.get().setEmail(customer.getEmail());
+            return customerDAO.save(foundCustomer.get());
         }
 
+        // En caso de no existir, se agrega
         try {
             return customerDAO.save(customer);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             throw BusinessException.builder().ex(e).build();
         }
-    }
-
-    @Override
-    public Customer loadOrCreate(CustomerCli1 customer) throws BusinessException, NotFoundException {
-        Optional<Customer> findCustomer = Optional.empty();
-
-        // todo logica repetida
-        try {
-            findCustomer = Optional.ofNullable(customerBaseBusiness.load(customer.getBusinessName()));
-        } catch (NotFoundException ignored) {
-        }
-
-        if (findCustomer.isEmpty()) {
-            try {
-                //return customerBaseBusiness.load(add(customer).getId());
-                return add(customer);
-            } catch (FoundException ignored) {
-            }
-        }
-        mapperEntity.map(customer, findCustomer.get());
-        return findCustomer.get();
     }
 
 }

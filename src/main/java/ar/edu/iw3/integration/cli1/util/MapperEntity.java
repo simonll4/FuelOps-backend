@@ -11,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-
 import java.util.Optional;
 
 @Service
@@ -36,30 +35,22 @@ public class MapperEntity {
     @Autowired
     private ProductBusiness productBaseBusiness;
 
-    @Transactional
-    public Product map(ProductCli1 product) throws BusinessException, NotFoundException {
-
-        Optional<ProductCli1> productCli1 = productDAO.findOneByIdCli1(product.getIdCli1());
-        if (productCli1.isPresent()) {
-            //return productCli1Business.load(product.getIdCli1());
-            //return productDAO.findOneByIdCli1(product.getIdCli1()).get();
-            return productCli1.get();
-        }
-
-        Product findProduct;
-        findProduct = productBaseBusiness.load(product.getProduct());
-        try {
-            product.setId(findProduct.getId());
-            product.setProduct(findProduct.getProduct());
-            product.setDescription(findProduct.getDescription());
-            product.setThresholdTemperature(findProduct.getThresholdTemperature());
-            productDAO.insertProductCli1(findProduct.getId(), product.getIdCli1());
-            return findProduct;
-        } catch (DataIntegrityViolationException e) {
-            throw BusinessException.builder().ex(e).build();
-        }
-
-    }
+//    @Transactional
+//    public Product map(ProductCli1 product) throws BusinessException, NotFoundException {
+//
+//        Product findProduct;
+//        findProduct = productBaseBusiness.load(product.getProduct());
+//        try {
+//            product.setId(findProduct.getId());
+//            product.setProduct(findProduct.getProduct());
+//            product.setDescription(findProduct.getDescription());
+//            product.setThresholdTemperature(findProduct.getThresholdTemperature());
+//            productDAO.insertProductCli1(findProduct.getId(), product.getIdCli1());
+//            return findProduct;
+//        } catch (DataIntegrityViolationException e) {
+//            throw BusinessException.builder().ex(e).build();
+//        }
+//    }
 
     @Transactional
     public void map(TruckCli1 truckCli1, Truck truck) throws BusinessException {
