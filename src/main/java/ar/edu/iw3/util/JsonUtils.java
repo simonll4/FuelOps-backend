@@ -10,8 +10,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import static ar.edu.iw3.integration.cli1.util.JsonAttributeConstants.*;
-
 
 public class JsonUtils {
     @SuppressWarnings({"unchecked", "rawtypes"})

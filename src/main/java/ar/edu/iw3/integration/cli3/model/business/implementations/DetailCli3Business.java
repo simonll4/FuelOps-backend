@@ -11,6 +11,7 @@ import ar.edu.iw3.websockets.wrappers.DetailWsWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -48,7 +49,7 @@ public class DetailCli3Business implements IDetailCli3Business {
             if (checkFrequency(currentTime, lastTimeStamp)) {
                 detail.setTimeStamp(new Date(currentTime));
                 detailBusiness.add(detail);
-                orderFound.setFuelingEndDate(new Date(System.currentTimeMillis()));
+                orderFound.setFuelingEndDate(new Date(currentTime));
                 orderBusiness.update(orderFound);
                 // Envío de detalle de carga a clientes (WebSocket)
                 wSock.convertAndSend("/topic/details/data", detailWsWrapper);

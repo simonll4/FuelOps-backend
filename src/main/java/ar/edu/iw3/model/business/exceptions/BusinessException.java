@@ -7,6 +7,7 @@ import java.io.Serial;
 
 @NoArgsConstructor
 public class BusinessException extends Exception {
+
 	@Serial
 	private static final long serialVersionUID = 1L;
 

@@ -8,9 +8,11 @@ import java.util.Date;
 @Setter
 @NoArgsConstructor
 public class DetailWsWrapper {
+
     private Date timeStamp;
     private float accumulatedMass;
     private float density;
     private float temperature;
     private float flowRate;
+
 }

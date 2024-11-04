@@ -98,9 +98,9 @@ public class AlarmEventListener implements ApplicationListener<AlarmEvent> {
                 detail.getFlowRate()
         );
 
-        //log.info("Enviando mensaje '{}'", mensaje);
         try {
             emailBusiness.sendSimpleMessage(to, subject, mensaje);
+            log.info("Enviando mensaje '{}'", mensaje);
         } catch (BusinessException e) {
             log.error(e.getMessage(), e);
         }
