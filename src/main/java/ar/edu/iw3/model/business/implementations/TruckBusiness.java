@@ -10,7 +10,6 @@ import ar.edu.iw3.model.Tanker;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -20,8 +19,13 @@ import java.util.Set;
 @Slf4j
 public class TruckBusiness implements ITruckBusiness {
 
+    // todo revisar hay metodos que no los vamos a usar
+
     @Autowired
     private TruckRepository truckDAO;
+
+    @Autowired
+    private TankerBusiness tankerBusiness;
 
     @Override
     public List<Truck> list() throws BusinessException {
@@ -134,9 +138,6 @@ public class TruckBusiness implements ITruckBusiness {
             throw BusinessException.builder().ex(e).build();
         }
     }
-
-    @Autowired
-    private TankerBusiness tankerBusiness;
 
     @Override
     public Set<Tanker> processTankers(Truck truck) throws BusinessException {

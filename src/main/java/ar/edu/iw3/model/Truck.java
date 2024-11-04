@@ -29,7 +29,7 @@ public class Truck {
 
     private String description;
 
-    @OneToMany(mappedBy = "truck")
+    @OneToMany(mappedBy = "truck",cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Tanker> tankers = new HashSet<>();
 
 }

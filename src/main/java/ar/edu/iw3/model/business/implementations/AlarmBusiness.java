@@ -1,7 +1,7 @@
 package ar.edu.iw3.model.business.implementations;
 
-
 import ar.edu.iw3.model.Alarm;
+import ar.edu.iw3.model.Order;
 import ar.edu.iw3.model.business.exceptions.BusinessException;
 import ar.edu.iw3.model.business.exceptions.FoundException;
 import ar.edu.iw3.model.business.exceptions.NotFoundException;
@@ -10,7 +10,6 @@ import ar.edu.iw3.model.persistence.AlarmRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 
 import java.util.List;
 import java.util.Optional;
@@ -61,7 +60,6 @@ public class AlarmBusiness implements IAlarmBusiness {
             throw FoundException.builder().message("Ya existe la Alarma = " + alarm.getId()).build();
         } catch (NotFoundException e) {
             // log.trace(e.getMessage(), e);
-
         }
         try {
             return alarmDAO.save(alarm);
@@ -80,6 +78,20 @@ public class AlarmBusiness implements IAlarmBusiness {
             log.error(e.getMessage(), e);
             throw BusinessException.builder().ex(e).build();
         }
+    }
+
+    @Override
+    public Boolean isAlarmAccepted(Long orderId)  {
+        return alarmDAO.findByStatusAndOrder_Id(Alarm.Status.PENDING_REVIEW,orderId).isPresent();
+    }
+
+    @Override
+    public List<Alarm> pendingReview() throws NotFoundException {
+        Optional<List<Alarm>> alarm = alarmDAO.findByStatusAndOrder_Status(Alarm.Status.PENDING_REVIEW, Order.Status.REGISTERED_INITIAL_WEIGHING);
+        if (alarm.isEmpty()) {
+            throw new NotFoundException("No alarm found with status PENDING_REVIEW");
+        }
+        return alarm.get();
     }
 
 }

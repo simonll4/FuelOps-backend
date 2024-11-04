@@ -15,8 +15,5 @@ public interface ITruckCli1Business {
 
     public List<TruckCli1> list() throws BusinessException;
 
-    public TruckCli1 add(TruckCli1 truck) throws FoundException, BusinessException;
-
-    public Truck loadOrCreate(TruckCli1 truck) throws BusinessException, NotFoundException;
-
+    public TruckCli1 addExternal(TruckCli1 truck) throws FoundException, BusinessException, NotFoundException;
 }

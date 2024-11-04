@@ -6,6 +6,7 @@ import ar.edu.iw3.integration.cli3.model.business.interfaces.IOrderCli3Business;
 import ar.edu.iw3.model.Detail;
 import ar.edu.iw3.model.Order;
 import ar.edu.iw3.model.business.exceptions.*;
+import ar.edu.iw3.model.business.implementations.AlarmBusiness;
 import ar.edu.iw3.model.business.implementations.OrderBusiness;
 import ar.edu.iw3.model.persistence.OrderRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +30,9 @@ public class OrderCli3Business implements IOrderCli3Business {
     @Autowired
     private ApplicationEventPublisher applicationEventPublisher;
 
+    @Autowired
+    private AlarmBusiness alarmBusiness;
+
     @Override
     public Order validatePassword(int password) throws NotFoundException, BusinessException, ConflictException {
         Optional<Order> order;
@@ -48,7 +52,7 @@ public class OrderCli3Business implements IOrderCli3Business {
     }
 
     @Override
-    public Order receiveDetails(Detail detail) throws NotFoundException, BusinessException, FoundException, UnProcessableException, ConflictException {
+    public Order receiveDetails(Detail detail) throws NotFoundException, BusinessException, UnProcessableException, ConflictException {
         Order orderFound = orderBusiness.load(detail.getOrder().getId());
 
         // Validaciones
@@ -64,9 +68,7 @@ public class OrderCli3Business implements IOrderCli3Business {
 
         // Validacion de alarma de temperatura
         if (detail.getTemperature() > orderFound.getProduct().getThresholdTemperature()) {
-            if (orderFound.isAlarmAccepted()) {
-                orderFound.setAlarmAccepted(false);
-                //orderBusiness.update(orderFound);
+            if (!alarmBusiness.isAlarmAccepted(orderFound.getId())) {
                 applicationEventPublisher.publishEvent(new AlarmEvent(detail, AlarmEvent.TypeEvent.TEMPERATURE_EXCEEDED));
             }
         }

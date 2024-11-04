@@ -14,4 +14,7 @@ public interface DriverCli1Repository extends JpaRepository<DriverCli1, Long> {
     @Modifying
     @Query(value = "INSERT INTO cli1_drivers (id_driver, id_cli1, cod_cli1temp) VALUES (:idDriver, :idCli1, false)", nativeQuery = true)
     void insertDriverCli1(@Param("idDriver") Long idDriver, @Param("idCli1") String idCli1);
+
+    Optional<DriverCli1> findByDocumentAndIdCli1Not(String document, String idCli1);
+
 }

@@ -18,7 +18,6 @@ public class OrderCli3SlimV1JsonSerializer extends StdSerializer<Order> {
 
         gen.writeStartObject();
         gen.writeNumberField("id", order.getId());
-        gen.writeNumberField("password", order.getActivatePassword());
         gen.writeNumberField("preset", order.getPreset());
         gen.writeEndObject();
 

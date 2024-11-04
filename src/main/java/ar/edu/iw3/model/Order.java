@@ -21,6 +21,7 @@ import java.util.Set;
 public class Order {
 
     public enum Status {
+        ORDER_CANCELLED,
         ORDER_RECEIVED,
         REGISTERED_INITIAL_WEIGHING,
         ORDER_CLOSED,
@@ -43,9 +44,6 @@ public class Order {
     @Min(value = 1, message = "El atributo 'preset' tiene que ser mayor a cero")
     @Column(nullable = false)
     private float preset;
-
-    @Column(columnDefinition = "tinyint default 1")
-    private boolean alarmAccepted = true;
 
     @Column()
     private float initialWeighing;

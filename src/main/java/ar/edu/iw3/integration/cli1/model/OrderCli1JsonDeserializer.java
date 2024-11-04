@@ -32,16 +32,14 @@ public class OrderCli1JsonDeserializer extends StdDeserializer<OrderCli1> {
     private IProductCli1Business productBusiness;
     private IDriverCli1Business driverBusiness;
     private ITruckCli1Business truckBusiness;
-    private ITankBusiness tankBusiness;
 
     public OrderCli1JsonDeserializer(Class<?> vc, IDriverCli1Business driverBusiness, ITruckCli1Business truckBusiness,
-                                     ICustomerCli1Business customerBusiness, IProductCli1Business productBusiness, ITankBusiness tankBusiness) {
+                                     ICustomerCli1Business customerBusiness, IProductCli1Business productBusiness) {
         super(vc);
         this.driverBusiness = driverBusiness;
         this.truckBusiness = truckBusiness;
         this.customerBusiness = customerBusiness;
         this.productBusiness = productBusiness;
-        this.tankBusiness = tankBusiness;
     }
 
     @SneakyThrows
@@ -55,7 +53,7 @@ public class OrderCli1JsonDeserializer extends StdDeserializer<OrderCli1> {
         String orderNumber = JsonUtils.getString(node, ORDER_NUMBER_ATTRIBUTES, "");
         Date estimatedTime = JsonUtils.getDate(node, ORDER_ESTIMATED_DATE_ATTRIBUTES, String.valueOf(new Date()));
         Driver driver = JsonUtilsCli1.getDriver(node, DRIVER_DOCUMENT_ATTRIBUTES, driverBusiness);
-        Truck truck = (JsonUtilsCli1.getTruck(node, TRUCK_LICENSE_PLATE_ATTRIBUTES, truckBusiness, tankBusiness));
+        Truck truck = (JsonUtilsCli1.getTruck(node, TRUCK_LICENSE_PLATE_ATTRIBUTES, truckBusiness));
         Customer customer = (JsonUtilsCli1.getCustomer(node, CUSTOMER_NAME_ATTRIBUTES, customerBusiness));
         Product product = JsonUtilsCli1.getProduct(node, PRODUCT_NAME_ATTRIBUTES, productBusiness);
 
@@ -69,7 +67,6 @@ public class OrderCli1JsonDeserializer extends StdDeserializer<OrderCli1> {
             r.setProduct(product);
             r.setTruck(truck);
         }
-        r.setAlarmAccepted(true);
         r.setStatus(Order.Status.ORDER_RECEIVED);
         return r;
     }

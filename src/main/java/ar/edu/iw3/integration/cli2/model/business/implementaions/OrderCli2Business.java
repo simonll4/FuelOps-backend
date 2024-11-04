@@ -78,7 +78,7 @@ public class OrderCli2Business implements IOrderCli2Business {
         Order order = orderFound.get();
         order.setFinalWeighing(finalWeight);
         order.setFinalWeighingDate(new Date(System.currentTimeMillis()));
-        order.setStatus(Order.Status.REGISTERED_FINAL_WEIGHING);
+        order.setStatus(Order.Status.REGISTERED_FINAL_WEIGHING); // todo si hay excepcion al crear el pdf no se actualiza
         orderBusiness.update(order);
 
         float initialWeighing = order.getInitialWeighing();
