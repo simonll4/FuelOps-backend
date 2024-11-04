@@ -14,14 +14,4 @@ public interface ITankBusiness {
     public Tanker load(long id) throws NotFoundException, BusinessException;
 
     public Tanker load(String license) throws NotFoundException, BusinessException;
-
-    public Tanker add(Tanker tank) throws FoundException, BusinessException;
-
-    public Tanker update(Tanker tank) throws NotFoundException, BusinessException, FoundException;
-
-    public void delete(Tanker tank) throws NotFoundException, BusinessException;
-
-    public void delete(long id) throws NotFoundException, BusinessException;
-
-    public Tanker loadOrCreate(Tanker tank) throws BusinessException;
 }

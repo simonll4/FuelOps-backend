@@ -14,12 +14,4 @@ public interface IDriverBusiness {
 
     public Driver load(String document) throws NotFoundException, BusinessException;
 
-    public Driver add(Driver driver) throws FoundException, BusinessException;
-
-    public Driver update(Driver driver) throws NotFoundException, BusinessException, FoundException;
-
-    public void delete(Driver driver) throws NotFoundException, BusinessException;
-
-    public void delete(long id) throws NotFoundException, BusinessException;
-
 }

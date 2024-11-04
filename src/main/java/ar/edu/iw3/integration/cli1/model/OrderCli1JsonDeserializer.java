@@ -49,7 +49,7 @@ public class OrderCli1JsonDeserializer extends StdDeserializer<OrderCli1> {
         OrderCli1 r = new OrderCli1();
         JsonNode node = jp.getCodec().readTree(jp);
 
-        float preset = JsonUtils.getValue(node, ORDER_PRESET_ATTRIBUTES, 0);
+        int preset = (int) JsonUtils.getValue(node, ORDER_PRESET_ATTRIBUTES, 0);
         String orderNumber = JsonUtils.getString(node, ORDER_NUMBER_ATTRIBUTES, "");
         Date estimatedTime = JsonUtils.getDate(node, ORDER_ESTIMATED_DATE_ATTRIBUTES, String.valueOf(new Date()));
         Driver driver = JsonUtilsCli1.getDriver(node, DRIVER_DOCUMENT_ATTRIBUTES, driverBusiness);

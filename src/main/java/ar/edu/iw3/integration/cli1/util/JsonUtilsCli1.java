@@ -36,7 +36,6 @@ public class JsonUtilsCli1 {
         return null;
     }
 
-    // todo ITankBusiness al pedo
     public static Truck getTruck(JsonNode node, String[] attrs, ITruckCli1Business truckCli1Business) throws FoundException, BusinessException, NotFoundException {
         JsonNode truckNode = getJsonNode(node, TRUCK_NODE_ATTRIBUTES); // Buscar el nodo padre "truck"
         if (truckNode != null) {

@@ -58,24 +58,6 @@ public class OrderBusiness implements IOrderBusiness {
     }
 
     @Override
-    public Order add(Order order) throws FoundException, BusinessException {
-        try {
-            load(order.getId());
-            throw FoundException.builder().message("Ya existe la Orden id= " + order.getId()).build();
-        } catch (NotFoundException e) {
-            // log.trace(e.getMessage(), e);
-        }
-
-        try {
-            return orderDAO.save(order);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            //throw BusinessException.builder().ex(e).build();
-            throw BusinessException.builder().message("Error al Crear Nueva Orden").build();
-        }
-    }
-
-    @Override
     public Order update(Order order) throws NotFoundException, BusinessException {
         load(order.getId());
         try {
@@ -84,22 +66,6 @@ public class OrderBusiness implements IOrderBusiness {
             log.error(e.getMessage(), e);
             //throw BusinessException.builder().ex(e).build();
             throw BusinessException.builder().message("Error al Actualizar Orden").build();
-        }
-    }
-
-    @Override
-    public void delete(Order order) throws NotFoundException, BusinessException {
-        delete(order.getId());
-    }
-
-    @Override
-    public void delete(long id) throws NotFoundException, BusinessException {
-        load(id);
-        try {
-            orderDAO.deleteById(id);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            throw BusinessException.builder().ex(e).build();
         }
     }
 

@@ -60,6 +60,8 @@ public class CustomerCli1Business implements ICustomerCli1Business {
     public CustomerCli1 addExternal(CustomerCli1 customer) throws BusinessException, NotFoundException, FoundException {
         Optional<CustomerCli1> foundCustomer;
 
+        // todo validar codigos temporales de las entidades
+
         // si el Cliente recibido ya existe en la db con otro id externo, se lanza una excepcion
         try {
            foundCustomer = customerDAO.findByBusinessNameAndIdCli1Not(customer.getBusinessName(), customer.getIdCli1());
