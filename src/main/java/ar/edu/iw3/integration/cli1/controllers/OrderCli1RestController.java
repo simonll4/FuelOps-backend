@@ -37,7 +37,7 @@ public class OrderCli1RestController extends BaseRestController {
     // todo falta doc
     @SneakyThrows
     @GetMapping(value = "/{orderNumberCli1}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> loadByCode(@PathVariable(value = "orderNumberCli1", required = true) String orderNumberCli1) {
+    public ResponseEntity<?> loadByCode(@PathVariable(value = "orderNumberCli1") String orderNumberCli1) {
         return new ResponseEntity<>(orderCli1Business.load(orderNumberCli1), HttpStatus.OK);
     }
 
@@ -62,20 +62,18 @@ public class OrderCli1RestController extends BaseRestController {
     public ResponseEntity<?> addExternal(HttpEntity<String> httpEntity) {
         OrderCli1 response = orderCli1Business.addExternal(httpEntity.getBody());
         HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.set("Location", Constants.URL_INTEGRATION_CLI1 + "/products/" + response.getOrderNumberCli1());
+        responseHeaders.set("Location", Constants.URL_INTEGRATION_CLI1 + "/orders/" + response.getOrderNumberCli1());
         return new ResponseEntity<>(responseHeaders, HttpStatus.CREATED);
     }
 
     //todo falta doc
     @SneakyThrows
     @PostMapping(value = "/cancel")
-    public ResponseEntity<?> cancelExternal(@RequestHeader("order") String orderNumberCli1) {
+    public ResponseEntity<?> cancelExternal(@RequestHeader("orderId") String orderNumberCli1) {
         OrderCli1 response = orderCli1Business.cancelExternal(orderNumberCli1);
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set("location", Constants.URL_INTEGRATION_CLI1 + "/orders/" + response.getOrderNumberCli1());
         return new ResponseEntity<>(responseHeaders, HttpStatus.CREATED);
     }
-
-
 
 }

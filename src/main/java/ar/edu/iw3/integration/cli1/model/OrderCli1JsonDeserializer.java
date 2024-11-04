@@ -67,7 +67,6 @@ public class OrderCli1JsonDeserializer extends StdDeserializer<OrderCli1> {
             r.setProduct(product);
             r.setTruck(truck);
         }
-        r.setAlarmAccepted(true);
         r.setStatus(Order.Status.ORDER_RECEIVED);
         return r;
     }

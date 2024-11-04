@@ -1,17 +1,22 @@
 package ar.edu.iw3.schedules;
 
+import java.util.Date;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import ar.edu.iw3.model.Alarm;
+import ar.edu.iw3.model.Order;
+import ar.edu.iw3.model.business.exceptions.BusinessException;
+import ar.edu.iw3.model.business.exceptions.NotFoundException;
+import ar.edu.iw3.model.business.interfaces.IAlarmBusiness;
+import ar.edu.iw3.model.business.interfaces.IOrderBusiness;
+import ar.edu.iw3.websockets.wrappers.AlarmWsWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
-
-//import ar.edu.iw3.integration.cli2.model.ProductCli2;
-//import ar.edu.iw3.integration.cli2.model.business.IProductCli2Business;
-import ar.edu.iw3.util.EmailBusiness;
 import lombok.extern.slf4j.Slf4j;
 
 @Configuration
@@ -20,64 +25,38 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class Scheduler {
 
-    // todo implementar envio de reporte semanal de las ordenes que fueron atentidas
+    @Autowired
+    private IAlarmBusiness alarmBusiness;
 
-    // fixedDelay e initialDelay se miden por defecto en milisegundos, lo varía
-    // timeUnit
-//    @Scheduled(fixedDelay = 5, initialDelay = 3, timeUnit = TimeUnit.SECONDS)
-//    public void schedule1() {
-//        log.trace("Evento calendarizado cada 5 segundos, 3 iniciales");
-//    }
+    @Autowired
+    private IOrderBusiness orderBusiness;
 
-    /**
-     * A cron-like expression, extending the usual UN*X definition to include
-     * triggers on the second, minute, hour, day of month, month, and day of week.
-     * For example, "0 * * * * MON-FRI" means once per minute on weekdays
-     * (at the top of the minute - the 0th second).
-     * The fields read from left to right are interpreted as follows.
-     * second / minute / hour / day of month / month / day of week
-     */
-//    @Scheduled(cron="0 3 10 * * *")
-//    public void schedule2() {
-//        log.info("Evento calendarizado a las 10:03 AM de cada día");
-//    }
+    @Autowired
+    private SimpMessagingTemplate wSock;
 
-    //@Autowired(required = false)
-    //private IProductCli2Business productBusiness;
+    // Recordatorio de alarmas sina aceptar para clientes de la aplicacion front
+    @Scheduled(fixedDelay = 15, initialDelay = 0, timeUnit = TimeUnit.SECONDS)
+    public void alarmReminder() {
+        try {
+            List<Alarm> alarms = alarmBusiness.pendingReview();
+            for (Alarm alarm : alarms) {
+                Order order = orderBusiness.load(alarm.getOrder().getId());
+                AlarmWsWrapper alarmWsWrapper = new AlarmWsWrapper();
 
-//    @Autowired
-//    private EmailBusiness emailBusiness;
-//
-//
-//    @Value("${expired.product.send.to:aca-va-mail}")
-//    private String expiredProductSendTo;
+                alarmWsWrapper.setAlertMessage("Temperatura excedida para orden " + order.getId());
+                alarmWsWrapper.setOrderId(order.getId());
+                alarmWsWrapper.setTimestamp(new Date(System.currentTimeMillis()));
 
-    // @Async
-    // @Scheduled(fixedDelayString = "${verify.product.expired:120}", initialDelay = 5, timeUnit = TimeUnit.SECONDS);
-//    public void expired() {
-//        if(productBusiness!=null) {
-//            log.info("Verificando productos expirados...");
-//            Calendar c = Calendar.getInstance();
-//            c.setTime(new Date());
-//            c.add(Calendar.DAY_OF_MONTH, 1);
-//            c.set(Calendar.HOUR_OF_DAY, 8);
-//            c.set(Calendar.MINUTE, 0);
-//            c.set(Calendar.SECOND, 0);
-//            c.set(Calendar.MILLISECOND, 0);
-//            try {
-//                List<ProductCli2> list=productBusiness.listExpired(c.getTime());
-//                SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//                String text="Productos que vencen:\n";
-//                for(ProductCli2 pc2: list) {
-//                    log.info("Producto {} expirado {}",pc2.getProduct(), sdf.format(pc2.getExpirationDate()));
-//                    text+=String.format("Producto %s vence %s\n", pc2.getProduct(), sdf.format(pc2.getExpirationDate()));
-//                }
-//                if(list.size()>0) {
-//                    emailBusiness.sendSimpleMessage(expiredProductSendTo, "Productos que vencen!", text);
-//                }
-//            } catch (BusinessException e) {
-//                log.error("{}.expired() Error: '{}'",this.getClass().getName(),e.getMessage());
-//            }
-//        }
-//    }
+                try {
+                    log.info("Sending reminder for alarm id=" + alarm.getId());
+                    wSock.convertAndSend("/topic/alarms/data", alarmWsWrapper);
+                } catch (Exception e) {
+                    log.error("Failed to send alert notification for alarm id=" + alarm.getId(), e);
+                }
+            }
+        } catch (Exception e) {
+            log.error("Error processing alarms", e);
+        }
+    }
+
 }
