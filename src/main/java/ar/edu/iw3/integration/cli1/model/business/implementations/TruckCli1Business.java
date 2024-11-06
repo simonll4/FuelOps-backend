@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -49,8 +50,9 @@ public class TruckCli1Business implements ITruckCli1Business {
     public TruckCli1 addExternal(TruckCli1 truck) throws FoundException, BusinessException, NotFoundException {
 
         Optional<TruckCli1> foundTruck;
+        // si el camion recibido ya existe en la db con otro id externo no temporal, se lanza una excepcion
         try {
-            foundTruck = truckDAO.findOneByLicensePlateAndIdCli1Not(truck.getLicensePlate(), truck.getIdCli1());
+            foundTruck = truckDAO.findOneByLicensePlateAndIdCli1NotAndCodCli1Temp(truck.getLicensePlate(), truck.getIdCli1(), truck.isCodCli1Temp());
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             throw BusinessException.builder().ex(e).build();
@@ -59,22 +61,32 @@ public class TruckCli1Business implements ITruckCli1Business {
             throw FoundException.builder().message("Ya existe un camion con Patente" + truck.getLicensePlate()).build();
         }
 
-        //si existe el camion, chequeamos si hay cambios y actualizamos
+        // Escenario 1: Camión existe con el mismo idCli1, se actualiza si hay cambios
         foundTruck = truckDAO.findOneByIdCli1(truck.getIdCli1());
         if (foundTruck.isPresent()) {
+            return updateTruckData(foundTruck.get(), truck, false);
+        }
+
+        // Escenario 2 y 3: Buscar camión por licensePlate
+        foundTruck = truckDAO.findByLicensePlate(truck.getLicensePlate());
+        if (foundTruck.isPresent()) {
             TruckCli1 existingTruck = foundTruck.get();
-            if (!existingTruck.getTankers().equals(truck.getTankers())) {
-                existingTruck.getTankers().clear();
-                truckDAO.save(existingTruck);
-                for (Tanker tanker : truck.getTankers()) {
-                    tanker.setTruck(existingTruck);
-                    existingTruck.getTankers().add(tanker);
-                }
-                truckDAO.save(existingTruck);
-                return load(truck.getIdCli1());
-            } else {
-                return existingTruck;
+
+            // Escenario 2: Camión enviado con id temporal, pero existe un id fijo
+            if (!existingTruck.isCodCli1Temp() && truck.isCodCli1Temp()) {
+                truck.setIdCli1(existingTruck.getIdCli1());
+                truck.setId(existingTruck.getId());
+                truck.setCodCli1Temp(false);
+                return updateTruckData(existingTruck, truck, false);
             }
+
+            // Escenario 3: Camión existe con id temporal y llega con id fijo
+            if (existingTruck.isCodCli1Temp() && !truck.isCodCli1Temp()) {
+                existingTruck.setIdCli1(truck.getIdCli1());
+                existingTruck.setCodCli1Temp(false);
+                return updateTruckData(existingTruck, truck, true);
+            }
+
         }
 
         // Guardar un nuevo camión si no existe
@@ -88,5 +100,32 @@ public class TruckCli1Business implements ITruckCli1Business {
             throw BusinessException.builder().ex(e).build();
         }
         return load(truck.getIdCli1());
+    }
+
+    // Funcion auxiliar para actualizar datos del camión y tankers si han cambiado
+    private TruckCli1 updateTruckData(TruckCli1 existingTruck, TruckCli1 newTruck, boolean updated) {
+
+        // Actualizar campos si es necesario
+        if (!Objects.equals(existingTruck.getLicensePlate(), newTruck.getLicensePlate())) {
+            existingTruck.setLicensePlate(newTruck.getLicensePlate());
+            updated = true;
+        }
+        if (!Objects.equals(existingTruck.getDescription(), newTruck.getDescription())) {
+            existingTruck.setDescription(newTruck.getDescription());
+            updated = true;
+        }
+
+        // Procesar tankers
+        if (!existingTruck.getTankers().equals(newTruck.getTankers())) {
+            existingTruck.getTankers().clear();
+            truckDAO.save(existingTruck);
+            for (Tanker tanker : newTruck.getTankers()) {
+                tanker.setTruck(existingTruck);
+                existingTruck.getTankers().add(tanker);
+            }
+            updated = true;
+        }
+
+        return updated ? truckDAO.save(existingTruck) : existingTruck;
     }
 }
