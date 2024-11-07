@@ -54,15 +54,15 @@ public class OrderRestController extends BaseRestController {
                             @Content(mediaType = "application/json", schema = @Schema(type = "object",
                                     example = """
                                             {
-                                              "initialWeighing": "float",
-                                              "finalWeighing": "float",
-                                              "accumulatedMass": "float",
-                                              "netWeight": "float",
-                                              "differenceWeight": "float",
-                                              "averageTemperature": "float",
-                                              "averageDensity": "float",
-                                              "averageFlowRate": "float",
-                                              "product": "string"
+                                              "initialWeighing": 0.0,
+                                              "finalWeighing": 0.0,
+                                              "accumulatedMass": 0.0,
+                                              "netWeight": 0.0,
+                                              "differenceWeight": 0.0,
+                                              "averageTemperature": 0.0,
+                                              "averageDensity": 0.0,
+                                              "averageFlowRate": 0.0,
+                                              "product": "String"
                                             }
                                             """)),
                             @Content(mediaType = "application/pdf")

@@ -84,7 +84,42 @@ public class OrderCli1RestController extends BaseRestController {
             description = "Objeto JSON que representa los datos de la orden de carga",
             content = @Content(
                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                    schema = @Schema(implementation = OrderCli1.class)
+                    schema = @Schema(
+                            example = """
+            {
+                "order_number": "String",
+                "truck": {
+                    "id": "String",
+                    "license_plate": "String",
+                    "description": "String",
+                    "tanks": [
+                        {
+                            "id": "String",
+                            "capacity": 0,
+                            "license_plate": "String"
+                        }
+                    ]
+                },
+                "driver": {
+                    "id": "String",
+                    "name": "String",
+                    "last_name": "String",
+                    "document": "String"
+                },
+                "customer": {
+                    "id": "String",
+                    "business_name": "String",
+                    "email": "String"
+                },
+                "product": {
+                    "product": "String",
+                    "description": "String"
+                },
+                "estimated_date": "String",
+                "preset": 0
+            }
+            """
+                    )
             )
     )
     @ApiResponses(value = {
@@ -112,7 +147,7 @@ public class OrderCli1RestController extends BaseRestController {
             operationId = "cancel-external-order",
             summary = "Cancela orden de carga",
             description = "Cancela una orden de carga externa.")
-    @Parameter(in = ParameterIn.HEADER, name = "orderNumberCli1", schema = @Schema(type = "String"), required = true, description = "Número de orden de carga externa")
+    @Parameter(in = ParameterIn.HEADER, name = "order", schema = @Schema(type = "String"), required = true, description = "Número de orden de carga externa")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Orden de carga cancelada exitosamente.", headers = {
                     @Header(name = "Location", description = "Ubicacion orden", schema = @Schema(type = "string"))}),

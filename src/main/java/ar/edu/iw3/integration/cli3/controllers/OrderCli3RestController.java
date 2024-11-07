@@ -45,9 +45,9 @@ public class OrderCli3RestController {
                     @Content(mediaType = "application/json", schema = @Schema(type = "object",
                             example = """
                                     {
-                                      "id": "int",
-                                      "password": "int",
-                                      "preset": "float"
+                                      "id": 0,
+                                      "password": 0,
+                                      "preset": 0.0
                                     }
                                     """))
             }),
@@ -105,10 +105,22 @@ public class OrderCli3RestController {
             description = "Recibe y almacena detalles de carga para una orden específica.")
     @io.swagger.v3.oas.annotations.parameters.RequestBody(
             required = true,
-            description = "Objeto JSON que representa los detalles de carga",
+            description = "Objeto JSON que representa los datos de la orden de carga",
             content = @Content(
                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                    schema = @Schema(implementation = Detail.class)
+                    schema = @Schema(
+                            example = """
+                                    {
+                                      "order": {
+                                        "id":0
+                                      },
+                                      "accumulatedMass": 0,
+                                      "density":0,
+                                      "temperature": 0,
+                                      "flowRate": 0
+                                    }
+                                    """
+                    )
             )
     )
     @ApiResponses(value = {
