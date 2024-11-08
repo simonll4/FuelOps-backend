@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -60,9 +61,9 @@ public class CustomerCli1Business implements ICustomerCli1Business {
     public CustomerCli1 addExternal(CustomerCli1 customer) throws BusinessException, NotFoundException, FoundException {
         Optional<CustomerCli1> foundCustomer;
 
-        // si el Cliente recibido ya existe en la db con otro id externo, se lanza una excepcion
+        // si el Cliente recibido ya existe en la db con otro id externo no temporal, se lanza una excepcion
         try {
-           foundCustomer = customerDAO.findByBusinessNameAndIdCli1Not(customer.getBusinessName(), customer.getIdCli1());
+           foundCustomer = customerDAO.findByBusinessNameAndIdCli1NotAndCodCli1Temp(customer.getBusinessName(), customer.getIdCli1(), customer.isCodCli1Temp());
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             throw BusinessException.builder().ex(e).build();
@@ -71,16 +72,31 @@ public class CustomerCli1Business implements ICustomerCli1Business {
             throw FoundException.builder().message("Ya existe un cliente con razon social:" + customer.getBusinessName()).build();
         }
 
-        // si el cliente recibido ya existe en la db con el mismo id externo,se actualiza si hay camabios
+        // Escenario 1: Cliente existe con el mismo idCli1, se actualiza si hay cambios
         foundCustomer = customerDAO.findOneByIdCli1(customer.getIdCli1());
         if (foundCustomer.isPresent()) {
-            if (customer.equals(foundCustomer.get())) {
-                return foundCustomer.get();
+            return updateCustomerData(foundCustomer.get(), customer, false);
+        }
+
+        // Escenario 2 y 3: Buscar cliente por businessName
+        foundCustomer = customerDAO.findByBusinessName(customer.getBusinessName());
+        if (foundCustomer.isPresent()) {
+            CustomerCli1 existingCustomer = foundCustomer.get();
+
+            // Escenario 2: Cliente enviado con id temporal, pero existe un id fijo
+            if (!existingCustomer.isCodCli1Temp() && customer.isCodCli1Temp()) {
+                customer.setIdCli1(existingCustomer.getIdCli1());
+                customer.setId(existingCustomer.getId());
+                customer.setCodCli1Temp(false);
+                return updateCustomerData(existingCustomer, customer, false);
             }
-            // Actualizamos los valores en caso de que hayan cambiado
-            foundCustomer.get().setBusinessName(customer.getBusinessName());
-            foundCustomer.get().setEmail(customer.getEmail());
-            return customerDAO.save(foundCustomer.get());
+
+            // Escenario 3: Existe con id temporal y llega con id fijo
+            if (existingCustomer.isCodCli1Temp() && !customer.isCodCli1Temp()) {
+                existingCustomer.setIdCli1(customer.getIdCli1());
+                existingCustomer.setCodCli1Temp(false);
+                return updateCustomerData(existingCustomer, customer, true);
+            }
         }
 
         // En caso de no existir, se agrega
@@ -90,6 +106,24 @@ public class CustomerCli1Business implements ICustomerCli1Business {
             log.error(e.getMessage(), e);
             throw BusinessException.builder().ex(e).build();
         }
+
+
     }
 
+    // Funcion auxiliar para actualizar datos del customer si han cambiado
+    private CustomerCli1 updateCustomerData(CustomerCli1 foundCustomer, CustomerCli1 newCustomer, boolean updated) {
+
+        if (!Objects.equals(foundCustomer.getBusinessName(), newCustomer.getBusinessName())) {
+            foundCustomer.setBusinessName(newCustomer.getBusinessName());
+            updated = true;
+        }
+        if (!Objects.equals(foundCustomer.getEmail(), newCustomer.getEmail())) {
+            foundCustomer.setEmail(newCustomer.getEmail());
+            updated = true;
+        }
+        return updated ? customerDAO.save(foundCustomer) : foundCustomer;
+    }
 }
+
+
+

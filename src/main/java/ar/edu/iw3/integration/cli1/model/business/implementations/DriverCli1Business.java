@@ -1,5 +1,6 @@
 package ar.edu.iw3.integration.cli1.model.business.implementations;
 
+import ar.edu.iw3.integration.cli1.model.CustomerCli1;
 import ar.edu.iw3.integration.cli1.model.DriverCli1;
 import ar.edu.iw3.integration.cli1.model.business.interfaces.IDriverCli1Business;
 import ar.edu.iw3.integration.cli1.model.persistence.DriverCli1Repository;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -49,9 +51,9 @@ public class DriverCli1Business implements IDriverCli1Business {
     public DriverCli1 addExternal(DriverCli1 driver) throws FoundException, BusinessException, NotFoundException {
         Optional<DriverCli1> foundDriver;
 
-        // si el conductor recibido ya existe en la db con otro id externo, se lanza una excepcion
+        // si el conductor recibido ya existe en la db con otro id externo no temporal, se lanza una excepcion
         try {
-            foundDriver = driverDAO.findByDocumentAndIdCli1Not(driver.getDocument(), driver.getIdCli1());
+            foundDriver = driverDAO.findByDocumentAndIdCli1NotAndCodCli1Temp(driver.getDocument(), driver.getIdCli1(), driver.isCodCli1Temp());
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             throw BusinessException.builder().ex(e).build();
@@ -60,24 +62,56 @@ public class DriverCli1Business implements IDriverCli1Business {
             throw FoundException.builder().message("Ya existe un conductor con DNI" + driver.getDocument()).build();
         }
 
-        // si el conductor recibido ya existe en la db con el mismo id externo, y se actualiza si hay camabios
+        // Escenario 1: Conductor existe con el mismo idCli1, se actualiza si hay cambios
         foundDriver = driverDAO.findOneByIdCli1(driver.getIdCli1());
         if (foundDriver.isPresent()) {
-            if (driver.equals(foundDriver.get())) {
-                return foundDriver.get();
-            }
-            foundDriver.get().setName(driver.getName());
-            foundDriver.get().setLastName(driver.getLastName());
-            return driverDAO.save(foundDriver.get());
+            return updateDriverData(foundDriver.get(), driver, false);
         }
 
-        // si el conductor recibido no existe en la db, se guarda
+        // Escenario 2 y 3: Buscar driver por document
+        foundDriver = driverDAO.findByDocument(driver.getDocument());
+        if (foundDriver.isPresent()) {
+            DriverCli1 existingDriver = foundDriver.get();
+
+            // Escenario 2: Cliente enviado con id temporal, pero existe un id fijo
+            if (!existingDriver.isCodCli1Temp() && driver.isCodCli1Temp()) {
+                driver.setIdCli1(existingDriver.getIdCli1());
+                driver.setId(existingDriver.getId());
+                driver.setCodCli1Temp(false);
+                return updateDriverData(existingDriver, driver, false);
+            }
+
+            // Escenario 3: Existe con id temporal y llega con id fijo
+            if (existingDriver.isCodCli1Temp() && !driver.isCodCli1Temp()) {
+                existingDriver.setIdCli1(driver.getIdCli1());
+                existingDriver.setCodCli1Temp(false);
+                return updateDriverData(existingDriver, driver, true);
+            }
+        }
+
+        // En caso de no existir, se agrega
         try {
             return driverDAO.save(driver);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             throw BusinessException.builder().ex(e).build();
         }
+
+
+    }
+
+    // Funcion auxiliar para actualizar datos del driver si han cambiado
+    private DriverCli1 updateDriverData(DriverCli1 foundDriver, DriverCli1 newDriver, boolean updated) {
+
+        if (!Objects.equals(foundDriver.getName(), newDriver.getName())) {
+            foundDriver.setName(newDriver.getName());
+            updated = true;
+        }
+        if (!Objects.equals(foundDriver.getLastName(), newDriver.getLastName())) {
+            foundDriver.setLastName(newDriver.getLastName());
+            updated = true;
+        }
+        return updated ? driverDAO.save(foundDriver) : foundDriver;
     }
 
 }

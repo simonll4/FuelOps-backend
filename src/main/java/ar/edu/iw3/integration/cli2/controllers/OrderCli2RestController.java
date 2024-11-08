@@ -35,8 +35,8 @@ public class OrderCli2RestController {
             operationId = "initial-weighing",
             summary = "Registrar pesaje inicial",
             description = "Registra el pesaje inicial de una orden mediante la patente del camion.")
-    @Parameter(in = ParameterIn.HEADER, name = "License-Plate", schema = @Schema(type = "String"), required = true, description = "Patente de camion.")
-    @Parameter(in = ParameterIn.HEADER, name = "Initial-Weight", schema = @Schema(type = "Float"), required = true, description = "Peso inicial.")
+    @Parameter(in = ParameterIn.HEADER, name = "License-Plate", schema = @Schema(type = "String"), required = true, description = "Patente del camion.")
+    @Parameter(in = ParameterIn.HEADER, name = "Initial-Weight", schema = @Schema(type = "Float"), required = true, description = "Peso inicial del camion, pre carga.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Pesaje registrado exitosamente.", headers = {
                     @Header(name = "Order-Id", description = "Numero de orden", schema = @Schema(type = "string"))}),
@@ -65,11 +65,15 @@ public class OrderCli2RestController {
             operationId = "final-weighing",
             summary = "Registrar pesaje final",
             description = "Registra el pesaje final de una orden mediante la patente del camion.")
-    @Parameter(in = ParameterIn.HEADER, name = "License-Plate", schema = @Schema(type = "String"), required = true, description = "Patente de camion.")
-    @Parameter(in = ParameterIn.HEADER, name = "Final-Weight", schema = @Schema(type = "Float"), required = true, description = "Peso inicial.")
+    @Parameter(in = ParameterIn.HEADER, name = "License-Plate", schema = @Schema(type = "String"), required = true, description = "Patente del camion.")
+    @Parameter(in = ParameterIn.HEADER, name = "Final-Weight", schema = @Schema(type = "Float"), required = true, description = "Peso final del camion, post carga.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Pesaje registrado exitosamente.", headers = {
-                    @Header(name = "Order-Id", description = "Numero de orden", schema = @Schema(type = "string"))}),
+            @ApiResponse(responseCode = "200", description = "Pesaje registrado exitosamente. El contenido de la respuesta es un PDF correspondiente a la conciliación de la carga.", headers = {
+                    @Header(name = "Content-Disposition", description = "attachment; filename=\"conciliation-report.pdf\"", schema = @Schema(type = "string")),
+                    @Header(name = "Content-Type", description = "application/pdf", schema = @Schema(type = "string"))
+            }, content = {
+                    @Content(mediaType = "application/pdf", schema = @Schema(type = "string", format = "binary"))
+            }),
             @ApiResponse(responseCode = "403", description = "No posee autorización para consumir este servicio", content = {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
             @ApiResponse(responseCode = "404", description = "No se encuentra la orden para el camion informado", content = {

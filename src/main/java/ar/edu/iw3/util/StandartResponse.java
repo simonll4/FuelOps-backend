@@ -1,6 +1,6 @@
 package ar.edu.iw3.util;
 
-
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.http.HttpStatus;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+@Schema(hidden = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter

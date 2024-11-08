@@ -16,14 +16,4 @@ public interface ITruckBusiness {
 
     public Truck load(String licensePlate) throws NotFoundException, BusinessException;
 
-    public Truck add(Truck truck) throws FoundException, BusinessException;
-
-    public Truck update(Truck truck) throws NotFoundException, BusinessException, FoundException;
-
-    public void delete(Truck truck) throws NotFoundException, BusinessException;
-
-    public void delete(long id) throws NotFoundException, BusinessException;
-
-    public Set<Tanker> processTankers(Truck truck) throws BusinessException;
-
 }

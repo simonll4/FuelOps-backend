@@ -2,6 +2,7 @@ package ar.edu.iw3.controllers;
 
 import ar.edu.iw3.Constants;
 import ar.edu.iw3.auth.User;
+import ar.edu.iw3.integration.cli1.model.OrderCli1;
 import ar.edu.iw3.model.Alarm;
 import ar.edu.iw3.model.Order;
 import ar.edu.iw3.model.business.interfaces.IOrderBusiness;
@@ -16,6 +17,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -52,15 +54,15 @@ public class OrderRestController extends BaseRestController {
                             @Content(mediaType = "application/json", schema = @Schema(type = "object",
                                     example = """
                                             {
-                                              "initialWeighing": "float",
-                                              "finalWeighing": "float",
-                                              "accumulatedMass": "float",
-                                              "netWeight": "float",
-                                              "differenceWeight": "float",
-                                              "averageTemperature": "float",
-                                              "averageDensity": "float",
-                                              "averageFlowRate": "float",
-                                              "product": "string"
+                                              "initialWeighing": 0.0,
+                                              "finalWeighing": 0.0,
+                                              "accumulatedMass": 0.0,
+                                              "netWeight": 0.0,
+                                              "differenceWeight": 0.0,
+                                              "averageTemperature": 0.0,
+                                              "averageDensity": 0.0,
+                                              "averageFlowRate": 0.0,
+                                              "product": "String"
                                             }
                                             """)),
                             @Content(mediaType = "application/pdf")
@@ -76,9 +78,9 @@ public class OrderRestController extends BaseRestController {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))})
     })
     @SneakyThrows
-    @GetMapping("/conciliation")
+    @GetMapping("/conciliation/{idOrder}")
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')  or hasRole('ROLE_CLI1') or hasRole('ROLE_CLI2') or hasRole('ROLE_CLI3')")
-    public ResponseEntity<?> registerFinalWeighing(@RequestParam("idOrder") Long idOrder, // todo cambiar a @PathVariable
+    public ResponseEntity<?> registerFinalWeighing(@PathVariable("idOrder") Long idOrder,
                                                    @RequestHeader(value = HttpHeaders.ACCEPT,
                                                            defaultValue = MediaType.APPLICATION_JSON_VALUE)
                                                    String acceptHeader) {
@@ -96,7 +98,32 @@ public class OrderRestController extends BaseRestController {
     }
 
 
-    //todo armar doc
+    @Operation(
+            operationId = "acknowledge-alarm",
+            summary = "Acepta una alarma",
+            description = "Acepta una alarma y guarda la informacion del usuario responsable.")
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            required = true,
+            description = "Objeto JSON que representa los datos de la alarma",
+            content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                    schema = @Schema(implementation = Alarm.class)
+            )
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Alarma aceptada exitosamente.", headers = {
+                    @io.swagger.v3.oas.annotations.headers.Header(name = "Location", description = "Ubicacion de la orden", schema = @Schema(type = "string"))}),
+            @ApiResponse(responseCode = "401", description = "Autenticación requerida.", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
+            @ApiResponse(responseCode = "403", description = "Permisos insuficientes para acceder al recurso.", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
+            @ApiResponse(responseCode = "404", description = "Recurso no encontrado.", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
+            @ApiResponse(responseCode = "409", description = "La alarma ya fue aceptada.", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
+            @ApiResponse(responseCode = "500", description = "Error interno.", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))})
+    })
     @SneakyThrows
     @PostMapping("/acknowledge-alarm")
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
@@ -108,7 +135,32 @@ public class OrderRestController extends BaseRestController {
         return new ResponseEntity<>(responseHeaders, HttpStatus.CREATED);
     }
 
-    // todo armar doc
+    @Operation(
+            operationId = "issue-alarm",
+            summary = "Emite una alarma",
+            description = "Emite una alarma y guarda la informacion del usuario responsable.")
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            required = true,
+            description = "Objeto JSON que representa los datos de la alarma",
+            content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                    schema = @Schema(implementation = Alarm.class)
+            )
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Alarma emitida exitosamente.", headers = {
+                    @io.swagger.v3.oas.annotations.headers.Header(name = "Location", description = "Ubicacion de la orden", schema = @Schema(type = "string"))}),
+            @ApiResponse(responseCode = "401", description = "Autenticación requerida.", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
+            @ApiResponse(responseCode = "403", description = "Permisos insuficientes para acceder al recurso.", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
+            @ApiResponse(responseCode = "404", description = "Recurso no encontrado.", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
+            @ApiResponse(responseCode = "409", description = "La alarma ya fue emitida.", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
+            @ApiResponse(responseCode = "500", description = "Error interno.", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))})
+    })
     @SneakyThrows
     @PostMapping("/issue-alarm")
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")

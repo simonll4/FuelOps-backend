@@ -12,10 +12,12 @@ public class BuildEntityUtils {
 
     public static DriverCli1 buildDriver(JsonNode driverNode) {
         DriverCli1 newDriver = new DriverCli1();
+        String codeCli1Temp = System.currentTimeMillis() + "";
 
-        String idCli1 = JsonUtils.getString(driverNode, DRIVER_IDCLI1_ATTRIBUTES, "");
+        String idCli1 = JsonUtils.getString(driverNode, DRIVER_IDCLI1_ATTRIBUTES, codeCli1Temp);
         if (idCli1 != null && !idCli1.isEmpty()) {
             newDriver.setIdCli1(idCli1);
+            newDriver.setCodCli1Temp(idCli1.equals(codeCli1Temp));
         }
 
         String name = JsonUtils.getString(driverNode, DRIVER_NAME_ATTRIBUTES, "");
@@ -39,10 +41,12 @@ public class BuildEntityUtils {
 
     public static TruckCli1 buildTruck(JsonNode truckNode, JsonNode tanksNode) {
         TruckCli1 newTruck = new TruckCli1();
+        String codeCli1Temp = System.currentTimeMillis() + "";
 
-        String idCli1 = JsonUtils.getString(truckNode, TRUCK_IDCLI1_ATTRIBUTES, "");
+        String idCli1 = JsonUtils.getString(truckNode, TRUCK_IDCLI1_ATTRIBUTES, codeCli1Temp);
         if (idCli1 != null && !idCli1.isEmpty()) {
             newTruck.setIdCli1(idCli1);
+            newTruck.setCodCli1Temp(idCli1.equals(codeCli1Temp));
         }
 
         String licensePlate = JsonUtils.getString(truckNode, TRUCK_LICENSE_PLATE_ATTRIBUTES, "");
@@ -59,10 +63,12 @@ public class BuildEntityUtils {
         if (tanksNode != null && tanksNode.isArray()) {
             for (JsonNode tankNode : tanksNode) {
                 TankerCli1 tanker = new TankerCli1();
+                String tankerIdCli1Temp = System.currentTimeMillis() + "";
 
-                String tankerIdCli1 = JsonUtils.getString(tankNode, TANKER_IDCLI1_ATTRIBUTES, "");
+                String tankerIdCli1 = JsonUtils.getString(tankNode, TANKER_IDCLI1_ATTRIBUTES, tankerIdCli1Temp);
                 if (tankerIdCli1 != null && !tankerIdCli1.isEmpty()) {
                     tanker.setIdCli1(tankerIdCli1);
+                    tanker.setCodCli1Temp(tankerIdCli1.equals(tankerIdCli1Temp));
                 }
 
                 long capacityLiters = (long) JsonUtils.getValue(tankNode, TANKER_CAPACITY_ATTRIBUTES, 0);
@@ -86,10 +92,12 @@ public class BuildEntityUtils {
 
     public static CustomerCli1 buildCustomer(JsonNode customerNode) {
         CustomerCli1 newCustomer = new CustomerCli1();
+        String codeCli1Temp = System.currentTimeMillis() + "";
 
-        String idCli1 = JsonUtils.getString(customerNode, CUSTOMER_IDCLI1_ATTRIBUTES, "");
+        String idCli1 = JsonUtils.getString(customerNode, CUSTOMER_IDCLI1_ATTRIBUTES, codeCli1Temp);
         if (idCli1 != null && !idCli1.isEmpty()) {
             newCustomer.setIdCli1(idCli1);
+            newCustomer.setCodCli1Temp(idCli1.equals(codeCli1Temp));
         }
 
         String businessName = JsonUtils.getString(customerNode, CUSTOMER_NAME_ATTRIBUTES, "");
@@ -108,10 +116,12 @@ public class BuildEntityUtils {
 
     public static ProductCli1 buildProduct(JsonNode productNode) {
         ProductCli1 newProduct = new ProductCli1();
+        String codeCli1Temp = System.currentTimeMillis() + "";
 
-        String idCli1 = JsonUtils.getString(productNode, PRODUCT_IDCLI1_ATTRIBUTES, "");
+        String idCli1 = JsonUtils.getString(productNode, PRODUCT_IDCLI1_ATTRIBUTES, codeCli1Temp);
         if (idCli1 != null && !idCli1.isEmpty()) {
             newProduct.setIdCli1(idCli1);
+            newProduct.setCodCli1Temp(idCli1.equals(codeCli1Temp));
         }
 
         String product = JsonUtils.getString(productNode, PRODUCT_NAME_ATTRIBUTES, "");

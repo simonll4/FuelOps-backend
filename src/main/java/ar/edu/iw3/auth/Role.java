@@ -2,6 +2,7 @@ package ar.edu.iw3.auth;
 
 import java.io.Serializable;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -13,6 +14,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+@Schema(hidden = true)
 @Entity
 @Table(name = "roles")
 @AllArgsConstructor

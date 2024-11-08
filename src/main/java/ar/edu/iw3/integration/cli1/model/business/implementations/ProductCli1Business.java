@@ -54,9 +54,9 @@ public class ProductCli1Business implements IProductCli1Business {
     public Product loadExternal(ProductCli1 product) throws BusinessException, NotFoundException, FoundException {
 
         Optional<ProductCli1> productCli1;
-        // si el Producto recibido ya existe en la db con otro id externo, se lanza una excepcion
+        // si el Producto recibido ya existe en la db con otro id externo no temporal, se lanza una excepcion
         try {
-            productCli1 = productDAO.findByProductAndIdCli1Not(product.getProduct(), product.getIdCli1());
+            productCli1 = productDAO.findByProductAndIdCli1NotAndCodCli1Temp(product.getProduct(), product.getIdCli1(), product.isCodCli1Temp());
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             throw BusinessException.builder().ex(e).build();
@@ -71,6 +71,13 @@ public class ProductCli1Business implements IProductCli1Business {
             return productCli1.get();
         }
 
+        // si el producto recibido tiene un id externo temporal, se verifica que el producto exista
+        productCli1 = productDAO.findProductCli1ByProduct(product.getProduct());
+        if (productCli1.isPresent() && product.isCodCli1Temp()) {
+            return productCli1.get();
+        }
+
+        // si se recibe un producto con codigo externo no existente en db, se mapea al producto base
         Product findProduct;
         findProduct = productBaseBusiness.load(product.getProduct());
         try {

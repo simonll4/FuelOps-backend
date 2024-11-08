@@ -12,7 +12,9 @@ public interface CustomerCli1Repository extends JpaRepository<CustomerCli1, Long
 
     Optional<CustomerCli1> findOneByIdCli1(String idCli1);
 
-    Optional<CustomerCli1> findByBusinessNameAndIdCli1Not(String businessName, String id);
+    Optional<CustomerCli1> findByBusinessNameAndIdCli1NotAndCodCli1Temp(String businessName, String idCli1, boolean codCli1Temp);
+
+    Optional<CustomerCli1> findByBusinessName(String businessName);
 
     @Modifying
     @Query(value = "INSERT INTO cli1_customers (id_customer, id_cli1, cod_cli1temp) VALUES (:idCustomer, :idCli1, false)", nativeQuery = true)

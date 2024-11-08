@@ -15,13 +15,4 @@ public interface ICustomerBusiness {
 
     public Customer load(String businessName) throws NotFoundException, BusinessException;
 
-    public Customer add(Customer customer) throws FoundException, BusinessException;
-
-    public Customer update(Customer customer) throws NotFoundException, BusinessException, FoundException;
-
-    public void delete(Customer customer) throws NotFoundException, BusinessException;
-
-    public void delete(long id) throws NotFoundException, BusinessException;
-
-
 }

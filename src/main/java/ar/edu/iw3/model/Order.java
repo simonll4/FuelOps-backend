@@ -43,7 +43,7 @@ public class Order {
 
     @Min(value = 1, message = "El atributo 'preset' tiene que ser mayor a cero")
     @Column(nullable = false)
-    private float preset;
+    private int preset;
 
     @Column()
     private float initialWeighing;

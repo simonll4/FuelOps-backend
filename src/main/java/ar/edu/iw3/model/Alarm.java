@@ -10,6 +10,7 @@ import lombok.Setter;
 
 import java.util.Date;
 
+@Schema(hidden = true)
 @Entity
 @Table(name = "alarms")
 @AllArgsConstructor

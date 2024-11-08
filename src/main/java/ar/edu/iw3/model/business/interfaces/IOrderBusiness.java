@@ -17,13 +17,7 @@ public interface IOrderBusiness {
 
     public Order load(long id) throws NotFoundException, BusinessException;
 
-    public Order add(Order order) throws FoundException, BusinessException;
-
     public Order update(Order order) throws NotFoundException, BusinessException, FoundException;
-
-    public void delete(Order order) throws NotFoundException, BusinessException;
-
-    public void delete(long id) throws NotFoundException, BusinessException;
 
     public Order acknowledgeAlarm(Alarm alarm, User user) throws BusinessException, NotFoundException, ConflictException;
 

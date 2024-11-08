@@ -19,8 +19,6 @@ import java.util.Set;
 @Slf4j
 public class TruckBusiness implements ITruckBusiness {
 
-    // todo revisar hay metodos que no los vamos a usar
-
     @Autowired
     private TruckRepository truckDAO;
 
@@ -67,94 +65,5 @@ public class TruckBusiness implements ITruckBusiness {
 
         return truckFound.get();
     }
-
-    @Override
-    public Truck add(Truck truck) throws FoundException, BusinessException {
-        try {
-            load(truck.getId());
-            throw FoundException.builder().message("Ya existe el Camion id= " + truck.getId()).build();
-        } catch (NotFoundException e) {
-            // log.trace(e.getMessage(), e);
-        }
-
-        try {
-            load(truck.getLicensePlate());
-            throw FoundException.builder().message("Ya existe el Camion con Patente " + truck.getLicensePlate()).build();
-        } catch (NotFoundException e) {
-            // log.trace(e.getMessage(), e);
-        }
-
-        try {
-            truck = truckDAO.save(truck);
-            truck.setTankers(processTankers(truck));
-            return truck;
-
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            //throw BusinessException.builder().ex(e).build();
-            throw BusinessException.builder().message("Error al Crear Nuevo Camion").build();
-        }
-    }
-
-    @Override
-    public Truck update(Truck truck) throws NotFoundException, BusinessException, FoundException {
-        load(truck.getId());
-
-        Optional<Truck> truckFound;
-        try {
-            truckFound = truckDAO.findByLicensePlateAndIdNot(truck.getLicensePlate(), truck.getId());
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            throw BusinessException.builder().ex(e).build();
-        }
-
-        if (truckFound.isPresent()) {
-            throw FoundException.builder().message("Ya Existe un Camion con Patente =" + truck.getLicensePlate()).build();
-        }
-
-        try {
-
-            return truckDAO.save(truck);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            //throw BusinessException.builder().ex(e).build();
-            throw BusinessException.builder().message("Error al Actualizar Camion").build();
-        }
-    }
-
-    @Override
-    public void delete(Truck truck) throws NotFoundException, BusinessException {
-        delete(truck.getId());
-    }
-
-    @Override
-    public void delete(long id) throws NotFoundException, BusinessException {
-        load(id);
-
-        try {
-            truckDAO.deleteById(id);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            throw BusinessException.builder().ex(e).build();
-        }
-    }
-
-    @Override
-    public Set<Tanker> processTankers(Truck truck) throws BusinessException {
-        Set<Tanker> tankers = truck.getTankers();
-        Set<Tanker> newTankers = new HashSet<>();
-        for (Tanker processedTanker : tankers) {
-            try {
-                processedTanker.setTruck(truck);
-                processedTanker = tankerBusiness.loadOrCreate(processedTanker);
-                newTankers.add(processedTanker); // agregamos el cisterna cargado en base de datos
-            } catch (Exception e) {
-                log.error(e.getMessage(), e);
-                throw BusinessException.builder().ex(e).build();
-            }
-        }
-        return newTankers;
-    }
-
 
 }
