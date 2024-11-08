@@ -91,8 +91,6 @@ public class OrderBusiness implements IOrderBusiness {
         alarmFound.setStatus(Alarm.Status.ACKNOWLEDGED);
         alarmFound.setUser(userFound);
         alarmBusiness.update(alarmFound);
-        // todo hay veces que el cuando se guardan los ultimos detalles pisan a este valor con el viejo y no se actualiza
-        orderFound.setAlarmAccepted(true);
         return update(orderFound);
     }
 
@@ -114,7 +112,6 @@ public class OrderBusiness implements IOrderBusiness {
         alarmFound.setStatus(Alarm.Status.CONFIRMED_ISSUE);
         alarmFound.setUser(userFound);
         alarmBusiness.update(alarmFound);
-        orderFound.setAlarmAccepted(true);
         return update(orderFound);
     }
 

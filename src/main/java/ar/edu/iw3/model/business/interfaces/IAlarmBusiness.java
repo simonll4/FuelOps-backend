@@ -19,6 +19,10 @@ public interface IAlarmBusiness {
 
     Alarm update(Alarm alarm) throws NotFoundException, BusinessException;
 
+    Boolean isAlarmAccepted(Long orderId) throws BusinessException;
+
+    List<Alarm> pendingReview() throws NotFoundException;
+
     // public Alarm update(Alarm alarm) throws NotFoundException, BusinessException, FoundException;
 
     //public void delete(Alarm alarm) throws NotFoundException, BusinessException;

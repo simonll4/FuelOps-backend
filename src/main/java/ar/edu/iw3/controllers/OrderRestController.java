@@ -171,5 +171,4 @@ public class OrderRestController extends BaseRestController {
         responseHeaders.set("Location", Constants.URL_ORDERS + "/orders/issue-alarm/" + order.getId());
         return new ResponseEntity<>(responseHeaders, HttpStatus.CREATED);
     }
-
 }

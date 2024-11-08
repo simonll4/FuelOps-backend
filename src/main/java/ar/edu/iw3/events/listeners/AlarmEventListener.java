@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationListener;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -46,7 +47,7 @@ public class AlarmEventListener implements ApplicationListener<AlarmEvent> {
         // Envío de notificación de alerta a clientes (WebSocket)
         AlarmWsWrapper alarmWsWrapper = new AlarmWsWrapper();
         alarmWsWrapper.setAlertMessage("Temperatura excedida para orden " + detail.getOrder().getId());
-        alarmWsWrapper.setDetail(detail);
+        alarmWsWrapper.setOrderId(detail.getOrder().getId());
         alarmWsWrapper.setTimestamp(now);
         try {
             wSock.convertAndSend("/topic/alarms/data", alarmWsWrapper);
@@ -97,9 +98,9 @@ public class AlarmEventListener implements ApplicationListener<AlarmEvent> {
                 detail.getFlowRate()
         );
 
-        //log.info("Enviando mensaje '{}'", mensaje);
         try {
             emailBusiness.sendSimpleMessage(to, subject, mensaje);
+            log.info("Enviando mensaje '{}'", mensaje);
         } catch (BusinessException e) {
             log.error(e.getMessage(), e);
         }

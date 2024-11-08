@@ -5,6 +5,7 @@ import java.io.Serial;
 
 //https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/422
 public class UnProcessableException extends Exception {
+
     @Serial
     private static final long serialVersionUID = 1L;
 

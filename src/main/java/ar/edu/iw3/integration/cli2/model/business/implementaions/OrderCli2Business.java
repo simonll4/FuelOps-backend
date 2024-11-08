@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.io.IOException;
 import java.util.Date;
 import java.util.Optional;
@@ -58,6 +59,7 @@ public class OrderCli2Business implements IOrderCli2Business {
         orderFound.get().setInitialWeighingDate(new Date(System.currentTimeMillis()));
         orderFound.get().setStatus(Order.Status.REGISTERED_INITIAL_WEIGHING);
         orderBusiness.update(orderFound.get());
+
         return orderFound.get();
     }
 
@@ -79,7 +81,6 @@ public class OrderCli2Business implements IOrderCli2Business {
         order.setFinalWeighing(finalWeight);
         order.setFinalWeighingDate(new Date(System.currentTimeMillis()));
         order.setStatus(Order.Status.REGISTERED_FINAL_WEIGHING);
-        orderBusiness.update(order);
 
         float initialWeighing = order.getInitialWeighing();
         float productLoaded = order.getLastAccumulatedMass();
@@ -91,7 +92,7 @@ public class OrderCli2Business implements IOrderCli2Business {
         Product product = order.getProduct();
 
         try {
-            return PdfGenerator.generateFuelLoadingReconciliationReport(
+            byte[] consiliation = PdfGenerator.generateFuelLoadingReconciliationReport(
                     initialWeighing,
                     finalWeight,
                     productLoaded,
@@ -102,6 +103,8 @@ public class OrderCli2Business implements IOrderCli2Business {
                     avgFlow,
                     product
             );
+            orderBusiness.update(order);
+            return consiliation;
         } catch (DocumentException | IOException e) {
             log.error("Error generando el PDF: {}", e.getMessage(), e);
             throw BusinessException.builder().message("Error al generar el reporte PDF").ex(e).build();

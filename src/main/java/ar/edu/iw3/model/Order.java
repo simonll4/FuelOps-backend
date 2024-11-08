@@ -45,9 +45,6 @@ public class Order {
     @Column(nullable = false)
     private int preset;
 
-    @Column(columnDefinition = "tinyint default 1")
-    private boolean alarmAccepted = true;
-
     @Column()
     private float initialWeighing;
 

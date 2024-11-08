@@ -31,15 +31,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         //lo que permite disponer de vías alternativas en el caso de que el navegador no soporte websoket
         //o existan restricciones de proxy por ejemplo.
         //El endpoint es el punto en común "físico" de la comunicación
-        // Ejemplos
-        //registry.addEndpoint("/chat");
-        //registry.addEndpoint("/chat").withSockJS();
-        //registry.addEndpoint("/graph");
-        // registry.addEndpoint("/graph").withSockJS();
-
         registry.addEndpoint("/alarms").setAllowedOrigins("http://localhost:3000");
         registry.addEndpoint("/alarms").withSockJS();
 
     }
-
 }
