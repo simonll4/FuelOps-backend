@@ -5,6 +5,7 @@ import java.util.Optional;
 import ar.edu.iw3.integration.cli1.model.business.interfaces.*;
 import ar.edu.iw3.integration.cli1.model.persistence.OrderCli1Repository;
 import ar.edu.iw3.model.Order;
+import ar.edu.iw3.model.business.exceptions.BadRequestException;
 import ar.edu.iw3.util.JsonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -83,7 +84,7 @@ public class OrderCli1Business implements IOrderCli1Business {
     private IDriverCli1Business driverBusiness;
 
     @Override
-    public OrderCli1 addExternal(String json) throws FoundException, BusinessException {
+    public OrderCli1 addExternal(String json) throws FoundException, BusinessException, BadRequestException {
         ObjectMapper mapper = JsonUtils.getObjectMapper(OrderCli1.class, new OrderCli1JsonDeserializer(
                 OrderCli1.class, driverBusiness, truckBusiness, customerBusiness, productBusiness), null);
         OrderCli1 order;

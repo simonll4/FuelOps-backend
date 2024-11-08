@@ -125,6 +125,10 @@ public class OrderCli1RestController extends BaseRestController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Carga registrada exitosamente.", headers = {
                     @Header(name = "Location", description = "Ubicacion orden", schema = @Schema(type = "string"))}),
+            @ApiResponse(responseCode = "302", description = "Ya existe una orden con el codigo externo", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
+            @ApiResponse(responseCode = "302", description = "Ya existe una orden para el camion idExterno", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
             @ApiResponse(responseCode = "401", description = "Autenticación requerida.", content = {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
             @ApiResponse(responseCode = "403", description = "Permisos insuficientes para acceder al recurso.", content = {
@@ -151,6 +155,8 @@ public class OrderCli1RestController extends BaseRestController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Orden de carga cancelada exitosamente.", headers = {
                     @Header(name = "Location", description = "Ubicacion orden", schema = @Schema(type = "string"))}),
+            @ApiResponse(responseCode = "400", description = "Parametros insuficientes, entidades no enviadas", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
             @ApiResponse(responseCode = "401", description = "Autenticación requerida.", content = {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
             @ApiResponse(responseCode = "403", description = "Permisos insuficientes para acceder al recurso.", content = {
