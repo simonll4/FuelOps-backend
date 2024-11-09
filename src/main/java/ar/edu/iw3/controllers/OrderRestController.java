@@ -2,10 +2,13 @@ package ar.edu.iw3.controllers;
 
 import ar.edu.iw3.Constants;
 import ar.edu.iw3.auth.User;
-import ar.edu.iw3.integration.cli1.model.OrderCli1;
 import ar.edu.iw3.model.Alarm;
 import ar.edu.iw3.model.Order;
+import ar.edu.iw3.model.business.exceptions.BadRequestException;
+import ar.edu.iw3.model.business.exceptions.BusinessException;
+import ar.edu.iw3.model.business.exceptions.NotFoundException;
 import ar.edu.iw3.model.business.interfaces.IOrderBusiness;
+import ar.edu.iw3.util.IStandartResponseBusiness;
 import ar.edu.iw3.util.StandartResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -17,7 +20,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -77,24 +79,25 @@ public class OrderRestController extends BaseRestController {
             @ApiResponse(responseCode = "500", description = "Error interno.", content = {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))})
     })
-    @SneakyThrows
     @GetMapping("/conciliation/{idOrder}")
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')  or hasRole('ROLE_CLI1') or hasRole('ROLE_CLI2') or hasRole('ROLE_CLI3')")
-    public ResponseEntity<?> registerFinalWeighing(@PathVariable("idOrder") Long idOrder,
+    @SneakyThrows
+    public ResponseEntity<?> getConciliationReport(@PathVariable("idOrder") Long idOrder,
                                                    @RequestHeader(value = HttpHeaders.ACCEPT,
                                                            defaultValue = MediaType.APPLICATION_JSON_VALUE)
                                                    String acceptHeader) {
         // Respuesta en JSON
-        Map<String, Object> conciliationData = orderBusiness.getConciliationJson(idOrder);
         if (acceptHeader.equals(MediaType.APPLICATION_JSON_VALUE)) {
+            Map<String, Object> conciliationData = orderBusiness.getConciliationJson(idOrder);
             return new ResponseEntity<>(conciliationData, HttpStatus.OK);
         }
-        // Respuesta en PDF
-        byte[] pdfContent = orderBusiness.generateConciliationPdf(idOrder);
+
+        byte[] pdfContent = orderBusiness.getConciliationPdf(idOrder);
         HttpHeaders headers = new HttpHeaders();
         headers.set(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_PDF_VALUE);
         headers.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"fuel-conciliation.pdf\"");
         return new ResponseEntity<>(pdfContent, headers, HttpStatus.OK);
+
     }
 
 

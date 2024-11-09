@@ -10,7 +10,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 
-public interface ProductCli1Repository extends JpaRepository<ProductCli1,Long> {
+public interface ProductCli1Repository extends JpaRepository<ProductCli1, Long> {
 
     Optional<ProductCli1> findOneByIdCli1(String idCli1);
 
@@ -20,8 +20,8 @@ public interface ProductCli1Repository extends JpaRepository<ProductCli1,Long> {
 
     @Transactional
     @Modifying
-    @Query(value = "INSERT INTO cli1_products (id_product, id_cli1, cod_cli1temp) VALUES (:idProduct, :idCli1, false)", nativeQuery = true)
-    void insertProductCli1(@Param("idProduct") Long idProduct, @Param("idCli1") String idCli1);
+    @Query(value = "INSERT INTO cli1_products (id_product, id_cli1, cod_cli1temp) VALUES (:idProduct, :idCli1, :codCli1Temp)", nativeQuery = true)
+    void insertProductCli1(@Param("idProduct") Long idProduct, @Param("idCli1") String idCli1, @Param("codCli1Temp") Boolean codCli1Temp);
 
 
 }

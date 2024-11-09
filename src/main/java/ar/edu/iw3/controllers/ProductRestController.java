@@ -37,6 +37,9 @@ public class ProductRestController extends BaseRestController {
     private IProductBusiness productBusiness;
 
     @Autowired
+    private ICategoryBusiness categoryBusiness;
+
+    @Autowired
     private IStandartResponseBusiness response;
 
     @Operation(operationId = "list-internal-products", summary = "Listar productos", description = "Lista todos los productos")
@@ -78,6 +81,7 @@ public class ProductRestController extends BaseRestController {
         return new ResponseEntity<>(productBusiness.load(id), HttpStatus.OK);
     }
 
+
     @Operation(operationId = "load-internal-product-by-name", summary = "Cargar producto por nombre", description = "Carga los datos de un producto por nombre")
     @Parameter(in = ParameterIn.PATH, name = "product", description = "Nombre del producto", required = true)
     @ApiResponses(value = {
@@ -98,6 +102,7 @@ public class ProductRestController extends BaseRestController {
     public ResponseEntity<?> loadProduct(@PathVariable String product) {
         return new ResponseEntity<>(productBusiness.load(product), HttpStatus.OK);
     }
+
 
     @Operation(operationId = "add-internal-product", summary = "Agregar producto", description = "Agrega un producto")
     @io.swagger.v3.oas.annotations.parameters.RequestBody(
@@ -129,6 +134,7 @@ public class ProductRestController extends BaseRestController {
         return new ResponseEntity<>(responseHeaders, HttpStatus.CREATED);
     }
 
+
     @Operation(operationId = "update-internal-product", summary = "Actualizar producto", description = "Actualiza un producto")
     @io.swagger.v3.oas.annotations.parameters.RequestBody(
             required = true,
@@ -156,6 +162,7 @@ public class ProductRestController extends BaseRestController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+
     @Operation(operationId = "delete-internal-product", summary = "Eliminar producto", description = "Elimina un producto")
     @Parameter(in = ParameterIn.PATH, name = "id", description = "Identificador del producto", required = true)
     @ApiResponses(value = {
@@ -176,8 +183,6 @@ public class ProductRestController extends BaseRestController {
         return new ResponseEntity<String>(HttpStatus.OK);
     }
 
-    @Autowired
-    private ICategoryBusiness categoryBusiness;
 
     @Operation(operationId = "list-internal-categories", summary = "Listar categorías", description = "Lista todas las categorías")
     @ApiResponses(value = {
@@ -201,6 +206,7 @@ public class ProductRestController extends BaseRestController {
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
 
     @Operation(operationId = "load-internal-category", summary = "Cargar categoría", description = "Carga los datos de una categoría")
     @Parameter(in = ParameterIn.PATH, name = "id", description = "Identificador de la categoría", required = true)
@@ -227,6 +233,7 @@ public class ProductRestController extends BaseRestController {
             return new ResponseEntity<>(response.build(HttpStatus.NOT_FOUND, e, e.getMessage()), HttpStatus.NOT_FOUND);
         }
     }
+
 
     @Operation(operationId = "load-internal-category-by-name", summary = "Cargar categoría por nombre", description = "Carga los datos de una categoría por nombre")
     @Parameter(in = ParameterIn.PATH, name = "category", description = "Nombre de la categoría", required = true)
@@ -324,6 +331,7 @@ public class ProductRestController extends BaseRestController {
             return new ResponseEntity<>(response.build(HttpStatus.FOUND, e, e.getMessage()), HttpStatus.FOUND);
         }
     }
+
 
     @Operation(operationId = "delete-internal-category", summary = "Eliminar categoría", description = "Elimina una categoría")
     @Parameter(in = ParameterIn.PATH, name = "id", description = "Identificador de la categoría", required = true)

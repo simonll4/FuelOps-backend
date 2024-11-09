@@ -14,5 +14,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     Optional<Order> findByTruck_LicensePlateAndStatus(String licensePlate, Order.Status status);
 
+    Optional<Order> findByIdAndStatus(long id, Order.Status status);
 
 }

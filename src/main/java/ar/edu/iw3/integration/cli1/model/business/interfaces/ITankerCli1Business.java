@@ -11,10 +11,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface ITankerCli1Business {
-    public TankerCli1 load(String idCli1) throws NotFoundException, BusinessException;
 
-    public List<TankerCli1> list() throws BusinessException;
-
-    public TankerCli1 add(TankerCli1 tanker) throws FoundException, BusinessException;
+    //public TankerCli1 add(TankerCli1 tanker) throws FoundException, BusinessException;
 
 }

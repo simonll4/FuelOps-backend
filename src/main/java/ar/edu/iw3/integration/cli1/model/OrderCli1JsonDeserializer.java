@@ -10,6 +10,7 @@ import ar.edu.iw3.integration.cli1.model.business.interfaces.ITruckCli1Business;
 import ar.edu.iw3.integration.cli1.util.JsonUtilsCli1;
 import ar.edu.iw3.model.*;
 import ar.edu.iw3.model.business.exceptions.BadRequestException;
+import ar.edu.iw3.model.business.exceptions.BusinessException;
 import ar.edu.iw3.util.JsonUtils;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
@@ -66,10 +67,10 @@ public class OrderCli1JsonDeserializer extends StdDeserializer<OrderCli1> {
             r.setDriver(driver);
             r.setProduct(product);
             r.setTruck(truck);
+        } else {
+            throw new BusinessException("No se pudo cargar la orden");
         }
-        else {
-            throw BadRequestException.builder().message("Se espera detalle de entidades: driver, customer, product, truck").build();
-        }
+
         r.setStatus(Order.Status.ORDER_RECEIVED);
         return r;
     }

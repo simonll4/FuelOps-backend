@@ -1,7 +1,6 @@
 package ar.edu.iw3.integration.cli1.controllers;
 
 import ar.edu.iw3.Constants;
-import ar.edu.iw3.model.Detail;
 import ar.edu.iw3.util.StandartResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -52,6 +51,7 @@ public class OrderCli1RestController extends BaseRestController {
         return new ResponseEntity<>(orderCli1Business.list(), HttpStatus.OK);
     }
 
+
     @Operation(
             operationId = "load-external-order",
             summary = "Carga orden de carga",
@@ -74,6 +74,7 @@ public class OrderCli1RestController extends BaseRestController {
     public ResponseEntity<?> loadByCode(@PathVariable(value = "orderNumberCli1") String orderNumberCli1) {
         return new ResponseEntity<>(orderCli1Business.load(orderNumberCli1), HttpStatus.OK);
     }
+
 
     @Operation(
             operationId = "add-external-order",
@@ -146,6 +147,7 @@ public class OrderCli1RestController extends BaseRestController {
         responseHeaders.set("Location", Constants.URL_INTEGRATION_CLI1 + "/orders/" + response.getOrderNumberCli1());
         return new ResponseEntity<>(responseHeaders, HttpStatus.CREATED);
     }
+
 
     @Operation(
             operationId = "cancel-external-order",

@@ -9,6 +9,7 @@ import ar.edu.iw3.model.business.implementations.OrderBusiness;
 import ar.edu.iw3.model.persistence.DetailRepository;
 import ar.edu.iw3.websockets.wrappers.DetailWsWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
@@ -51,15 +52,17 @@ public class DetailCli3Business implements IDetailCli3Business {
                 detailBusiness.add(detail);
                 orderFound.setFuelingEndDate(new Date(currentTime));
                 orderBusiness.update(orderFound);
+
                 // Envío de detalle de carga a clientes (WebSocket)
                 wSock.convertAndSend("/topic/details/data", detailWsWrapper);
             }
         } else {
             detail.setTimeStamp(new Date(currentTime));
             detailBusiness.add(detail);
-            orderFound.setFuelingStartDate(new Date(System.currentTimeMillis()));
-            orderFound.setFuelingEndDate(new Date(System.currentTimeMillis()));
+            orderFound.setFuelingStartDate(new Date(currentTime));
+            orderFound.setFuelingEndDate(new Date(currentTime));
             orderBusiness.update(orderFound);
+
             // Envío de detalle de carga a clientes (WebSocket)
             wSock.convertAndSend("/topic/details/data", detailWsWrapper);
         }
@@ -69,8 +72,8 @@ public class DetailCli3Business implements IDetailCli3Business {
     //////////////////////////////////////////// UTILIDADES  ////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    // todo dar la posibildidad de cambiar la frecuencia de guardado
-    private static final long SAVE_INTERVAL_MS = 5000;
+    @Value("${loading.details.saving.frequency}")
+    private long SAVE_INTERVAL_MS;
 
     private boolean checkFrequency(long currentTime, Date lastTimeStamp) {
         return currentTime - lastTimeStamp.getTime() >= SAVE_INTERVAL_MS;

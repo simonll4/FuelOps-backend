@@ -23,8 +23,8 @@ public interface IOrderBusiness {
 
     public Order confirmIssueAlarm(Alarm alarm, User user) throws BusinessException, NotFoundException, ConflictException;
 
-    public byte[] generateConciliationPdf(Long orderNumber) throws BusinessException, NotFoundException;
+    public byte[] getConciliationPdf(Long orderNumber) throws BusinessException, NotFoundException, ConflictException;
 
-    public Map<String, Object> getConciliationJson(Long idOrder) throws BusinessException, NotFoundException;
+    public Map<String, Object> getConciliationJson(Long idOrder) throws BusinessException, NotFoundException, ConflictException;
 
 }

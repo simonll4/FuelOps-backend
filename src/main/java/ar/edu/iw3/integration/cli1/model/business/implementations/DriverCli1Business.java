@@ -1,6 +1,5 @@
 package ar.edu.iw3.integration.cli1.model.business.implementations;
 
-import ar.edu.iw3.integration.cli1.model.CustomerCli1;
 import ar.edu.iw3.integration.cli1.model.DriverCli1;
 import ar.edu.iw3.integration.cli1.model.business.interfaces.IDriverCli1Business;
 import ar.edu.iw3.integration.cli1.model.persistence.DriverCli1Repository;
@@ -11,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -23,33 +21,15 @@ public class DriverCli1Business implements IDriverCli1Business {
     private DriverCli1Repository driverDAO;
 
     @Override
-    public DriverCli1 load(String idCli1) throws NotFoundException, BusinessException {
-        Optional<DriverCli1> r;
-        try {
-            r = driverDAO.findOneByIdCli1(idCli1);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            throw BusinessException.builder().ex(e).build();
-        }
-        if (r.isEmpty()) {
-            throw NotFoundException.builder().message("No se encuentra el conductor idCli1=" + idCli1).build();
-        }
-        return r.get();
-    }
-
-    @Override
-    public List<DriverCli1> list() throws BusinessException {
-        try {
-            return driverDAO.findAll();
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            throw BusinessException.builder().ex(e).build();
-        }
-    }
-
-    @Override
     public DriverCli1 addExternal(DriverCli1 driver) throws FoundException, BusinessException, NotFoundException {
         Optional<DriverCli1> foundDriver;
+
+        // Escenario 1: Conductor recibido con codCli1Temp y en db esta con codCli1Temp
+        foundDriver = driverDAO.findByDocument(driver.getDocument());
+        if (foundDriver.isPresent() && foundDriver.get().isCodCli1Temp() && driver.isCodCli1Temp()) {
+            driver.setId(foundDriver.get().getId());
+            return updateDriverData(foundDriver.get(), driver, false);
+        }
 
         // si el conductor recibido ya existe en la db con otro id externo no temporal, se lanza una excepcion
         try {
@@ -62,30 +42,28 @@ public class DriverCli1Business implements IDriverCli1Business {
             throw FoundException.builder().message("Ya existe un conductor con DNI" + driver.getDocument()).build();
         }
 
-        // Escenario 1: Conductor existe con el mismo idCli1, se actualiza si hay cambios
+        // Escenario 2: Conductor ya existe con el mismo idCli1, se actualiza si hay cambios
         foundDriver = driverDAO.findOneByIdCli1(driver.getIdCli1());
         if (foundDriver.isPresent()) {
             return updateDriverData(foundDriver.get(), driver, false);
         }
 
-        // Escenario 2 y 3: Buscar driver por document
         foundDriver = driverDAO.findByDocument(driver.getDocument());
         if (foundDriver.isPresent()) {
-            DriverCli1 existingDriver = foundDriver.get();
 
-            // Escenario 2: Cliente enviado con id temporal, pero existe un id fijo
-            if (!existingDriver.isCodCli1Temp() && driver.isCodCli1Temp()) {
-                driver.setIdCli1(existingDriver.getIdCli1());
-                driver.setId(existingDriver.getId());
+            // Escenario 3: Conductor llega con codCli1Temp, pero existe un id fijo
+            if (!foundDriver.get().isCodCli1Temp() && driver.isCodCli1Temp()) {
+                driver.setIdCli1(foundDriver.get().getIdCli1());
+                driver.setId(foundDriver.get().getId());
                 driver.setCodCli1Temp(false);
-                return updateDriverData(existingDriver, driver, false);
+                return updateDriverData(foundDriver.get(), driver, false);
             }
 
-            // Escenario 3: Existe con id temporal y llega con id fijo
-            if (existingDriver.isCodCli1Temp() && !driver.isCodCli1Temp()) {
-                existingDriver.setIdCli1(driver.getIdCli1());
-                existingDriver.setCodCli1Temp(false);
-                return updateDriverData(existingDriver, driver, true);
+            // Escenario 4: Conductor con codCli1Temp y llega con id fijo
+            if (foundDriver.get().isCodCli1Temp() && !driver.isCodCli1Temp()) {
+                foundDriver.get().setIdCli1(driver.getIdCli1());
+                foundDriver.get().setCodCli1Temp(false);
+                return updateDriverData(foundDriver.get(), driver, true);
             }
         }
 
@@ -96,8 +74,6 @@ public class DriverCli1Business implements IDriverCli1Business {
             log.error(e.getMessage(), e);
             throw BusinessException.builder().ex(e).build();
         }
-
-
     }
 
     // Funcion auxiliar para actualizar datos del driver si han cambiado

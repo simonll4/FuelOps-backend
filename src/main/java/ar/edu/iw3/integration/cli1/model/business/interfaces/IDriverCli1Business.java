@@ -11,10 +11,6 @@ import java.util.List;
 
 public interface IDriverCli1Business {
 
-    public DriverCli1 load(String idCli1) throws NotFoundException, BusinessException;
-
-    public List<DriverCli1> list() throws BusinessException;
-
     public Driver addExternal(DriverCli1 driver) throws FoundException, BusinessException, NotFoundException;
 
 }

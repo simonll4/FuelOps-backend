@@ -55,7 +55,7 @@ public class OrderCli3Business implements IOrderCli3Business {
     public Order receiveDetails(Detail detail) throws NotFoundException, BusinessException, UnProcessableException, ConflictException {
         Order orderFound = orderBusiness.load(detail.getOrder().getId());
 
-        // Validaciones
+        // Validaciones de negocio
         if (orderFound.getStatus() != Order.Status.REGISTERED_INITIAL_WEIGHING) {
             throw new ConflictException("Estado de orden no válido");
         }
@@ -65,8 +65,6 @@ public class OrderCli3Business implements IOrderCli3Business {
         if (detail.getAccumulatedMass() < orderFound.getLastAccumulatedMass()) {
             throw new UnProcessableException("Masa acumulada no válida");
         }
-
-        // Validacion de alarma de temperatura
         if (detail.getTemperature() > orderFound.getProduct().getThresholdTemperature()) {
             if (!alarmBusiness.isAlarmAccepted(orderFound.getId())) {
                 applicationEventPublisher.publishEvent(new AlarmEvent(detail, AlarmEvent.TypeEvent.TEMPERATURE_EXCEEDED));

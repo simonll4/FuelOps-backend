@@ -10,6 +10,7 @@ import ar.edu.iw3.model.business.exceptions.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -37,19 +38,16 @@ public class TruckCli1Business implements ITruckCli1Business {
     }
 
     @Override
-    public List<TruckCli1> list() throws BusinessException {
-        try {
-            return truckDAO.findAll();
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            throw BusinessException.builder().ex(e).build();
-        }
-    }
-
-    @Override
     public TruckCli1 addExternal(TruckCli1 truck) throws FoundException, BusinessException, NotFoundException {
-
         Optional<TruckCli1> foundTruck;
+
+        // Escenario 1: Camion recibido con codCli1Temp y en db esta con codCli1Temp
+        foundTruck = truckDAO.findByLicensePlate(truck.getLicensePlate());
+        if (foundTruck.isPresent() && foundTruck.get().isCodCli1Temp() && truck.isCodCli1Temp()) {
+            truck.setId(foundTruck.get().getId());
+            return updateTruckData(foundTruck.get(), truck, false);
+        }
+
         // si el camion recibido ya existe en la db con otro id externo no temporal, se lanza una excepcion
         try {
             foundTruck = truckDAO.findOneByLicensePlateAndIdCli1NotAndCodCli1Temp(truck.getLicensePlate(), truck.getIdCli1(), truck.isCodCli1Temp());
@@ -61,32 +59,29 @@ public class TruckCli1Business implements ITruckCli1Business {
             throw FoundException.builder().message("Ya existe un camion con Patente" + truck.getLicensePlate()).build();
         }
 
-        // Escenario 1: Camión existe con el mismo idCli1, se actualiza si hay cambios
+        // Escenario 2: Camion ya existe con el mismo idCli1, se actualiza si hay cambios
         foundTruck = truckDAO.findOneByIdCli1(truck.getIdCli1());
         if (foundTruck.isPresent()) {
             return updateTruckData(foundTruck.get(), truck, false);
         }
 
-        // Escenario 2 y 3: Buscar camión por licensePlate
         foundTruck = truckDAO.findByLicensePlate(truck.getLicensePlate());
         if (foundTruck.isPresent()) {
-            TruckCli1 existingTruck = foundTruck.get();
 
-            // Escenario 2: Camión enviado con id temporal, pero existe un id fijo
-            if (!existingTruck.isCodCli1Temp() && truck.isCodCli1Temp()) {
-                truck.setIdCli1(existingTruck.getIdCli1());
-                truck.setId(existingTruck.getId());
+            // Escenario 3: Camion llega con codCli1Temp, pero existe un id fijo
+            if (!foundTruck.get().isCodCli1Temp() && truck.isCodCli1Temp()) {
+                truck.setIdCli1(foundTruck.get().getIdCli1());
+                truck.setId(foundTruck.get().getId());
                 truck.setCodCli1Temp(false);
-                return updateTruckData(existingTruck, truck, false);
+                return updateTruckData(foundTruck.get(), truck, false);
             }
 
-            // Escenario 3: Camión existe con id temporal y llega con id fijo
-            if (existingTruck.isCodCli1Temp() && !truck.isCodCli1Temp()) {
-                existingTruck.setIdCli1(truck.getIdCli1());
-                existingTruck.setCodCli1Temp(false);
-                return updateTruckData(existingTruck, truck, true);
+            // Escenario 4: Camion con codCli1Temp y llega con id fijo
+            if (foundTruck.get().isCodCli1Temp() && !truck.isCodCli1Temp()) {
+                foundTruck.get().setIdCli1(truck.getIdCli1());
+                foundTruck.get().setCodCli1Temp(false);
+                return updateTruckData(foundTruck.get(), truck, true);
             }
-
         }
 
         // Guardar un nuevo camión si no existe

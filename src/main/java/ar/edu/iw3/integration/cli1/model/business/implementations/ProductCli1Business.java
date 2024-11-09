@@ -25,6 +25,7 @@ public class ProductCli1Business implements IProductCli1Business {
     @Autowired
     private ProductBusiness productBaseBusiness;
 
+    // se puede llegar a implementar para que el sistema externo busque un producto por su idCli1
     @Override
     public ProductCli1 load(String idCli1) throws NotFoundException, BusinessException {
         Optional<ProductCli1> r;
@@ -40,6 +41,7 @@ public class ProductCli1Business implements IProductCli1Business {
         return r.get();
     }
 
+    // se puede llegar a implementar para que el sistema externo liste todos los productos
     @Override
     public List<ProductCli1> list() throws BusinessException {
         try {
@@ -52,8 +54,20 @@ public class ProductCli1Business implements IProductCli1Business {
 
     @Override
     public Product loadExternal(ProductCli1 product) throws BusinessException, NotFoundException, FoundException {
-
         Optional<ProductCli1> productCli1;
+
+        // si el producto recibido tiene un id externo temporal, se verifica si el producto existe
+        productCli1 = productDAO.findProductCli1ByProduct(product.getProduct());
+        if (productCli1.isPresent() && product.isCodCli1Temp()) {
+            return productCli1.get();
+        }
+        // si el producto recibido tiene un id externo no temporal, y si esta temporal en db lo reemplazamos
+        if (productCli1.isPresent() && !product.isCodCli1Temp() && productCli1.get().isCodCli1Temp()) {
+            productCli1.get().setIdCli1(product.getIdCli1());
+            productCli1.get().setCodCli1Temp(false);
+            return productDAO.save(productCli1.get());
+        }
+
         // si el Producto recibido ya existe en la db con otro id externo no temporal, se lanza una excepcion
         try {
             productCli1 = productDAO.findByProductAndIdCli1NotAndCodCli1Temp(product.getProduct(), product.getIdCli1(), product.isCodCli1Temp());
@@ -65,15 +79,9 @@ public class ProductCli1Business implements IProductCli1Business {
             throw FoundException.builder().message("Ya existe un producto con el nombre:" + product.getProduct()).build();
         }
 
-        // Si el producto recibido existe en la entidad producto externa
+        // Si el producto recibido existe en la entidad producto externa con idCli1, se retorna el producto
         productCli1 = productDAO.findOneByIdCli1(product.getIdCli1());
         if (productCli1.isPresent()) {
-            return productCli1.get();
-        }
-
-        // si el producto recibido tiene un id externo temporal, se verifica que el producto exista
-        productCli1 = productDAO.findProductCli1ByProduct(product.getProduct());
-        if (productCli1.isPresent() && product.isCodCli1Temp()) {
             return productCli1.get();
         }
 
@@ -85,11 +93,10 @@ public class ProductCli1Business implements IProductCli1Business {
             product.setProduct(findProduct.getProduct());
             product.setDescription(findProduct.getDescription());
             product.setThresholdTemperature(findProduct.getThresholdTemperature());
-            productDAO.insertProductCli1(findProduct.getId(), product.getIdCli1());
+            productDAO.insertProductCli1(findProduct.getId(), product.getIdCli1(), product.isCodCli1Temp());
             return findProduct;
         } catch (DataIntegrityViolationException e) {
             throw BusinessException.builder().message("Error al mapear producto").build();
         }
     }
-
 }

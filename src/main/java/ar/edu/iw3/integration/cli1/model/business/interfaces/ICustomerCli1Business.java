@@ -10,9 +10,5 @@ import java.util.List;
 
 public interface ICustomerCli1Business {
 
-    public CustomerCli1 load(String idCli1) throws NotFoundException, BusinessException;
-
-    public List<CustomerCli1> list() throws BusinessException;
-
     public CustomerCli1 addExternal(CustomerCli1 customer) throws BusinessException, NotFoundException, FoundException;
 }

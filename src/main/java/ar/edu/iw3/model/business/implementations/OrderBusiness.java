@@ -116,18 +116,26 @@ public class OrderBusiness implements IOrderBusiness {
     }
 
     @Override
-    public byte[] generateConciliationPdf(Long idOrder) throws BusinessException, NotFoundException {
-        Order orderFound = load(idOrder);
+    public byte[] getConciliationPdf(Long idOrder) throws BusinessException, NotFoundException {
+        Optional<Order> orderFound;
+        try {
+            orderFound = orderDAO.findByIdAndStatus(idOrder, Order.Status.REGISTERED_FINAL_WEIGHING);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            throw BusinessException.builder().message("").build();
+        }
+        if (orderFound.isEmpty())
+            throw NotFoundException.builder().message("No se encuentra la Orden id= " + idOrder).build();
 
-        float initialWeighing = orderFound.getInitialWeighing();
-        float productLoaded = orderFound.getLastAccumulatedMass();
-        float finalWeight = orderFound.getFinalWeighing();
+        float initialWeighing = orderFound.get().getInitialWeighing();
+        float productLoaded = orderFound.get().getLastAccumulatedMass();
+        float finalWeight = orderFound.get().getFinalWeighing();
         float netWeight = finalWeight - initialWeighing;
         float difference = netWeight - productLoaded;
-        float avgTemperature = detailBusiness.calculateAverageTemperature(orderFound.getId());
-        float avgDensity = detailBusiness.calculateAverageDensity(orderFound.getId());
-        float avgFlow = detailBusiness.calculateAverageFlowRate(orderFound.getId());
-        Product product = orderFound.getProduct();
+        float avgTemperature = detailBusiness.calculateAverageTemperature(orderFound.get().getId());
+        float avgDensity = detailBusiness.calculateAverageDensity(orderFound.get().getId());
+        float avgFlow = detailBusiness.calculateAverageFlowRate(orderFound.get().getId());
+        Product product = orderFound.get().getProduct();
 
         try {
             return PdfGenerator.generateFuelLoadingReconciliationReport(initialWeighing, finalWeight, productLoaded, netWeight, difference, avgTemperature, avgDensity, avgFlow, product);
@@ -138,20 +146,27 @@ public class OrderBusiness implements IOrderBusiness {
     }
 
     @Override
-    public Map<String, Object> getConciliationJson(Long idOrder) throws BusinessException, NotFoundException {
-        Order orderFound = load(idOrder);
+    public Map<String, Object> getConciliationJson(Long idOrder) throws BusinessException, NotFoundException{
+        Optional<Order> orderFound;
+        try {
+            orderFound = orderDAO.findByIdAndStatus(idOrder, Order.Status.REGISTERED_FINAL_WEIGHING);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            throw BusinessException.builder().message("").build();
+        }
+        if (orderFound.isEmpty())
+            throw NotFoundException.builder().message("No se encuentra la Orden id= " + idOrder).build();
 
-        float initialWeighing = orderFound.getInitialWeighing();
-        float productLoaded = orderFound.getLastAccumulatedMass();
-        float finalWeight = orderFound.getFinalWeighing();
+        float initialWeighing = orderFound.get().getInitialWeighing();
+        float productLoaded = orderFound.get().getLastAccumulatedMass();
+        float finalWeight = orderFound.get().getFinalWeighing();
         float netWeight = finalWeight - initialWeighing;
         float difference = netWeight - productLoaded;
-        float avgTemperature = detailBusiness.calculateAverageTemperature(orderFound.getId());
-        float avgDensity = detailBusiness.calculateAverageDensity(orderFound.getId());
-        float avgFlow = detailBusiness.calculateAverageFlowRate(orderFound.getId());
-        Product product = orderFound.getProduct();
+        float avgTemperature = detailBusiness.calculateAverageTemperature(orderFound.get().getId());
+        float avgDensity = detailBusiness.calculateAverageDensity(orderFound.get().getId());
+        float avgFlow = detailBusiness.calculateAverageFlowRate(orderFound.get().getId());
+        Product product = orderFound.get().getProduct();
 
-        // todo revisar este json si cumple con la consigna
         Map<String, Object> conciliationData = new HashMap<>();
         conciliationData.put("initialWeighing", initialWeighing);
         conciliationData.put("finalWeighing", finalWeight);

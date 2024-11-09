@@ -1,6 +1,6 @@
 package ar.edu.iw3.integration.cli1.model.business.implementations;
 
-import  java.util.List;
+import java.util.List;
 import java.util.Optional;
 import ar.edu.iw3.integration.cli1.model.business.interfaces.*;
 import ar.edu.iw3.integration.cli1.model.persistence.OrderCli1Repository;
@@ -22,8 +22,20 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class OrderCli1Business implements IOrderCli1Business {
 
-    @Autowired(required = false)
+    @Autowired
     private OrderCli1Repository orderDAO;
+
+    @Autowired
+    private ICustomerCli1Business customerBusiness;
+
+    @Autowired
+    private ITruckCli1Business truckBusiness;
+
+    @Autowired
+    private IProductCli1Business productBusiness;
+
+    @Autowired
+    private IDriverCli1Business driverBusiness;
 
     @Override
     public OrderCli1 load(String orderNumberCli1) throws NotFoundException, BusinessException {
@@ -71,18 +83,6 @@ public class OrderCli1Business implements IOrderCli1Business {
         }
     }
 
-    @Autowired
-    private ICustomerCli1Business customerBusiness;
-
-    @Autowired
-    private ITruckCli1Business truckBusiness;
-
-    @Autowired
-    private IProductCli1Business productBusiness;
-
-    @Autowired
-    private IDriverCli1Business driverBusiness;
-
     @Override
     public OrderCli1 addExternal(String json) throws FoundException, BusinessException, BadRequestException {
         ObjectMapper mapper = JsonUtils.getObjectMapper(OrderCli1.class, new OrderCli1JsonDeserializer(
@@ -109,6 +109,5 @@ public class OrderCli1Business implements IOrderCli1Business {
         }
         throw new BusinessException("No se puede cancelar la orden, estado actual: " + orderFound.get().getStatus());
     }
-
 
 }

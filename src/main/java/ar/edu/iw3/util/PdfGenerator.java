@@ -85,15 +85,15 @@ public class PdfGenerator {
         weighingHeader.setHorizontalAlignment(Element.ALIGN_CENTER);
         weighingTable.addCell(weighingHeader);
         weighingTable.addCell("Pesaje inicial:");
-        weighingTable.addCell(initialWeighing + " kg");
+        weighingTable.addCell(String.format("%.2f kg", initialWeighing));
         weighingTable.addCell("Pesaje final:");
-        weighingTable.addCell(finalWeighing + " kg");
+        weighingTable.addCell(String.format("%.2f kg", finalWeighing));
         weighingTable.addCell("Producto cargado:");
-        weighingTable.addCell(productLoaded + " kg");
+        weighingTable.addCell(String.format("%.2f kg", productLoaded));
         weighingTable.addCell("Neto por balanza:");
         weighingTable.addCell(netWeight + " kg");
         weighingTable.addCell("Diferencia entre balanza y caudalímetro:");
-        weighingTable.addCell(difference + " kg");
+        weighingTable.addCell(String.format("%.2f kg", difference));
         document.add(weighingTable);
 
         // Promedios durante la carga en una tabla
@@ -108,11 +108,11 @@ public class PdfGenerator {
         averagesHeader.setHorizontalAlignment(Element.ALIGN_CENTER);
         averagesTable.addCell(averagesHeader);
         averagesTable.addCell("Promedio de temperatura:");
-        averagesTable.addCell(avgTemperature + " °C");
+        averagesTable.addCell(String.format("%.2f °C", avgTemperature));
         averagesTable.addCell("Promedio de densidad:");
-        averagesTable.addCell(avgDensity + " kg/m³");
+        averagesTable.addCell(String.format("%.2f kg/m³", avgDensity));
         averagesTable.addCell("Promedio de caudal:");
-        averagesTable.addCell(avgFlow + " L/h");
+        averagesTable.addCell(String.format("%.2f L/h", avgFlow));
         document.add(averagesTable);
 
         // Nota de confidencialidad y firma

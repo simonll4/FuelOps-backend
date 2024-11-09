@@ -8,10 +8,14 @@ import ar.edu.iw3.model.Customer;
 import ar.edu.iw3.model.Driver;
 import ar.edu.iw3.model.Product;
 import ar.edu.iw3.model.Truck;
+import ar.edu.iw3.model.business.exceptions.BadRequestException;
 import ar.edu.iw3.model.business.exceptions.BusinessException;
 import ar.edu.iw3.model.business.exceptions.FoundException;
 import ar.edu.iw3.model.business.exceptions.NotFoundException;
 import com.fasterxml.jackson.databind.JsonNode;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
+
 import static ar.edu.iw3.integration.cli1.util.JsonAttributeConstants.*;
 import static ar.edu.iw3.util.JsonUtils.getJsonNode;
 import static ar.edu.iw3.util.JsonUtils.getString;
@@ -30,7 +34,13 @@ public class JsonUtilsCli1 {
                 }
             }
             if (driverDocument != null) {
-                return driverCli1Business.addExternal(BuildEntityUtils.buildDriver(driverNode)); // Cargar el driver desde el business
+                try {
+                    return driverCli1Business.addExternal(BuildEntityUtils.buildDriver(driverNode)); // Cargar el driver desde el business
+                } catch (BadRequestException ex) {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
+                }
+            } else {
+                throw new NotFoundException("No se encuentra el documento del conductor");
             }
         }
         return null;
@@ -42,7 +52,11 @@ public class JsonUtilsCli1 {
             String truckLicensePlate = getString(truckNode, attrs, null);  // Obtener placa del camión desde los atributos
             if (truckLicensePlate != null) {
                 JsonNode tanksNode = truckNode.get("tanks");
-                return truckCli1Business.addExternal(BuildEntityUtils.buildTruck(truckNode, tanksNode));
+                try {
+                    return truckCli1Business.addExternal(BuildEntityUtils.buildTruck(truckNode, tanksNode));
+                } catch (BadRequestException e) {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+                }
             }
         }
         return null; // Si no se encuentra la placa, retorna null
@@ -60,7 +74,11 @@ public class JsonUtilsCli1 {
                 }
             }
             if (customerName != null) {
-                return customerCli1Business.addExternal(BuildEntityUtils.buildCustomer(customerNode)); // Cargar el customer desde el business
+                try {
+                    return customerCli1Business.addExternal(BuildEntityUtils.buildCustomer(customerNode)); // Cargar el customer desde el business
+                } catch (BadRequestException ex) {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
+                }
             }
         }
         return null;
@@ -78,7 +96,11 @@ public class JsonUtilsCli1 {
                 }
             }
             if (productName != null) {
-                return productCli1Business.loadExternal(BuildEntityUtils.buildProduct(productNode)); // Cargar el producto desde el business
+                try {
+                    return productCli1Business.loadExternal(BuildEntityUtils.buildProduct(productNode)); // Cargar el producto desde el business
+                } catch (BadRequestException ex) {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
+                }
             }
         }
         return null;
