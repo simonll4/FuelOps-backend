@@ -26,7 +26,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-@Tag(description = "API para Gestionar Ordenes desde Sistema Externo de Carga de Combustible", name = "Cli3/Order")
+@Tag(name = "4. Cli3/Order", description = "API para Gestionar Ordenes desde Sistema Externo de Carga de Combustible")
 @RestController
 @RequestMapping(Constants.URL_INTEGRATION_CLI3 + "/orders")
 @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLI3')")

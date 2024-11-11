@@ -8,11 +8,11 @@ public class JsonAttributeConstants {
     public static final String[] ORDER_PRESET_ATTRIBUTES = {"preset", "order_preset"};
 
     // Constantes para el nodo Driver
-    public static final String[] DRIVER_NODE_ATTRIBUTES = {"driver", "Driver", "choffer", "Choffer"};
+    public static final String[] DRIVER_NODE_ATTRIBUTES = {"driver", "Driver", "choffer", "C hoffer"};
     public static final String[] DRIVER_IDCLI1_ATTRIBUTES = {"id", "id_driver", "code", "driver_code"};
-    public static final String[] DRIVER_NAME_ATTRIBUTES = {"name", "driver_name", "driver"};
-    public static final String[] DRIVER_LASTNAME_ATTRIBUTES = {"lastname", "driver_lastname", "last_name", "driver_last_name"};
-    public static final String[] DRIVER_DOCUMENT_ATTRIBUTES = {"driver_document", "driver_document_number", "document"};
+    public static final String[] DRIVER_NAME_ATTRIBUTES = {"name", "driver_name", "driver","choffer_name"};
+    public static final String[] DRIVER_LASTNAME_ATTRIBUTES = {"lastname", "driver_lastname", "last_name", "driver_last_name","choffer_last_name"};
+    public static final String[] DRIVER_DOCUMENT_ATTRIBUTES = {"driver_document", "driver_document_number", "document","choffer_document"};
 
     // Constantes para el nodo Truck
     public static final String[] TRUCK_NODE_ATTRIBUTES = {"truck", "Truck", "vehicle", "Vehicle"};
@@ -28,11 +28,11 @@ public class JsonAttributeConstants {
     // Constantes para el nodo Customer
     public static final String[] CUSTOMER_NODE_ATTRIBUTES = {"customer", "Customer", "client", "Client"};
     public static final String[] CUSTOMER_IDCLI1_ATTRIBUTES = {"id", "id_customer", "code", "customer_code"};
-    public static final String[] CUSTOMER_NAME_ATTRIBUTES = {"name", "customer_name", "business_name", "customer"};
+    public static final String[] CUSTOMER_NAME_ATTRIBUTES = {"name", "customer_name", "business_name", "customer", "client_name"};
     public static final String[] CUSTOMER_EMAIL_ATTRIBUTES = {"mail", "email", "contact", "mail_contact"};
 
     // Constantes para el nodo Product
     public static final String[] PRODUCT_NODE_ATTRIBUTES = {"product", "Product", "gas", "Gas", "fuel", "Fuel"};
     public static final String[] PRODUCT_IDCLI1_ATTRIBUTES = {"id", "id_product", "code", "product_code"};
-    public static final String[] PRODUCT_NAME_ATTRIBUTES = {"product", "product_name"};
+    public static final String[] PRODUCT_NAME_ATTRIBUTES = {"product", "product_name","name"};
 }

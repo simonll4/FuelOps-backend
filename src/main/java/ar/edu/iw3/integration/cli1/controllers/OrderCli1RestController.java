@@ -20,7 +20,7 @@ import ar.edu.iw3.controllers.BaseRestController;
 import ar.edu.iw3.integration.cli1.model.OrderCli1;
 import ar.edu.iw3.integration.cli1.model.business.interfaces.IOrderCli1Business;
 
-@Tag(description = "API para Gestionar Ordenes desde Sistema Externo Administracion", name = "Cli1/Order")
+@Tag(name = "2. Cli1/Order", description = "API para Gestionar Ordenes desde Sistema Externo Administracion")
 @RestController
 @RequestMapping(Constants.URL_INTEGRATION_CLI1 + "/orders")
 @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLI1')")

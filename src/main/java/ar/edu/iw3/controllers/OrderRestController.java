@@ -4,11 +4,7 @@ import ar.edu.iw3.Constants;
 import ar.edu.iw3.auth.User;
 import ar.edu.iw3.model.Alarm;
 import ar.edu.iw3.model.Order;
-import ar.edu.iw3.model.business.exceptions.BadRequestException;
-import ar.edu.iw3.model.business.exceptions.BusinessException;
-import ar.edu.iw3.model.business.exceptions.NotFoundException;
 import ar.edu.iw3.model.business.interfaces.IOrderBusiness;
-import ar.edu.iw3.util.IStandartResponseBusiness;
 import ar.edu.iw3.util.StandartResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -84,26 +80,25 @@ public class OrderRestController extends BaseRestController {
     @SneakyThrows
     public ResponseEntity<?> getConciliationReport(@PathVariable("idOrder") Long idOrder,
                                                    @RequestHeader(value = HttpHeaders.ACCEPT,
-                                                           defaultValue = MediaType.APPLICATION_JSON_VALUE)
+                                                           defaultValue = MediaType.APPLICATION_PDF_VALUE)
                                                    String acceptHeader) {
         // Respuesta en JSON
         if (acceptHeader.equals(MediaType.APPLICATION_JSON_VALUE)) {
             Map<String, Object> conciliationData = orderBusiness.getConciliationJson(idOrder);
             return new ResponseEntity<>(conciliationData, HttpStatus.OK);
         }
-
+        // Respuesta en PDF
         byte[] pdfContent = orderBusiness.getConciliationPdf(idOrder);
         HttpHeaders headers = new HttpHeaders();
         headers.set(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_PDF_VALUE);
         headers.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"fuel-conciliation.pdf\"");
         return new ResponseEntity<>(pdfContent, headers, HttpStatus.OK);
-
     }
 
 
     @Operation(
             operationId = "acknowledge-alarm",
-            summary = "Acepta una alarma",
+            summary = "Reconoce una alarma",
             description = "Acepta una alarma y guarda la informacion del usuario responsable.")
     @io.swagger.v3.oas.annotations.parameters.RequestBody(
             required = true,
@@ -140,7 +135,7 @@ public class OrderRestController extends BaseRestController {
 
     @Operation(
             operationId = "issue-alarm",
-            summary = "Emite una alarma",
+            summary = "Marca como problematica a una alarma",
             description = "Emite una alarma y guarda la informacion del usuario responsable.")
     @io.swagger.v3.oas.annotations.parameters.RequestBody(
             required = true,
@@ -151,7 +146,7 @@ public class OrderRestController extends BaseRestController {
             )
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Alarma emitida exitosamente.", headers = {
+            @ApiResponse(responseCode = "201", description = "Alarma establecida con problemas.", headers = {
                     @io.swagger.v3.oas.annotations.headers.Header(name = "Location", description = "Ubicacion de la orden", schema = @Schema(type = "string"))}),
             @ApiResponse(responseCode = "401", description = "Autenticación requerida.", content = {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),

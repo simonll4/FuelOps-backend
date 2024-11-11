@@ -20,8 +20,8 @@ public interface ProductCli1Repository extends JpaRepository<ProductCli1, Long> 
 
     @Transactional
     @Modifying
-    @Query(value = "INSERT INTO cli1_products (id_product, id_cli1, cod_cli1temp) VALUES (:idProduct, :idCli1, :codCli1Temp)", nativeQuery = true)
+    @Query(value = "INSERT INTO cli1_products (id_product, id_cli1, cod_cli1temp) VALUES (:idProduct, :idCli1, :codCli1Temp) " +
+            "ON DUPLICATE KEY UPDATE id_product = id_product", nativeQuery = true)
     void insertProductCli1(@Param("idProduct") Long idProduct, @Param("idCli1") String idCli1, @Param("codCli1Temp") Boolean codCli1Temp);
-
 
 }

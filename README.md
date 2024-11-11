@@ -1,10 +1,27 @@
-## Proyecto IW3 - 2024
-# Backend for a Load Management Application
-## FuelOps
+# Backend - FuelOps
 
-We have developed this backend for a load management application. This server performs all the fundamental CRUD operations related to load management with user validation at every step. This project is developed by a team of developers.
+FuelOps es un sistema backend diseñado para administrar y monitorear órdenes de carga de gas líquido en una planta de
+combustible,
+integrando datos en tiempo real y sincronizándose con sistemas externos. Este servicio backend permite la creación,
+actualización
+y cierre de órdenes de carga, así como el reporte conciliación de datos ,de pesaje y carga, al final del proceso.
 
-## Tech Stack
+# Funcionalidades Principales
+
+- Autenticación y autorizacion de usuarios.
+- Sincronización con sistemas externos para recibir datos iniciales de ordenes y de pesajes.
+- Creación y actualización de órdenes de carga.
+- Gestión de estados de la orden (creación, carga en proceso, cierre).
+- Registro de datos en tiempo real para monitoreo y almacenamiento de carga.
+- Reportes conciliación de cargas.
+
+## Modules
+
+- Auth: Modulo encargado de exponer API para la autenticación y autorización de usuarios.
+- Integration: Modulo encargado de exponer API para la integración con sistemas externos.
+- General servies: Modulo encargado de exponer API para cliente web.
+
+## Stack Tecnológico
 
 - Java
 - Spring Framework
@@ -13,83 +30,45 @@ We have developed this backend for a load management application. This server pe
 - Hibernate
 - MySQL
 
-## Modules
+## Perfiles de Ejecución
 
-- Login, Logout Module
-- Order Module
-- Weight Module
-- Load Detail Module
+- **mysqldev**: Perfil de desarrollo que activa el perfil de Spring `mysqldev`. Utiliza una base de datos MySQL
+  configurada para desarrollo.
+- **mysqlprod**: Perfil de producción que activa el perfil de Spring `mysqlprod`. Utiliza una base de datos MySQL
+  configurada para producción.
+- **war-build**: Perfil de empaquetado que configura el proyecto para ser empaquetado como un archivo WAR. Este perfil
+  es activado por defecto si la propiedad `build` está configurada como `war`.
+- **jar-build**: Perfil de empaquetado que configura el proyecto para ser empaquetado como un archivo JAR. Este perfil
+  es activado si la propiedad `build` está configurada como `jar`.
 
-## Features
+Para activar un perfil específico, puedes usar el siguiente comando de Maven:
 
-- External interface authentication for clients and internal users authentication & validation with session token having validity of 1 hour for security purposes
-- **Order Features:**
-    - Create an order with basic details
-    - Retrieve order details
-    - Cancel an order
-- **Weight Features:**
-    - Register initial weight details for an order
-    - Create validation password to charge
-    - Register final weight details for an order
-- **Load Detail Features:**
-    - Validate password to charge
-    - Register load details for an order
-    - Close order
+```sh
+mvn clean install -P<profile-id>
+```
 
-## Contributors
+## Instalacion y Ejecucion del Proyecto: Dev
 
-- [simonll4](https://github.com/simonll4)
-- [MattGoode7](https://github.com/MattGoode7)
-- [Pandulc](https://github.com/Pandulc)
+Antes de iniciar el servidor, ejecute el archivo docker-compose.yml ubicado en la raíz del proyecto.
+Este archivo configura y levanta una base de datos para el perfil de ejecución mysqldev.
+
+## Postman Collection
+
+Puedes encontrar la colección de Postman para probar la API en el siguiente enlace:
+
+[Postman Collection - FuelOps API](<https://drive.google.com/file/d/1E8iaMf6G7WXBFj8npD88_DrCpJXe3am3/view?usp=sharing>)
 
 ## API Documentation
+
+La documentacion de la API se encuentra disponible en Swagger UI. Puede acceder
+a la documentación de la API en el siguiente enlace:
+
 ```
 http://localhost:8080/swagger-ui.html
 ```
-### API Endpoints
-#### 1. Login Module
-- POST `/api/v1/login`: Login
-#### 2. Order Module
-- POST `/api/v1/orders/acknowledge-alarm`: Acknowledge Alarm
-- POST `/api/v1/orders/issue-alarm`: Issue Alarm
-- GET `/api/v1/orders/conciliation/{id}`: Get Conciliation as PDF or JSON
-#### 3. SAP Module
-- POST `/api/v1/integration/cli1/orders/b2b`: Create Order
-- GET `/api/v1/integration/cli1/orders`: Get Orders
-- GET `/api/v1/integration/cli1/orders/{id}`: Get Order by ID
-- POST `/api/v1/integration/cli1/orders/cancel`: Cancel Order
-#### 3. Weight Module
-- POST `/api/v1/integration/cli2/orders/initial-weighing`: Initial Weighing for Order
-- POST `/api/v1/integration/cli2/orders/validate-password`: Validate Password for Charge
-- POST `/api/v1/integration/cli2/orders/final-weighing`: Final Weighing for Order
-#### 4. Load Detail Module
-- POST `/api/v1/integration/cli3/orders/validate-password`: Validate Password for Charge
-- POST `/api/v1/integration/cli3/orders/detail`: Register Load Details for Order
-- POST `/api/v1/integration/cli3/orders/close`: Close Order
 
-## Installation & Run
+## Contributors
 
-Before running the API server, you should update the database config inside the `application.properties` file. Update the port number, username, and password as per your local database config.
-
-```properties
-server.port=8080
-
-spring.datasource.url=jdbc:mysql://localhost:3306/loadmanagementdb
-spring.datasource.username=root
-spring.datasource.password=root
-```
-### Commands to Start the Server
-
-#### 1. Start Docker Compose
-
-```sh
-docker-compose up -d
-```
-#### 2. Install Dependencies with npm
-```sh
-npm install
-```
-
-#### 3. Run the Spring Boot Application
-
-You can run the application under two profiles: `mysql_dev` and `mysql_prod`. By default, the application runs under the `mysql_dev` profile.
+- [Simonll4](https://github.com/simonll4)
+- [MattGoode7](https://github.com/MattGoode7)
+- [Pandulc](https://github.com/Pandulc)

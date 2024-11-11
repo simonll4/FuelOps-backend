@@ -12,6 +12,7 @@ import io.swagger.v3.oas.models.info.License;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+
 @Configuration
 @OpenAPIDefinition( //Global
         security = @SecurityRequirement(name = "Bearer Authentication")
@@ -40,5 +41,4 @@ public class OpenApiConfig {
                         .license(new License().name("License").url("#"))
                 );
     }
-
 }

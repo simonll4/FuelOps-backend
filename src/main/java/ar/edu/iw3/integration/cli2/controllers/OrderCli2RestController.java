@@ -22,7 +22,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-@Tag(description = "API para Gestionar Ordenes desde Sistema Externo Balanza", name = "Cli2/Order")
+@Tag(name = "3. Cli2/Order", description = "API para Gestionar Ordenes desde Sistema Externo Balanza")
 @RestController
 @RequestMapping(Constants.URL_INTEGRATION_CLI2 + "/orders")
 @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLI2')")

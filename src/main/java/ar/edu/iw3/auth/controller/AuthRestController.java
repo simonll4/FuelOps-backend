@@ -2,7 +2,8 @@ package ar.edu.iw3.auth.controller;
 
 import java.util.ArrayList;
 import java.util.Date;
-
+import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -16,10 +17,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-
 import ar.edu.iw3.auth.User;
 import ar.edu.iw3.auth.custom.CustomAuthenticationManager;
 import ar.edu.iw3.auth.filters.AuthConstants;
@@ -27,6 +26,7 @@ import ar.edu.iw3.controllers.BaseRestController;
 import ar.edu.iw3.Constants;
 import ar.edu.iw3.util.IStandartResponseBusiness;
 
+@Tag(name = "1. Auth", description = "Autenticación de usuarios")
 @RestController
 public class AuthRestController extends BaseRestController {
 
@@ -36,7 +36,7 @@ public class AuthRestController extends BaseRestController {
     @Autowired
     private IStandartResponseBusiness response;
 
-        @PostMapping(value = Constants.URL_LOGIN, produces = MediaType.TEXT_PLAIN_VALUE)
+    @PostMapping(value = Constants.URL_LOGIN, produces = MediaType.TEXT_PLAIN_VALUE)
     public ResponseEntity<?> loginExternalOnlyToken(@RequestParam String username, @RequestParam String password) {
 
         Authentication auth = null;
@@ -65,6 +65,7 @@ public class AuthRestController extends BaseRestController {
     @Autowired
     private PasswordEncoder pEncoder;
 
+    @Hidden
     @GetMapping(value = "/demo/encodepass", produces = MediaType.TEXT_PLAIN_VALUE)
     public ResponseEntity<?> encodepass(@RequestParam String password) {
         try {

@@ -23,6 +23,7 @@
           <option value="Initial-Weight" />
           <option value="Order-Id" />
           <option value="Final-Weight" />
+          <option value="orderId" />
         </set>
       </option>
     </inspection_tool>

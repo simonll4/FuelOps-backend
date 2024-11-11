@@ -2,6 +2,7 @@ package ar.edu.iw3.integration.cli1.model.business.implementations;
 
 import java.util.List;
 import java.util.Optional;
+
 import ar.edu.iw3.integration.cli1.model.business.interfaces.*;
 import ar.edu.iw3.integration.cli1.model.persistence.OrderCli1Repository;
 import ar.edu.iw3.model.Order;
@@ -17,6 +18,7 @@ import ar.edu.iw3.model.business.exceptions.BusinessException;
 import ar.edu.iw3.model.business.exceptions.FoundException;
 import ar.edu.iw3.model.business.exceptions.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
+
 
 @Service
 @Slf4j
@@ -94,6 +96,14 @@ public class OrderCli1Business implements IOrderCli1Business {
             log.error(e.getMessage(), e);
             throw BusinessException.builder().ex(e).build();
         }
+
+        // Seteo de orderNumberCli1 tmp
+        if (order.getOrderNumberCli1() == null || order.getOrderNumberCli1().isBlank()) {
+            String codeCli1Temp = order.getPreset() + System.currentTimeMillis() + "";
+            order.setOrderNumberCli1(codeCli1Temp);
+            order.setCodCli1Temp(true);
+        }
+
         return add(order);
     }
 

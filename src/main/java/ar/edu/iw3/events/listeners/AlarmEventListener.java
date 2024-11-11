@@ -88,7 +88,7 @@ public class AlarmEventListener implements ApplicationListener<AlarmEvent> {
                         Por favor, revise esta alerta lo antes posible para evitar inconvenientes.
 
                         Atentamente,
-                        Sistema de Monitoreo de Carga de Combustible""",
+                        Sistema de Monitoreo de Carga de Combustible FuelOps""",
                 detail.getOrder().getId(),
                 detail.getOrder().getId(),
                 new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(now),

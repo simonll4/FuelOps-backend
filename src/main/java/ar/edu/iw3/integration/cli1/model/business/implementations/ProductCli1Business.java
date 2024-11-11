@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -96,7 +97,12 @@ public class ProductCli1Business implements IProductCli1Business {
             productDAO.insertProductCli1(findProduct.getId(), product.getIdCli1(), product.isCodCli1Temp());
             return findProduct;
         } catch (DataIntegrityViolationException e) {
-            throw BusinessException.builder().message("Error al mapear producto").build();
+            Optional<ProductCli1> existingProduct = productDAO.findOneByIdCli1(product.getIdCli1());
+            if (existingProduct.isPresent()) {
+                return existingProduct.get(); // Retornar el producto si ya existe
+            } else {
+                throw BusinessException.builder().message("Error en el mapeo de producto").build();
+            }
         }
     }
 }

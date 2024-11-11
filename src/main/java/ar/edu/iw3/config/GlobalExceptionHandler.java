@@ -4,13 +4,12 @@ import ar.edu.iw3.model.business.exceptions.*;
 import ar.edu.iw3.util.IStandartResponseBusiness;
 import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
+import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
@@ -20,6 +19,7 @@ import java.util.Map;
 
 
 @ControllerAdvice
+@RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @Autowired
@@ -63,5 +63,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<Object> handleBadRequestException(BadRequestException ex) {
         return new ResponseEntity<>(response.build(HttpStatus.BAD_REQUEST, ex, ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
+
+
 
 }
