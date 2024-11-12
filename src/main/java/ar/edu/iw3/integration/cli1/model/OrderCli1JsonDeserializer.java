@@ -9,6 +9,7 @@ import ar.edu.iw3.integration.cli1.model.business.interfaces.IProductCli1Busines
 import ar.edu.iw3.integration.cli1.model.business.interfaces.ITruckCli1Business;
 import ar.edu.iw3.integration.cli1.util.JsonUtilsCli1;
 import ar.edu.iw3.model.*;
+import ar.edu.iw3.model.business.exceptions.BadRequestException;
 import ar.edu.iw3.model.business.exceptions.BusinessException;
 import ar.edu.iw3.util.JsonUtils;
 import com.fasterxml.jackson.core.JsonParser;
@@ -52,32 +53,47 @@ public class OrderCli1JsonDeserializer extends StdDeserializer<OrderCli1> {
         OrderCli1 r = new OrderCli1();
         JsonNode node = jp.getCodec().readTree(jp);
 
-        int preset = (int) JsonUtils.getValue(node, ORDER_PRESET_ATTRIBUTES, 0);
-        String orderNumber = JsonUtils.getString(node, ORDER_NUMBER_ATTRIBUTES, "");
-        Date estimatedTime = JsonUtils.getDate(node, ORDER_ESTIMATED_DATE_ATTRIBUTES, String.valueOf(new Date()));
-        Driver driver = JsonUtilsCli1.getDriver(node, DRIVER_DOCUMENT_ATTRIBUTES, driverBusiness);
-        Truck truck = JsonUtilsCli1.getTruck(node, TRUCK_LICENSE_PLATE_ATTRIBUTES, truckBusiness);
-        Customer customer = JsonUtilsCli1.getCustomer(node, CUSTOMER_NAME_ATTRIBUTES, customerBusiness);
-        Product product = JsonUtilsCli1.getProduct(node, PRODUCT_NAME_ATTRIBUTES, productBusiness);
+        try {
+//            int preset = (int) JsonUtils.getValue(node, ORDER_PRESET_ATTRIBUTES, 0);
+//            String orderNumber = JsonUtils.getString(node, ORDER_NUMBER_ATTRIBUTES, "");
+//            Date estimatedTime = JsonUtils.getDate(node, ORDER_ESTIMATED_DATE_ATTRIBUTES, String.valueOf(new Date()));
 
-        r.setOrderNumberCli1(orderNumber);
-        r.setEstimatedTime(estimatedTime);
-        r.setExternalReceptionDate(new Date(System.currentTimeMillis()));
-        r.setPreset(preset);
 
-        System.out.println("OrderCli1JsonDeserializer.deserialize: orderNumber=" + orderNumber + ", estimatedTime=" + estimatedTime + ", preset=" + preset);
-        System.out.println("OrderCli1JsonDeserializer.deserialize: driver=" + driver + ", truck=" + truck + ", customer=" + customer + ", product=" + product);
+            int preset = (int) JsonUtils.getValue(node, ORDER_PRESET_ATTRIBUTES, 0);
+            if (preset < 0) {
+                throw new BadRequestException("Preset falta o no es válido");
+            }
+            String orderNumber = JsonUtils.getString(node, ORDER_NUMBER_ATTRIBUTES, "");
+            if (orderNumber == null || orderNumber.isEmpty()) {
+                throw new BadRequestException("Número de orden falta o es inválido");
+            }
+            Date estimatedTime = JsonUtils.getDate(node, ORDER_ESTIMATED_DATE_ATTRIBUTES, String.valueOf(new Date()));
+            if (estimatedTime == null) {
+                throw new BadRequestException("Fecha estimada falta o es inválida");
+            }
 
-        if (product != null && customer != null && truck != null && driver != null) {
-            r.setCustomer(customer);
-            r.setDriver(driver);
-            r.setProduct(product);
-            r.setTruck(truck);
-        } else {
-            throw new BusinessException("No se pudo cargar la orden");
+            Driver driver = JsonUtilsCli1.getDriver(node, DRIVER_DOCUMENT_ATTRIBUTES, driverBusiness);
+            Truck truck = JsonUtilsCli1.getTruck(node, TRUCK_LICENSE_PLATE_ATTRIBUTES, truckBusiness);
+            Customer customer = JsonUtilsCli1.getCustomer(node, CUSTOMER_NAME_ATTRIBUTES, customerBusiness);
+            Product product = JsonUtilsCli1.getProduct(node, PRODUCT_NAME_ATTRIBUTES, productBusiness);
+
+            r.setOrderNumberCli1(orderNumber);
+            r.setEstimatedTime(estimatedTime);
+            r.setExternalReceptionDate(new Date(System.currentTimeMillis()));
+            r.setPreset(preset);
+
+            if (product != null && customer != null && truck != null && driver != null) {
+                r.setCustomer(customer);
+                r.setDriver(driver);
+                r.setProduct(product);
+                r.setTruck(truck);
+            }
+
+            r.setStatus(Order.Status.ORDER_RECEIVED);
+            return r;
+        } catch (BadRequestException e) {
+            log.error(e.getMessage(), e);
+            throw new BusinessException(e.getMessage());
         }
-
-        r.setStatus(Order.Status.ORDER_RECEIVED);
-        return r;
     }
 }

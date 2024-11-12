@@ -44,7 +44,7 @@ public class OrderRestController extends BaseRestController {
             in = ParameterIn.HEADER,
             name = HttpHeaders.ACCEPT,
             schema = @Schema(type = "string", allowableValues = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_PDF_VALUE}),
-            description = "Tipo de respuesta. Puede ser 'application/json' (por defecto) o 'application/pdf'."
+            description = "Tipo de respuesta. Puede ser 'application/pdf' (por defecto) o 'application/json'."
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Conciliación obtenida con éxito en el formato especificado.",

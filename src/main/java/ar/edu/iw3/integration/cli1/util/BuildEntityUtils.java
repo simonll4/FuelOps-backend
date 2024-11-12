@@ -20,7 +20,7 @@ public class BuildEntityUtils {
         if (name != null && !name.isEmpty()) {
             newDriver.setName(name);
         } else {
-            throw new BadRequestException("El nombre del conductor no puede ser nulo o vací");
+            throw new BadRequestException("El nombre del conductor no puede ser nulo o vacío");
         }
 
         String lastName = JsonUtils.getString(driverNode, DRIVER_LASTNAME_ATTRIBUTES, "");
@@ -43,7 +43,6 @@ public class BuildEntityUtils {
             newDriver.setIdCli1(idCli1);
             newDriver.setCodCli1Temp(idCli1.equals(codeCli1Temp));
         }
-
         return newDriver;
     }
 
@@ -68,8 +67,6 @@ public class BuildEntityUtils {
         String description = JsonUtils.getString(truckNode, TRUCK_DESCRIPTION_ATTRIBUTES, "");
         if (description != null && !description.isEmpty()) {
             newTruck.setDescription(description);
-        } else {
-            throw new BadRequestException("La descripción del camión no puede ser nula o vacía");
         }
 
         Set<Tanker> newTankers = new HashSet<>();

@@ -88,8 +88,9 @@ public class OrderCli3Business implements IOrderCli3Business {
     @Override
     public Order closeOrder(Long orderId) throws BusinessException, NotFoundException, ConflictException {
         Optional<Order> order;
+
         try {
-            order = orderDAO.findById(orderId);
+            order = orderDAO.findByIdAndStatus(orderId, Order.Status.REGISTERED_INITIAL_WEIGHING);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             throw new BusinessException("Error al recuperar orden", e);

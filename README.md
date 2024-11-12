@@ -15,11 +15,11 @@ y cierre de órdenes de carga, así como el reporte conciliación de datos ,de p
 - Registro de datos en tiempo real para monitoreo y almacenamiento de carga.
 - Reportes conciliación de cargas.
 
-## Modules
+## Modulos
 
 - Auth: Modulo encargado de exponer API para la autenticación y autorización de usuarios.
 - Integration: Modulo encargado de exponer API para la integración con sistemas externos.
-- General servies: Modulo encargado de exponer API para cliente web.
+- General Services: Modulo encargado de exponer API para cliente web.
 
 ## Stack Tecnológico
 

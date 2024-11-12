@@ -2,9 +2,6 @@ package ar.edu.iw3.model;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Future;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -43,8 +40,6 @@ public class Order {
     @Column(unique = true)
     private Integer activatePassword;
 
-    @Min(value = 1, message = "El atributo 'preset' tiene que ser mayor a cero")
-    //@NotEmpty(message = "El atributo 'preset' no puede estar vacío")
     @Column(nullable = false)
     private int preset;
 
@@ -87,8 +82,6 @@ public class Order {
     private Set<Alarm> alarms;
 
     // fechas y horas de los eventos durante el proceso
-    @Future(message = "La fecha estimada tiene que ser futura")
-    //@NotEmpty(message = "La fecha estimada no puede estar vacía")
     private Date estimatedTime;
 
     private Date externalReceptionDate;

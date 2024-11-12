@@ -92,7 +92,7 @@ public class OrderCli2Business implements IOrderCli2Business {
         Product product = order.getProduct();
 
         try {
-            byte[] consiliation = PdfGenerator.generateFuelLoadingReconciliationReport(
+            byte[] conciliation = PdfGenerator.generateFuelLoadingReconciliationReport(
                     initialWeighing,
                     finalWeight,
                     productLoaded,
@@ -104,7 +104,7 @@ public class OrderCli2Business implements IOrderCli2Business {
                     product
             );
             orderBusiness.update(order);
-            return consiliation;
+            return conciliation;
         } catch (DocumentException | IOException e) {
             log.error("Error generando el PDF: {}", e.getMessage(), e);
             throw BusinessException.builder().message("Error al generar el reporte PDF").ex(e).build();

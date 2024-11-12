@@ -2,11 +2,10 @@ package ar.edu.iw3.integration.cli1.model.business.implementations;
 
 import java.util.List;
 import java.util.Optional;
-
 import ar.edu.iw3.integration.cli1.model.business.interfaces.*;
 import ar.edu.iw3.integration.cli1.model.persistence.OrderCli1Repository;
 import ar.edu.iw3.model.Order;
-import ar.edu.iw3.model.business.exceptions.BadRequestException;
+import ar.edu.iw3.model.business.exceptions.*;
 import ar.edu.iw3.util.JsonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,9 +13,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ar.edu.iw3.integration.cli1.model.OrderCli1;
 import ar.edu.iw3.integration.cli1.model.OrderCli1JsonDeserializer;
-import ar.edu.iw3.model.business.exceptions.BusinessException;
-import ar.edu.iw3.model.business.exceptions.FoundException;
-import ar.edu.iw3.model.business.exceptions.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 
 
@@ -86,15 +82,16 @@ public class OrderCli1Business implements IOrderCli1Business {
     }
 
     @Override
-    public OrderCli1 addExternal(String json) throws FoundException, BusinessException, BadRequestException {
+    public OrderCli1 addExternal(String json) throws FoundException, BusinessException, BadRequestException, UnProcessableException {
         ObjectMapper mapper = JsonUtils.getObjectMapper(OrderCli1.class, new OrderCli1JsonDeserializer(
                 OrderCli1.class, driverBusiness, truckBusiness, customerBusiness, productBusiness), null);
         OrderCli1 order;
+
         try {
             order = mapper.readValue(json, OrderCli1.class);
         } catch (JsonProcessingException e) {
             log.error(e.getMessage(), e);
-            throw BusinessException.builder().ex(e).build();
+            throw UnProcessableException.builder().message("El formato JSON es incorrecto").build();
         }
 
         // Seteo de orderNumberCli1 tmp

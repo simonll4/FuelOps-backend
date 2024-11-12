@@ -1,7 +1,7 @@
 package ar.edu.iw3.integration.cli2.controllers;
 
 import ar.edu.iw3.Constants;
-import ar.edu.iw3.integration.cli2.model.business.implementaions.OrderCli2Business;
+import ar.edu.iw3.integration.cli2.model.business.interfaces.IOrderCli2Business;
 import ar.edu.iw3.model.Order;
 import ar.edu.iw3.util.StandartResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.*;
 public class OrderCli2RestController {
 
     @Autowired
-    OrderCli2Business orderCli2Business;
+    IOrderCli2Business orderCli2Business;
 
     @Operation(
             operationId = "initial-weighing",

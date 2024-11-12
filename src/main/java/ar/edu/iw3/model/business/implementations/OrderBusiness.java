@@ -71,7 +71,6 @@ public class OrderBusiness implements IOrderBusiness {
     @Autowired
     IUserBusiness userBusiness;
 
-    // todo reutilizar codigo entre este metodo y el de abajo
     @Override
     public Order acknowledgeAlarm(Alarm alarm, User user) throws BusinessException, NotFoundException, ConflictException {
         Alarm alarmFound = alarmBusiness.load(alarm.getId());
