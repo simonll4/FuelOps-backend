@@ -13,8 +13,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import ar.edu.iw3.auth.IUserBusiness;
-import ar.edu.iw3.auth.User;
+import ar.edu.iw3.auth.model.business.interfaces.IUserAuthBusiness;
+import ar.edu.iw3.auth.model.User;
 import ar.edu.iw3.model.business.exceptions.BusinessException;
 import ar.edu.iw3.model.business.exceptions.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
@@ -22,11 +22,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class CustomAuthenticationManager implements AuthenticationManager {
 
-    private IUserBusiness userBusiness;
+    private IUserAuthBusiness userBusiness;
 
     private PasswordEncoder pEncoder;
 
-    public CustomAuthenticationManager(PasswordEncoder pEncoder, IUserBusiness userBusiness) {
+    public CustomAuthenticationManager(PasswordEncoder pEncoder, IUserAuthBusiness userBusiness) {
         this.pEncoder = pEncoder;
         this.userBusiness = userBusiness;
     }

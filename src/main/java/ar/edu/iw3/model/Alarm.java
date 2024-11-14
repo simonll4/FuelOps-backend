@@ -1,6 +1,6 @@
 package ar.edu.iw3.model;
 
-import ar.edu.iw3.auth.User;
+import ar.edu.iw3.auth.model.User;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

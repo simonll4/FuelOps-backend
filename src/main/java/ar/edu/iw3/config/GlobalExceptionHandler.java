@@ -20,6 +20,8 @@ import java.util.Map;
 @RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
+    // todo tratar esta excepcion JsonProcessingException es de los serealizadores
+
     @Autowired
     private IStandartResponseBusiness response;
 

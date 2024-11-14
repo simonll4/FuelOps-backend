@@ -1,7 +1,6 @@
 package ar.edu.iw3.auth.filters;
 
 import java.io.IOException;
-import java.nio.file.AccessDeniedException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -19,8 +18,8 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 
-import ar.edu.iw3.auth.Role;
-import ar.edu.iw3.auth.User;
+import ar.edu.iw3.auth.model.Role;
+import ar.edu.iw3.auth.model.User;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

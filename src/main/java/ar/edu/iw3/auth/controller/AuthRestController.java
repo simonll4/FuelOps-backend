@@ -2,8 +2,15 @@ package ar.edu.iw3.auth.controller;
 
 import java.util.ArrayList;
 import java.util.Date;
+
+import ar.edu.iw3.auth.model.serializers.UserSlimV1JsonSerializer;
+import ar.edu.iw3.model.Order;
+import ar.edu.iw3.util.JsonUtils;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -13,13 +20,10 @@ import org.springframework.security.authentication.AuthenticationServiceExceptio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-import ar.edu.iw3.auth.User;
+import ar.edu.iw3.auth.model.User;
 import ar.edu.iw3.auth.custom.CustomAuthenticationManager;
 import ar.edu.iw3.auth.filters.AuthConstants;
 import ar.edu.iw3.controllers.BaseRestController;
@@ -35,6 +39,9 @@ public class AuthRestController extends BaseRestController {
 
     @Autowired
     private IStandartResponseBusiness response;
+
+    @Autowired
+    private PasswordEncoder pEncoder;
 
     @PostMapping(value = Constants.URL_LOGIN, produces = MediaType.TEXT_PLAIN_VALUE)
     public ResponseEntity<?> loginExternalOnlyToken(@RequestParam String username, @RequestParam String password) {
@@ -62,8 +69,15 @@ public class AuthRestController extends BaseRestController {
         return new ResponseEntity<String>(token, HttpStatus.OK);
     }
 
-    @Autowired
-    private PasswordEncoder pEncoder;
+    // todo - documentar
+    @SneakyThrows
+    @GetMapping(value = Constants.URL_TOKEN_VALIDATE , produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> validateToken()  {
+        User user = getUserLogged();
+        StdSerializer<User> ser = new UserSlimV1JsonSerializer(User.class, false);
+        String result = JsonUtils.getObjectMapper(User.class, ser, null).writeValueAsString(user);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
 
     @Hidden
     @GetMapping(value = "/demo/encodepass", produces = MediaType.TEXT_PLAIN_VALUE)

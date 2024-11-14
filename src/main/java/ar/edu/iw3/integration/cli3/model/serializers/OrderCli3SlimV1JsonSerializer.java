@@ -1,4 +1,4 @@
-package ar.edu.iw3.integration.cli3;
+package ar.edu.iw3.integration.cli3.model.serializers;
 
 import ar.edu.iw3.model.Order;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -14,12 +14,10 @@ public class OrderCli3SlimV1JsonSerializer extends StdSerializer<Order> {
     }
 
     @Override
-    public void serialize(Order order, JsonGenerator gen, SerializerProvider serializerProvider) throws IOException {
-
-        gen.writeStartObject();
-        gen.writeNumberField("id", order.getId());
-        gen.writeNumberField("preset", order.getPreset());
-        gen.writeEndObject();
-
+    public void serialize(Order order, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
+        jsonGenerator.writeStartObject();
+        jsonGenerator.writeNumberField("id", order.getId());
+        jsonGenerator.writeNumberField("preset", order.getPreset());
+        jsonGenerator.writeEndObject();
     }
 }

@@ -1,7 +1,7 @@
 package ar.edu.iw3.controllers;
 
 import ar.edu.iw3.Constants;
-import ar.edu.iw3.auth.User;
+import ar.edu.iw3.auth.model.User;
 import ar.edu.iw3.model.Alarm;
 import ar.edu.iw3.model.Order;
 import ar.edu.iw3.model.business.interfaces.IOrderBusiness;

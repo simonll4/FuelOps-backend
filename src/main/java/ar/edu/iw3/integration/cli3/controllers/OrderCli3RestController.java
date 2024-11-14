@@ -1,7 +1,7 @@
 package ar.edu.iw3.integration.cli3.controllers;
 
 import ar.edu.iw3.Constants;
-import ar.edu.iw3.integration.cli3.OrderCli3SlimV1JsonSerializer;
+import ar.edu.iw3.integration.cli3.model.serializers.OrderCli3SlimV1JsonSerializer;
 import ar.edu.iw3.integration.cli3.model.business.interfaces.IOrderCli3Business;
 import ar.edu.iw3.model.Detail;
 import ar.edu.iw3.model.Order;

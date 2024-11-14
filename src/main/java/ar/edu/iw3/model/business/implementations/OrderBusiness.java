@@ -1,7 +1,7 @@
 package ar.edu.iw3.model.business.implementations;
 
-import ar.edu.iw3.auth.IUserBusiness;
-import ar.edu.iw3.auth.User;
+import ar.edu.iw3.auth.model.business.interfaces.IUserAuthBusiness;
+import ar.edu.iw3.auth.model.User;
 import ar.edu.iw3.model.Alarm;
 import ar.edu.iw3.model.Order;
 import ar.edu.iw3.model.Product;
@@ -69,7 +69,7 @@ public class OrderBusiness implements IOrderBusiness {
     }
 
     @Autowired
-    IUserBusiness userBusiness;
+    IUserAuthBusiness userBusiness;
 
     @Override
     public Order acknowledgeAlarm(Alarm alarm, User user) throws BusinessException, NotFoundException, ConflictException {

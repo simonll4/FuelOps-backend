@@ -1,4 +1,4 @@
-package ar.edu.iw3.auth;
+package ar.edu.iw3.auth.model;
 
 import java.io.Serializable;
 

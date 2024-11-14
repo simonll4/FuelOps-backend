@@ -18,7 +18,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import ar.edu.iw3.auth.IUserBusiness;
+import ar.edu.iw3.auth.model.business.interfaces.IUserAuthBusiness;
 import ar.edu.iw3.auth.custom.CustomAuthenticationManager;
 import ar.edu.iw3.auth.filters.JWTAuthorizationFilter;
 
@@ -33,7 +33,7 @@ public class SecurityConfig {
     }
 
     @Autowired
-    private IUserBusiness userBusiness;
+    private IUserAuthBusiness userBusiness;
 
     @Autowired
     private AccessDeniedHandler accessDeniedHandler;

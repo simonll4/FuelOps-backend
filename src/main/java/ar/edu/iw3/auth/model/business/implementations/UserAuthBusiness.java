@@ -1,8 +1,12 @@
-package ar.edu.iw3.auth;
+package ar.edu.iw3.auth.model.business.implementations;
 
 import java.util.List;
 import java.util.Optional;
 
+import ar.edu.iw3.auth.model.User;
+import ar.edu.iw3.auth.model.persistence.UserAuthRepository;
+import ar.edu.iw3.auth.model.business.exceptions.BadPasswordException;
+import ar.edu.iw3.auth.model.business.interfaces.IUserAuthBusiness;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -13,10 +17,10 @@ import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-public class UserBusiness implements IUserBusiness {
+public class UserAuthBusiness implements IUserAuthBusiness {
 
 	@Autowired
-	private UserRepository userDAO;
+	private UserAuthRepository userDAO;
 
 	@Override
 	public User load(String usernameOrEmail) throws NotFoundException, BusinessException {

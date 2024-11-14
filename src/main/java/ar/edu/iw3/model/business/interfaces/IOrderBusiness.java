@@ -1,6 +1,6 @@
 package ar.edu.iw3.model.business.interfaces;
 
-import ar.edu.iw3.auth.User;
+import ar.edu.iw3.auth.model.User;
 import ar.edu.iw3.model.Alarm;
 import ar.edu.iw3.model.Order;
 import ar.edu.iw3.model.business.exceptions.BusinessException;

@@ -32,7 +32,7 @@ public class Scheduler {
     private SimpMessagingTemplate wSock;
 
     // Recordatorio de alarmas sin aceptar para clientes de la aplicacion front
-    @Scheduled(fixedDelay = 15, initialDelay = 0, timeUnit = TimeUnit.SECONDS)
+    @Scheduled(fixedDelay = 15, initialDelay = 15, timeUnit = TimeUnit.SECONDS)
     public void alarmReminder() {
         try {
             List<Alarm> alarms = alarmBusiness.pendingReview();

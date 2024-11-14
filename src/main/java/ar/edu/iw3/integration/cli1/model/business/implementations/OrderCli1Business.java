@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ar.edu.iw3.integration.cli1.model.OrderCli1;
-import ar.edu.iw3.integration.cli1.model.OrderCli1JsonDeserializer;
+import ar.edu.iw3.integration.cli1.model.deserializers.OrderCli1JsonDeserializer;
 import lombok.extern.slf4j.Slf4j;
 
 
