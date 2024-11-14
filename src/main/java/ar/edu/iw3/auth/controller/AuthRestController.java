@@ -9,6 +9,11 @@ import ar.edu.iw3.util.JsonUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,7 +74,11 @@ public class AuthRestController extends BaseRestController {
         return new ResponseEntity<String>(token, HttpStatus.OK);
     }
 
-    // todo - documentar
+    @Operation(operationId = "validate_token", summary = "Validar token", description = "Valida el token del usuario logueado")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Usuario logueado", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = User.class))}),
+    })
     @SneakyThrows
     @GetMapping(value = Constants.URL_TOKEN_VALIDATE , produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> validateToken()  {
