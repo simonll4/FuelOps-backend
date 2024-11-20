@@ -33,6 +33,16 @@ public class OrderRestController extends BaseRestController {
     @Autowired
     private IOrderBusiness orderBusiness;
 
+    // todo get all orders con paginacion, adaptar el metodo list de IOrderBusiness
+    //  fechas mas recientes primero y dar la posbilidad de filtrar por estado
+    // serealizer: id,patenete camion, nombre cliente, fecha recepcion, fecha estimada, estado
+    // objeto estado alarma 3 boleanos que dicen si hay alguna alarma con ese estado para la orden
+    // devolver informacion de paginacion
+
+    // todo get order by id
+    // serealizer: id,patente camion,preset, nombre cliente, fecha recepcion, fecha estimada, fecha pesaje inicial y final,
+    // fecha inicio y fin de carga
+
     @Operation(
             operationId = "get-conciliation",
             summary = "Obtener conciliacion de orden de carga finalizada",
@@ -76,7 +86,7 @@ public class OrderRestController extends BaseRestController {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))})
     })
     @GetMapping("/conciliation/{idOrder}")
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')  or hasRole('ROLE_CLI1') or hasRole('ROLE_CLI2') or hasRole('ROLE_CLI3')")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_OPERATOR')  or hasRole('ROLE_CLI1') or hasRole('ROLE_CLI2') or hasRole('ROLE_CLI3')")
     @SneakyThrows
     public ResponseEntity<?> getConciliationReport(@PathVariable("idOrder") Long idOrder,
                                                    @RequestHeader(value = HttpHeaders.ACCEPT,
@@ -124,7 +134,7 @@ public class OrderRestController extends BaseRestController {
     })
     @SneakyThrows
     @PostMapping("/acknowledge-alarm")
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_OPERATOR')")
     public ResponseEntity<?> acknowledgeAlarm(@RequestBody Alarm alarm) {
         User user = getUserLogged();
         Order order = orderBusiness.acknowledgeAlarm(alarm, user);
@@ -161,7 +171,7 @@ public class OrderRestController extends BaseRestController {
     })
     @SneakyThrows
     @PostMapping("/issue-alarm")
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_OPERATOR')")
     public ResponseEntity<?> confirmIssueAlarm(@RequestBody Alarm alarm) {
         User user = getUserLogged();
         Order order = orderBusiness.confirmIssueAlarm(alarm, user);

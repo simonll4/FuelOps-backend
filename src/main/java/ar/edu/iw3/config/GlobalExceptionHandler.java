@@ -2,6 +2,7 @@ package ar.edu.iw3.config;
 
 import ar.edu.iw3.model.business.exceptions.*;
 import ar.edu.iw3.util.IStandartResponseBusiness;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
@@ -19,8 +20,6 @@ import java.util.Map;
 @ControllerAdvice
 @RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
-
-    // todo tratar esta excepcion JsonProcessingException es de los serealizadores
 
     @Autowired
     private IStandartResponseBusiness response;
@@ -62,6 +61,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<Object> handleBadRequestException(BadRequestException ex) {
         return new ResponseEntity<>(response.build(HttpStatus.BAD_REQUEST, ex, ex.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+
+    // todo tratar esta excepcion JsonProcessingException es de los serealizadores
+    // revisar
+    @ExceptionHandler(JsonProcessingException.class)
+    public ResponseEntity<Object> handleJsonProcessingException(JsonProcessingException ex) {
+        return new ResponseEntity<>(response.build(HttpStatus.INTERNAL_SERVER_ERROR, ex, ex.getMessage()),
+                HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 }

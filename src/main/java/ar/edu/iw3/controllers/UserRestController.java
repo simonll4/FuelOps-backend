@@ -65,7 +65,7 @@ public class UserRestController extends BaseRestController {
     })
     @Parameter(in = ParameterIn.PATH, name = "user", description = "Nombre del usuario a cargar", required = true)
     @SneakyThrows
-    @GetMapping(value = "/{user}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/name/{user}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> loadUser(@PathVariable String user) {
         return new ResponseEntity<>(userBusiness.load(user), HttpStatus.OK);
     }

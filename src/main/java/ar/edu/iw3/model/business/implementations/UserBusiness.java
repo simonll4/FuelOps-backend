@@ -62,13 +62,14 @@ public class UserBusiness implements IUserBusiness {
 
     @Override
     public User add(User user) throws FoundException, BusinessException {
+
         try {
             load(user.getId());
             throw FoundException.builder().message("Se encontro el Usuario con id = " + user.getId()).build();
         } catch (NotFoundException ignored) {
         }
 
-        try{
+        try {
             load(user.getUsername());
             throw FoundException.builder().message("Se encontro el Usuario " + user.getUsername()).build();
         } catch (NotFoundException ignored) {
@@ -87,18 +88,18 @@ public class UserBusiness implements IUserBusiness {
         load(user.getId());
         Optional<User> userFound;
 
-        try{
+        try {
             userFound = userDAO.findByUsernameAndIdNot(user.getUsername(), user.getId());
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             throw BusinessException.builder().ex(e).build();
         }
 
-        if(userFound.isPresent()){
+        if (userFound.isPresent()) {
             throw FoundException.builder().message("Se encontro el Usuario " + user.getUsername()).build();
         }
 
-        try{
+        try {
             return userDAO.save(user);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -122,6 +123,5 @@ public class UserBusiness implements IUserBusiness {
             throw BusinessException.builder().ex(e).build();
         }
     }
-
 
 }

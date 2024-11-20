@@ -5,9 +5,12 @@ public final class Constants {
     public static final String URL_API_VERSION = "/v1";
     public static final String URL_BASE = URL_API + URL_API_VERSION;
 
-    // Auth service
+    // Exteral Auth services
+    public static final String URL_EXTERNAL_LOGIN = URL_BASE + "/login";
+
+    // Internal Auth services
     public static final String URL_AUTH = URL_BASE + "/auth";
-    public static final String URL_LOGIN = URL_AUTH + "/login";
+    public static final String URL_INTERNAL_LOGIN = URL_AUTH + "/login";
     public static final String URL_TOKEN_VALIDATE = URL_AUTH + "/validate";
 
     // General services
@@ -21,5 +24,4 @@ public final class Constants {
     public static final String URL_INTEGRATION_CLI1 = URL_INTEGRATION + "/cli1";
     public static final String URL_INTEGRATION_CLI2 = URL_INTEGRATION + "/cli2";
     public static final String URL_INTEGRATION_CLI3 = URL_INTEGRATION + "/cli3";
-
 }
