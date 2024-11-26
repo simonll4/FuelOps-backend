@@ -6,9 +6,13 @@ import ar.edu.iw3.model.business.exceptions.BusinessException;
 import ar.edu.iw3.model.business.exceptions.FoundException;
 import ar.edu.iw3.model.business.exceptions.NotFoundException;
 import ar.edu.iw3.model.business.interfaces.IAlarmBusiness;
+import ar.edu.iw3.model.business.interfaces.IOrderBusiness;
 import ar.edu.iw3.model.persistence.AlarmRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -92,6 +96,15 @@ public class AlarmBusiness implements IAlarmBusiness {
             throw new NotFoundException("No alarm found with status PENDING_REVIEW");
         }
         return alarm.get();
+    }
+
+    @Override
+    public Page<Alarm> getAllAlarmsByOrder(Order order, Pageable pageable) {
+
+        Optional<Page<Alarm>> alarms = alarmDAO.findAllByOrder(order, pageable);
+
+        return alarms.orElseGet(Page::empty);
+
     }
 
 }

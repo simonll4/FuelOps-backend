@@ -75,8 +75,13 @@ public class AuthRestController extends BaseRestController {
     }
 
 
-    // todo breve doc
-    // login devuelve el token e informacion basica del user
+    @Operation(operationId = "login_internal", summary = "Login interno", description = "Login interno de la aplicacion")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Usuario logueado", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = User.class))}),
+            @ApiResponse(responseCode = "500", description = "Error interno", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = User.class))}),
+    })
     @SneakyThrows
     @PostMapping(value = Constants.URL_INTERNAL_LOGIN, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> loginInternal(@RequestBody User user) {

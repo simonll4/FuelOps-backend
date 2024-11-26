@@ -1,6 +1,8 @@
 package ar.edu.iw3.model.business.implementations;
 
+import ar.edu.iw3.model.Alarm;
 import ar.edu.iw3.model.Detail;
+import ar.edu.iw3.model.Order;
 import ar.edu.iw3.model.business.exceptions.BusinessException;
 import ar.edu.iw3.model.business.exceptions.FoundException;
 import ar.edu.iw3.model.business.exceptions.NotFoundException;
@@ -8,6 +10,8 @@ import ar.edu.iw3.model.business.interfaces.IDetailBusiness;
 import ar.edu.iw3.model.persistence.DetailRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
@@ -51,6 +55,13 @@ public class DetailBusiness implements IDetailBusiness {
             throw BusinessException.builder().message("Error al Crear Nuevo Detalle").build();
         }
 
+    }
+
+    @Override
+    public Page<Detail> listByOrder(Order order, Pageable pageable) {
+        Optional<Page<Detail>> details = detailDAO.findAllByOrder(order, pageable);
+
+        return details.orElseGet(Page::empty);
     }
 
     // lista todos los detalles de una orden

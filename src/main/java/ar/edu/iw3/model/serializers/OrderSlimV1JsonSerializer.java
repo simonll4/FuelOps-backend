@@ -1,10 +1,10 @@
 package ar.edu.iw3.model.serializers;
 
 import ar.edu.iw3.model.Order;
+import ar.edu.iw3.util.OrderUtils;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-
 import java.io.IOException;
 
 public class OrderSlimV1JsonSerializer extends StdSerializer<Order> {
@@ -31,6 +31,12 @@ public class OrderSlimV1JsonSerializer extends StdSerializer<Order> {
         // Objeto "customer"
         jsonGenerator.writeObjectFieldStart("customer");
         jsonGenerator.writeStringField("businessName", order.getCustomer().getBusinessName());
+        jsonGenerator.writeEndObject();
+
+        // Estado de alarmas
+        String alarmStatus = OrderUtils.getAlarmStatus(order);
+        jsonGenerator.writeObjectFieldStart("alarmStatus");
+        jsonGenerator.writeStringField("state", alarmStatus);
         jsonGenerator.writeEndObject();
 
         // Campo de fechas y estado
