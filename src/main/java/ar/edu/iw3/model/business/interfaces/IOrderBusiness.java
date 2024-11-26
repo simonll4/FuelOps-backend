@@ -7,13 +7,15 @@ import ar.edu.iw3.model.business.exceptions.BusinessException;
 import ar.edu.iw3.model.business.exceptions.ConflictException;
 import ar.edu.iw3.model.business.exceptions.FoundException;
 import ar.edu.iw3.model.business.exceptions.NotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Map;
 
 public interface IOrderBusiness {
 
-    public List<Order> list() throws BusinessException;
+    public Page<Order> list(Pageable pageable) throws BusinessException;
 
     public Order load(long id) throws NotFoundException, BusinessException;
 

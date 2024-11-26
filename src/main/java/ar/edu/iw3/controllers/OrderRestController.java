@@ -5,7 +5,13 @@ import ar.edu.iw3.auth.model.User;
 import ar.edu.iw3.model.Alarm;
 import ar.edu.iw3.model.Order;
 import ar.edu.iw3.model.business.interfaces.IOrderBusiness;
+import ar.edu.iw3.model.serializers.OrderSlimV1JsonSerializer;
+import ar.edu.iw3.util.JsonUtils;
+import ar.edu.iw3.util.PaginationInfo;
 import ar.edu.iw3.util.StandartResponse;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -16,6 +22,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -23,6 +33,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.io.StringWriter;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Tag(description = "API Interna para Gestionar Ordenes", name = "Order")
@@ -33,15 +47,184 @@ public class OrderRestController extends BaseRestController {
     @Autowired
     private IOrderBusiness orderBusiness;
 
-    // todo get all orders con paginacion, adaptar el metodo list de IOrderBusiness
-    //  fechas mas recientes primero y dar la posbilidad de filtrar por estado
-    // serealizer: id,patenete camion, nombre cliente, fecha recepcion, fecha estimada, estado
-    // objeto estado alarma 3 boleanos que dicen si hay alguna alarma con ese estado para la orden
-    // devolver informacion de paginacion
+    // todo verificar funcionamiento
 
-    // todo get order by id
-    // serealizer: id,patente camion,preset, nombre cliente, fecha recepcion, fecha estimada, fecha pesaje inicial y final,
-    // fecha inicio y fin de carga
+    @Operation(
+            operationId = "get-all-orders",
+            summary = "Obtener todas las ordenes de carga",
+            description = "Devuelve todas las ordenes de carga en formato JSON.")
+    @Parameter(in = ParameterIn.QUERY, name = "page", schema = @Schema(type = "integer"), required = true, description = "Número de página.")
+    @Parameter(in = ParameterIn.QUERY, name = "size", schema = @Schema(type = "integer"), required = true, description = "Cantidad de elementos por página.")
+    @Parameter(in = ParameterIn.QUERY, name = "sort", schema = @Schema(type = "string"), required = false, description = "Campo y dirección de ordenamiento (ejemplo: 'externalReceptionDate,desc').")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ordenes obtenidas con éxito.",
+                    content = {
+                            @Content(mediaType = "application/json", schema = @Schema(type = "object",
+                                    example = """
+                                            {
+                                              "content": [
+                                                {
+                                                  "id": 0,
+                                                  "truck": {
+                                                    "licensePlate": "String"
+                                                  },
+                                                  "customer": {
+                                                    "businessName": "String"
+                                                  },
+                                                  "receptionDate": "String",
+                                                  "estimatedDate": "String",
+                                                  "status": "String"
+                                                }
+                                              ],
+                                              "pagination": {
+                                                "pageable": {
+                                                  "pageNumber": 0,
+                                                  "pageSize": 0,
+                                                  "sort": {
+                                                    "sorted": false,
+                                                    "unsorted": true,
+                                                    "empty": true
+                                                  }
+                                                },
+                                                "totalPages": 0,
+                                                "totalElements": 0,
+                                                "number": 0,
+                                                "size": 0,
+                                                "numberOfElements": 0
+                                              }
+                                            }
+                                            """)),
+                            @Content(mediaType = "application/pdf")
+                    }
+            ),
+            @ApiResponse(responseCode = "401", description = "Autenticación requerida.", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
+            @ApiResponse(responseCode = "403", description = "Permisos insuficientes para acceder al recurso.", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
+            @ApiResponse(responseCode = "404", description = "Recurso no encontrado.", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
+            @ApiResponse(responseCode = "500", description = "Error interno.", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))})
+    })
+    @GetMapping(value = "", params = {"page", "size"}, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_OPERATOR')")
+    @SneakyThrows
+    public ResponseEntity<?> getAll(@RequestParam("page") int page,
+                                    @RequestParam("size") int size,
+                                    @RequestParam(value = "sort", required = false, defaultValue = "externalReceptionDate,desc") String sort) {
+        Pageable pageable;
+
+        if (sort != null && !sort.isEmpty()) {
+            String[] sortParams = sort.split(",");
+            if (sortParams.length == 2) {
+                String sortField = sortParams[0];
+                String sortDirection = sortParams[1].toLowerCase();
+
+                Sort.Direction direction = sortDirection.equals("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+                pageable = PageRequest.of(page, size, Sort.by(direction, sortField));
+            } else {
+                throw new IllegalArgumentException("El parámetro 'sort' debe tener el formato 'campo,direccion' (ejemplo: 'externalReceptionDate,desc')");
+            }
+        } else {
+            pageable = PageRequest.of(page, size);
+        }
+
+        Page<Order> orders = orderBusiness.list(pageable);
+
+        StdSerializer<Order> orderSerializer = new OrderSlimV1JsonSerializer(Order.class, false);
+        ObjectMapper mapper = JsonUtils.getObjectMapper(Order.class, orderSerializer, null);
+
+        // Convertir cada orden a JSON y agregarla al resultado
+        List<String> serializedOrders = orders.getContent().stream()
+                .map(order -> {
+                    try {
+                        return mapper.writeValueAsString(order);
+                    } catch (IOException e) {
+                        throw new RuntimeException("Error al serializar el objeto Order", e);
+                    }
+                }).toList();
+
+        // Crear un objeto de información de paginación
+        PaginationInfo paginationInfo = new PaginationInfo(
+                orders.getPageable(),
+                orders.getTotalPages(),
+                orders.getTotalElements(),
+                orders.getNumber(),
+                orders.getSize(),
+                orders.getNumberOfElements()
+        );
+
+        // Crear la respuesta
+        Map<String, Object> response = new HashMap<>();
+        response.put("content", serializedOrders);
+        response.put("pagination", paginationInfo);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    // todo verificar funcionamiento
+
+    @Operation(
+            operationId = "get-order-by-id",
+            summary = "Obtener una orden de carga por su ID",
+            description = "Devuelve una orden de carga en formato JSON.")
+    @Parameter(in = ParameterIn.PATH, name = "id", schema = @Schema(type = "Long"), required = true, description = "Identificador de la orden.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Orden obtenida con éxito.",
+                    content = {
+                            @Content(mediaType = "application/json", schema = @Schema(type = "object",
+                                    example = """
+                                            {
+                                              "id": 0,
+                                              "truck": {
+                                                "licensePlate": "String"
+                                              },
+                                              "customer": {
+                                                "businessName": "String"
+                                              },
+                                              "preset": 0,
+                                              "receptionDate": "String",
+                                              "estimatedDate": "String",
+                                              "initialWeighingDate": "String",
+                                              "finalWeighingDate": "String"
+                                            }
+                                            """)),
+                            @Content(mediaType = "application/pdf")
+                    }
+            ),
+            @ApiResponse(responseCode = "401", description = "Autenticación requerida.", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
+            @ApiResponse(responseCode = "403", description = "Permisos insuficientes para acceder al recurso.", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
+            @ApiResponse(responseCode = "404", description = "Recurso no encontrado.", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
+            @ApiResponse(responseCode = "500", description = "Error interno.", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))})
+    })
+    @GetMapping(value = "/{id}",produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_OPERATOR')")
+    @SneakyThrows
+    public ResponseEntity<?> getOrderById(@PathVariable("id") Long id) {
+        Order order = orderBusiness.load(id);
+        OrderSlimV1JsonSerializer orderSerializer = new OrderSlimV1JsonSerializer(Order.class, false);
+        ObjectMapper mapper = JsonUtils.getObjectMapper(Order.class, orderSerializer, null);
+        try {
+            // Crear un generador de JSON
+            StringWriter writer = new StringWriter();
+            JsonGenerator jsonGenerator = mapper.getFactory().createGenerator(writer);
+
+            // Llamar al method de serialización para el detalle
+            orderSerializer.serializeOrderDetail(order, jsonGenerator);
+
+            // Cerrar el generador y obtener el resultado
+            jsonGenerator.close();
+            String serializedOrder = writer.toString();
+
+            return new ResponseEntity<>(serializedOrder, HttpStatus.OK);
+        } catch (IOException e) {
+            throw new RuntimeException("Error al serializar el objeto Order", e);
+        }
+    }
 
     @Operation(
             operationId = "get-conciliation",
