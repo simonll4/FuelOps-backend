@@ -6,10 +6,8 @@ import ar.edu.iw3.model.business.exceptions.BusinessException;
 import ar.edu.iw3.model.business.exceptions.FoundException;
 import ar.edu.iw3.model.business.exceptions.NotFoundException;
 import ar.edu.iw3.model.business.interfaces.IAlarmBusiness;
-import ar.edu.iw3.model.business.interfaces.IOrderBusiness;
 import ar.edu.iw3.model.persistence.AlarmRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -85,8 +83,8 @@ public class AlarmBusiness implements IAlarmBusiness {
     }
 
     @Override
-    public Boolean isAlarmAccepted(Long orderId)  {
-        return alarmDAO.findByStatusAndOrder_Id(Alarm.Status.PENDING_REVIEW,orderId).isPresent();
+    public Boolean isAlarmAccepted(Long orderId) {
+        return alarmDAO.findByStatusAndOrder_Id(Alarm.Status.PENDING_REVIEW, orderId).isPresent();
     }
 
     @Override
@@ -99,12 +97,21 @@ public class AlarmBusiness implements IAlarmBusiness {
     }
 
     @Override
-    public Page<Alarm> getAllAlarmsByOrder(Order order, Pageable pageable) {
+    public Page<Alarm> getAllAlarmsByOrder(Order order, Pageable pageable) throws NotFoundException, BusinessException {
+        Optional<Page<Alarm>> alarms;
 
-        Optional<Page<Alarm>> alarms = alarmDAO.findAllByOrder(order, pageable);
+        try {
+            alarms = alarmDAO.findAllByOrder(order, pageable);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            throw BusinessException.builder().ex(e).build();
+        }
+
+        if (alarms.isEmpty()) {
+            throw new NotFoundException("No alarms found for order id = " + order.getId());
+        }
 
         return alarms.orElseGet(Page::empty);
-
     }
 
 }

@@ -5,6 +5,7 @@ import ar.edu.iw3.util.OrderUtils;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+
 import java.io.IOException;
 
 public class OrderSlimV1JsonSerializer extends StdSerializer<Order> {
@@ -13,9 +14,7 @@ public class OrderSlimV1JsonSerializer extends StdSerializer<Order> {
         super(t, dummy);
     }
 
-    // serealizer: id,patenete camion, nombre cliente, fecha recepcion, fecha estimada, estado
-    // objeto estado alarma 3 boleanos que dicen si hay alguna alarma con ese estado para la orden
-
+    // serealizer: id,patenete camion, nombre cliente, fecha recepcion, fecha estimada, estado, estado de alarmas
     @Override
     public void serialize(Order order, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
         jsonGenerator.writeStartObject();
@@ -41,7 +40,7 @@ public class OrderSlimV1JsonSerializer extends StdSerializer<Order> {
 
         // Campo de fechas y estado
         jsonGenerator.writeStringField("receptionDate", order.getExternalReceptionDate().toString());
-        jsonGenerator.writeStringField("estimatedDate", order.getEstimatedTime().toString());
+        jsonGenerator.writeStringField("estimatedDate", order.getEstimatedDate().toString());
         jsonGenerator.writeStringField("status", order.getStatus().toString());
 
         jsonGenerator.writeEndObject();
@@ -56,6 +55,9 @@ public class OrderSlimV1JsonSerializer extends StdSerializer<Order> {
 
         // Campo ID
         jsonGenerator.writeNumberField("id", order.getId());
+
+        // Status
+        jsonGenerator.writeStringField("status", order.getStatus().toString());
 
         // Objeto "truck"
         jsonGenerator.writeObjectFieldStart("truck");
@@ -72,7 +74,7 @@ public class OrderSlimV1JsonSerializer extends StdSerializer<Order> {
 
         // Campo de fechas
         jsonGenerator.writeStringField("receptionDate", order.getExternalReceptionDate().toString());
-        jsonGenerator.writeStringField("estimatedDate", order.getEstimatedTime().toString());
+        jsonGenerator.writeStringField("estimatedDate", order.getEstimatedDate().toString());
 
         // Validaciones para fechas opcionales
         jsonGenerator.writeFieldName("initialWeighingDate");
@@ -105,6 +107,4 @@ public class OrderSlimV1JsonSerializer extends StdSerializer<Order> {
 
         jsonGenerator.writeEndObject();
     }
-
-
 }

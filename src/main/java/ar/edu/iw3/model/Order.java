@@ -82,7 +82,7 @@ public class Order {
     private Set<Alarm> alarms;
 
     // fechas y horas de los eventos durante el proceso
-    private Date estimatedTime;
+    private Date estimatedDate;
 
     private Date externalReceptionDate;
 

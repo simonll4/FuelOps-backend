@@ -113,6 +113,7 @@ public class AuthRestController extends BaseRestController {
                 newUser.getEmail(),
                 newUser.getAuthoritiesStr()
         );
+
         // Devolver el token y el usuario simplificado en un Map
         Map<String, Object> response = Map.of(
                 "token", token,

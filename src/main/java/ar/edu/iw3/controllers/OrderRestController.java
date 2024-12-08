@@ -6,6 +6,7 @@ import ar.edu.iw3.model.Alarm;
 import ar.edu.iw3.model.Order;
 import ar.edu.iw3.model.business.interfaces.IOrderBusiness;
 import ar.edu.iw3.model.serializers.OrderSlimV1JsonSerializer;
+import ar.edu.iw3.util.FieldValidator;
 import ar.edu.iw3.util.JsonUtils;
 import ar.edu.iw3.util.PaginationInfo;
 import ar.edu.iw3.util.StandartResponse;
@@ -47,15 +48,15 @@ public class OrderRestController extends BaseRestController {
     @Autowired
     private IOrderBusiness orderBusiness;
 
-    // todo verificar funcionamiento
 
+    /* ENPOINT PARA OBTENER UNA LISTA DE ORDENES (PAGINABLE) */
     @Operation(
             operationId = "get-all-orders",
             summary = "Obtener todas las ordenes de carga",
             description = "Devuelve todas las ordenes de carga en formato JSON.")
     @Parameter(in = ParameterIn.QUERY, name = "page", schema = @Schema(type = "integer"), required = true, description = "Número de página.")
     @Parameter(in = ParameterIn.QUERY, name = "size", schema = @Schema(type = "integer"), required = true, description = "Cantidad de elementos por página.")
-    @Parameter(in = ParameterIn.QUERY, name = "sort", schema = @Schema(type = "string"), required = false, description = "Campo y dirección de ordenamiento (ejemplo: 'externalReceptionDate,desc').")
+    @Parameter(in = ParameterIn.QUERY, name = "sort", schema = @Schema(type = "string"), description = "Campo y dirección de ordenamiento (ejemplo: 'externalReceptionDate,desc').")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Ordenes obtenidas con éxito.",
                     content = {
@@ -106,40 +107,40 @@ public class OrderRestController extends BaseRestController {
             @ApiResponse(responseCode = "500", description = "Error interno.", content = {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))})
     })
-    @GetMapping(value = "", params = {"page", "size"}, produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_OPERATOR')")
     @SneakyThrows
-    public ResponseEntity<?> getAll(@RequestParam("page") int page,
-                                    @RequestParam("size") int size,
-                                    @RequestParam(value = "sort", required = false, defaultValue = "externalReceptionDate,desc") String sort) {
-        Pageable pageable;
+    public ResponseEntity<?> getAll(@RequestParam(value = "page", defaultValue = "0") int page,
+                                    @RequestParam(value = "size", defaultValue = "10") int size,
+                                    @RequestParam(value = "sort", defaultValue = "externalReceptionDate,desc") String sort) {
 
+        Pageable pageable;
         if (sort != null && !sort.isEmpty()) {
             String[] sortParams = sort.split(",");
-            if (sortParams.length == 2) {
-                String sortField = sortParams[0];
-                String sortDirection = sortParams[1].toLowerCase();
+            String sortField = sortParams[0].trim();
+            String sortDirection = (sortParams.length > 1 ? sortParams[1].trim().toLowerCase() : "desc"); // Dirección predeterminada
+            Sort.Direction direction = sortDirection.equals("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
 
-                Sort.Direction direction = sortDirection.equals("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
-                pageable = PageRequest.of(page, size, Sort.by(direction, sortField));
-            } else {
-                throw new IllegalArgumentException("El parámetro 'sort' debe tener el formato 'campo,direccion' (ejemplo: 'externalReceptionDate,desc')");
+            // Validar el campo de ordenación
+            if (FieldValidator.isValidField(Order.class, sortField)) {
+                throw new IllegalArgumentException("El campo de ordenación '" + sortField + "' no es válido para la entidad Order");
             }
+
+            pageable = PageRequest.of(page, size, Sort.by(direction, sortField));
         } else {
             pageable = PageRequest.of(page, size);
         }
 
         Page<Order> orders = orderBusiness.list(pageable);
-
         StdSerializer<Order> orderSerializer = new OrderSlimV1JsonSerializer(Order.class, false);
         ObjectMapper mapper = JsonUtils.getObjectMapper(Order.class, orderSerializer, null);
 
         // Convertir cada orden a JSON y agregarla al resultado
-        List<String> serializedOrders = orders.getContent().stream()
+        List<Object> serializedOrders = orders.getContent().stream()
                 .map(order -> {
                     try {
-                        return mapper.writeValueAsString(order);
-                    } catch (IOException e) {
+                        return mapper.valueToTree(order);  // Serializa a JsonNode directamente
+                    } catch (Exception e) {
                         throw new RuntimeException("Error al serializar el objeto Order", e);
                     }
                 }).toList();
@@ -156,14 +157,14 @@ public class OrderRestController extends BaseRestController {
 
         // Crear la respuesta
         Map<String, Object> response = new HashMap<>();
-        response.put("content", serializedOrders);
+        response.put("orders", serializedOrders);
         response.put("pagination", paginationInfo);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    // todo verificar funcionamiento
 
+    /* ENPOINT PARA OBTENER EL DETALLE DE UNA ORDEN POR SU ID */
     @Operation(
             operationId = "get-order-by-id",
             summary = "Obtener una orden de carga por su ID",
@@ -201,7 +202,7 @@ public class OrderRestController extends BaseRestController {
             @ApiResponse(responseCode = "500", description = "Error interno.", content = {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))})
     })
-    @GetMapping(value = "/{id}",produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_OPERATOR')")
     @SneakyThrows
     public ResponseEntity<?> getOrderById(@PathVariable("id") Long id) {
@@ -226,6 +227,7 @@ public class OrderRestController extends BaseRestController {
         }
     }
 
+    /* ENPOINT PARA OBTENER LA CONCILIACION DE UNA ORDEN (PDF/JSON) */
     @Operation(
             operationId = "get-conciliation",
             summary = "Obtener conciliacion de orden de carga finalizada",
@@ -288,7 +290,7 @@ public class OrderRestController extends BaseRestController {
         return new ResponseEntity<>(pdfContent, headers, HttpStatus.OK);
     }
 
-
+    /* ENPOINT PARA RECONOCER UNA ALARMA DURANTE LA CARGA*/
     @Operation(
             operationId = "acknowledge-alarm",
             summary = "Reconoce una alarma",
@@ -326,6 +328,8 @@ public class OrderRestController extends BaseRestController {
         return new ResponseEntity<>(responseHeaders, HttpStatus.CREATED);
     }
 
+
+    /* ENDPOINT PARA AVISAR PROBLEMA EN ALARMA DURANTE LA CARGA*/
     @Operation(
             operationId = "issue-alarm",
             summary = "Marca como problematica a una alarma",

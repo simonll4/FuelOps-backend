@@ -15,6 +15,7 @@ public final class Constants {
 
     // General services
     public static final String URL_ALARMS = URL_BASE + "/alarms";
+    public static final String URL_DETAILS = URL_BASE + "/details";
     public static final String URL_PRODUCTS = URL_BASE + "/products";
     public static final String URL_ORDERS = URL_BASE + "/orders";
     public static final String URL_SUPPLIERS = URL_BASE + "/suppliers";

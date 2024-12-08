@@ -26,7 +26,7 @@ public interface IAlarmBusiness {
 
     List<Alarm> pendingReview() throws NotFoundException;
 
-    Page<Alarm> getAllAlarmsByOrder(Order order, Pageable pageable);
+    Page<Alarm> getAllAlarmsByOrder(Order order, Pageable pageable) throws NotFoundException, BusinessException;
 
     // public Alarm update(Alarm alarm) throws NotFoundException, BusinessException, FoundException;
 
