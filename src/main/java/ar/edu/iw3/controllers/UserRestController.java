@@ -19,12 +19,14 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 
 @Tag(name = "2. Usuarios", description = "Operaciones con usuarios")
 @RestController
 @RequestMapping(Constants.URL_USERS)
+@PreAuthorize("hasRole('ROLE_ADMIN')")
 public class UserRestController extends BaseRestController {
 
     @Autowired
@@ -43,13 +45,13 @@ public class UserRestController extends BaseRestController {
     }
 
     @Operation(operationId = "load_internal_user", summary = "Cargar usuario", description = "Carga un usuario interno por id")
+    @Parameter(in = ParameterIn.PATH, name = "id", description = "Id del usuario a cargar", required = true)
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Usuario interno cargado", content = {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = User.class))}),
             @ApiResponse(responseCode = "404", description = "Usuario interno no encontrado", content = {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
     })
-    @Parameter(in = ParameterIn.PATH, name = "id", description = "Id del usuario a cargar", required = true)
     @SneakyThrows
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> loadUser(@PathVariable Long id) {

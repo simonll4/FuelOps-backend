@@ -14,6 +14,8 @@ import ar.edu.iw3.util.PdfGenerator;
 import com.itextpdf.text.DocumentException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -33,9 +35,9 @@ public class OrderBusiness implements IOrderBusiness {
     AlarmBusiness alarmBusiness;
 
     @Override
-    public List<Order> list() throws BusinessException {
+    public Page<Order> list(Pageable pageable) throws BusinessException {
         try {
-            return orderDAO.findAll();
+            return orderDAO.findAll(pageable);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             throw BusinessException.builder().ex(e).build();

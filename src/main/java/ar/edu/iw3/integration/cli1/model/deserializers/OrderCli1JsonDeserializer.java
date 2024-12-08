@@ -79,7 +79,7 @@ public class OrderCli1JsonDeserializer extends StdDeserializer<OrderCli1> {
             Product product = JsonUtilsCli1.getProduct(node, PRODUCT_NAME_ATTRIBUTES, productBusiness);
 
             r.setOrderNumberCli1(orderNumber);
-            r.setEstimatedTime(estimatedTime);
+            r.setEstimatedDate(estimatedTime);
             r.setExternalReceptionDate(new Date(System.currentTimeMillis()));
             r.setPreset(preset);
 
