@@ -4,8 +4,8 @@ import ar.edu.iw3.integration.cli3.model.business.interfaces.IDetailCli3Business
 import ar.edu.iw3.model.Detail;
 import ar.edu.iw3.model.Order;
 import ar.edu.iw3.model.business.exceptions.*;
-import ar.edu.iw3.model.business.implementations.DetailBusiness;
-import ar.edu.iw3.model.business.implementations.OrderBusiness;
+import ar.edu.iw3.model.business.interfaces.IDetailBusiness;
+import ar.edu.iw3.model.business.interfaces.IOrderBusiness;
 import ar.edu.iw3.model.persistence.DetailRepository;
 import ar.edu.iw3.websockets.wrappers.DetailWsWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,10 +21,10 @@ import java.util.Optional;
 public class DetailCli3Business implements IDetailCli3Business {
 
     @Autowired
-    private OrderBusiness orderBusiness;
+    private IOrderBusiness orderBusiness;
 
     @Autowired
-    private DetailBusiness detailBusiness;
+    private IDetailBusiness detailBusiness;
 
     @Autowired
     private DetailRepository detailDAO;
@@ -39,7 +39,7 @@ public class DetailCli3Business implements IDetailCli3Business {
         Optional<List<Detail>> detailsOptional = detailDAO.findByOrderId(detail.getOrder().getId());
 
         DetailWsWrapper detailWsWrapper = new DetailWsWrapper();
-        detailWsWrapper.setTimeStamp(detail.getTimeStamp());
+        detailWsWrapper.setTimeStamp(new Date(currentTime));
         detailWsWrapper.setAccumulatedMass(detail.getAccumulatedMass());
         detailWsWrapper.setDensity(detail.getDensity());
         detailWsWrapper.setTemperature(detail.getTemperature());
@@ -49,12 +49,13 @@ public class DetailCli3Business implements IDetailCli3Business {
             Date lastTimeStamp = orderFound.getFuelingEndDate();
             if (checkFrequency(currentTime, lastTimeStamp)) {
                 detail.setTimeStamp(new Date(currentTime));
-                detailBusiness.add(detail);
+                Detail savedDetail = detailBusiness.add(detail);
                 orderFound.setFuelingEndDate(new Date(currentTime));
                 orderBusiness.update(orderFound);
 
+                detailWsWrapper.setId(savedDetail.getId());
                 // Envío de detalle de carga a clientes (WebSocket)
-                wSock.convertAndSend("/topic/details/data", detailWsWrapper);
+                wSock.convertAndSend("/topic/details/order/" + detail.getOrder().getId(), detailWsWrapper);
             }
         } else {
             detail.setTimeStamp(new Date(currentTime));
@@ -63,8 +64,9 @@ public class DetailCli3Business implements IDetailCli3Business {
             orderFound.setFuelingEndDate(new Date(currentTime));
             orderBusiness.update(orderFound);
 
+
             // Envío de detalle de carga a clientes (WebSocket)
-            wSock.convertAndSend("/topic/details/data", detailWsWrapper);
+            wSock.convertAndSend("/topic/details/order/" + detail.getOrder().getId(), detailWsWrapper);
         }
     }
 

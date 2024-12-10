@@ -47,6 +47,19 @@ public class AlarmBusiness implements IAlarmBusiness {
         return alarmFound.get();
     }
 
+    public Alarm load(long orderId, Alarm.Status status) throws NotFoundException, BusinessException {
+        Optional<Alarm> alarmFound;
+        try {
+            alarmFound = alarmDAO.findByOrder_IdAndStatus(orderId, status);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            throw BusinessException.builder().ex(e).build();
+        }
+        if (alarmFound.isEmpty())
+            throw NotFoundException.builder().message("No se encuentra la alarma para la orden id= " + orderId + " con status " + status).build();
+        return alarmFound.get();
+    }
+
 
     @Override
     public Alarm add(Alarm alarm) throws FoundException, BusinessException {

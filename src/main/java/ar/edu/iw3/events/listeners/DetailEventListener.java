@@ -36,5 +36,4 @@ public class DetailEventListener implements ApplicationListener<DetailEvent> {
             log.error("Error: ", e);
         }
     }
-
 }

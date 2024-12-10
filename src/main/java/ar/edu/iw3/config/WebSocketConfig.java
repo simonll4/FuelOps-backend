@@ -12,7 +12,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-
         // Crea un broker de mensajes en memoria, los suscriptores deben hacerlo con el
         // prefijo /topic
         // broker --> suscriptor (SUSCRIPCIONES)
@@ -22,7 +21,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         //controlador con @MessageMapping("/algo"), por lo tanto el cliente que publique, deberá hacerlo en /ws/algo
         // publicador ---> broker (PUBLICACIONES)
         //config.setApplicationDestinationPrefixes("/ws");
-
     }
 
     @Override
@@ -31,8 +29,12 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         //lo que permite disponer de vías alternativas en el caso de que el navegador no soporte websoket
         //o existan restricciones de proxy por ejemplo.
         //El endpoint es el punto en común "físico" de la comunicación
-        registry.addEndpoint("/alarms").setAllowedOrigins("http://localhost:3000");
-        registry.addEndpoint("/alarms").withSockJS();
+//        registry.addEndpoint("/alarms").setAllowedOrigins("http://localhost:3000");
+//        registry.addEndpoint("/alarms").withSockJS();
+
+        registry.addEndpoint("/notifier").setAllowedOrigins("http://localhost:3000");
+        registry.addEndpoint("/notifier").withSockJS();
 
     }
+
 }

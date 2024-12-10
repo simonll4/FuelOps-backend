@@ -9,6 +9,7 @@ import java.util.Date;
 @NoArgsConstructor
 public class DetailWsWrapper {
 
+    private long id;
     private Date timeStamp;
     private float accumulatedMass;
     private float density;

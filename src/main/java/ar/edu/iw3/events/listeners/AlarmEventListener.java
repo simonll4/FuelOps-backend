@@ -5,7 +5,7 @@ import ar.edu.iw3.model.Alarm;
 import ar.edu.iw3.model.Detail;
 import ar.edu.iw3.model.business.exceptions.BusinessException;
 import ar.edu.iw3.model.business.exceptions.FoundException;
-import ar.edu.iw3.model.business.implementations.AlarmBusiness;
+import ar.edu.iw3.model.business.interfaces.IAlarmBusiness;
 import ar.edu.iw3.util.EmailBusiness;
 import ar.edu.iw3.websockets.wrappers.AlarmWsWrapper;
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +33,7 @@ public class AlarmEventListener implements ApplicationListener<AlarmEvent> {
     private EmailBusiness emailBusiness;
 
     @Autowired
-    private AlarmBusiness alarmBusiness;
+    private IAlarmBusiness alarmBusiness;
 
     @Autowired
     private SimpMessagingTemplate wSock;
@@ -44,17 +44,6 @@ public class AlarmEventListener implements ApplicationListener<AlarmEvent> {
     private void handleTemperatureExceeded(Detail detail) {
         Date now = new Date(System.currentTimeMillis());
 
-        // Envío de notificación de alerta a clientes (WebSocket)
-        AlarmWsWrapper alarmWsWrapper = new AlarmWsWrapper();
-        alarmWsWrapper.setAlertMessage("Temperatura excedida para orden " + detail.getOrder().getId());
-        alarmWsWrapper.setOrderId(detail.getOrder().getId());
-        alarmWsWrapper.setTimestamp(now);
-        try {
-            wSock.convertAndSend("/topic/alarms/data", alarmWsWrapper);
-        } catch (Exception e) {
-            log.error("Failed to send alert notification", e);
-        }
-
         // Guardado de alerta en db
         Alarm alarm = new Alarm();
         alarm.setOrder(detail.getOrder());
@@ -63,9 +52,30 @@ public class AlarmEventListener implements ApplicationListener<AlarmEvent> {
         alarm.setStatus(Alarm.Status.PENDING_REVIEW);
 
         try {
-            alarmBusiness.add(alarm);
+            alarm = alarmBusiness.add(alarm);
         } catch (BusinessException | FoundException e) {
             log.error(e.getMessage(), e);
+        }
+
+        // Envío de alerta a clientes (WebSocket)
+        AlarmWsWrapper alarmWsWrapper = new AlarmWsWrapper();
+        alarmWsWrapper.setId(alarm.getId());
+        alarmWsWrapper.setOrderId(alarm.getOrder().getId());
+        alarmWsWrapper.setStatus(alarm.getStatus());
+        alarmWsWrapper.setTemperature(alarm.getTemperature());
+        alarmWsWrapper.setTimestamp(alarm.getTimeStamp());
+        alarmWsWrapper.setObservation(alarm.getObservation() != null ? alarm.getObservation() : null);
+        alarmWsWrapper.setUser(
+                alarm.getUser() != null && alarm.getUser().getUsername() != null
+                        ? alarm.getUser().getUsername()
+                        : null
+        );
+
+        String topic = "/topic/alarms/order/" + detail.getOrder().getId();
+        try {
+            wSock.convertAndSend(topic, alarmWsWrapper);
+        } catch (Exception e) {
+            log.error("Failed to send alert notification", e);
         }
 
         // Armado de mail de alerta
