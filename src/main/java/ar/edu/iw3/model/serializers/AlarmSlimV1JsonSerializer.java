@@ -24,7 +24,7 @@ public class AlarmSlimV1JsonSerializer extends StdSerializer<Alarm> {
         jsonGenerator.writeStringField("status", alarm.getStatus().toString());
 
         // Campo timestamp
-        jsonGenerator.writeStringField("timestamp", alarm.getTimeStamp().toString());
+        jsonGenerator.writeStringField("timeStamp", alarm.getTimeStamp().toString());
 
         // Campo usuario
         String user = alarm.getUser() == null ? "null" : alarm.getUser().getUsername();

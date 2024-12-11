@@ -6,7 +6,7 @@ import ar.edu.iw3.model.Detail;
 import ar.edu.iw3.model.business.exceptions.BusinessException;
 import ar.edu.iw3.model.business.exceptions.FoundException;
 import ar.edu.iw3.model.business.interfaces.IAlarmBusiness;
-import ar.edu.iw3.util.EmailBusiness;
+import ar.edu.iw3.util.services.EmailBusiness;
 import ar.edu.iw3.websockets.wrappers.AlarmWsWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

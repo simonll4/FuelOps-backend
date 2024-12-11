@@ -22,19 +22,19 @@ public class DetailSlimV1JsonSerializer extends StdSerializer<Detail> {
         jsonGenerator.writeNumberField("id", detail.getId());
 
         // Campo acummulated mass
-        jsonGenerator.writeNumberField("acummulatedMass", detail.getAccumulatedMass());
+        jsonGenerator.writeNumberField("accumulatedMass", detail.getAccumulatedMass());
 
         // Campo density
         jsonGenerator.writeNumberField("density", detail.getDensity());
 
         // Campo flow
-        jsonGenerator.writeNumberField("flow", detail.getFlowRate());
+        jsonGenerator.writeNumberField("flowRate", detail.getFlowRate());
 
         // Campo temperature
         jsonGenerator.writeNumberField("temperature", detail.getTemperature());
 
         // Campo timestamp
-        jsonGenerator.writeStringField("timestamp", detail.getTimeStamp().toString());
+        jsonGenerator.writeStringField("timeStamp", detail.getTimeStamp().toString());
 
         jsonGenerator.writeEndObject();
     }

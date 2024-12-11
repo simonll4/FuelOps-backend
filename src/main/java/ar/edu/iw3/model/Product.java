@@ -30,6 +30,8 @@ public class Product {
 
     private float thresholdTemperature;
 
+    private float density;
+
     @Column(columnDefinition = "tinyint default 1")
     private boolean stock = true;
 

@@ -69,6 +69,19 @@ public class OrderSlimV1JsonSerializer extends StdSerializer<Order> {
         jsonGenerator.writeStringField("businessName", order.getCustomer().getBusinessName());
         jsonGenerator.writeEndObject();
 
+        // Obejto "driver"
+        jsonGenerator.writeObjectFieldStart("driver");
+        jsonGenerator.writeStringField("name", order.getDriver().getName());
+        jsonGenerator.writeStringField("lastName", order.getDriver().getLastName());
+        jsonGenerator.writeStringField("dni", order.getDriver().getDocument());
+        jsonGenerator.writeEndObject();
+
+        // Objeto "product"
+        jsonGenerator.writeObjectFieldStart("product");
+        jsonGenerator.writeStringField("product", order.getProduct().getProduct());
+        jsonGenerator.writeStringField("density", String.valueOf(order.getProduct().getDensity()));
+        jsonGenerator.writeEndObject();
+
         // Preset
         jsonGenerator.writeNumberField("preset", order.getPreset());
 

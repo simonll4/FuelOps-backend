@@ -9,9 +9,11 @@ import ar.edu.iw3.model.business.exceptions.*;
 import ar.edu.iw3.model.business.implementations.AlarmBusiness;
 import ar.edu.iw3.model.business.implementations.OrderBusiness;
 import ar.edu.iw3.model.persistence.OrderRepository;
+import ar.edu.iw3.websockets.wrappers.DetailWsWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -32,6 +34,9 @@ public class OrderCli3Business implements IOrderCli3Business {
 
     @Autowired
     private AlarmBusiness alarmBusiness;
+
+    @Autowired
+    private SimpMessagingTemplate wSock;
 
     @Override
     public Order validatePassword(int password) throws NotFoundException, BusinessException, ConflictException {
@@ -71,13 +76,24 @@ public class OrderCli3Business implements IOrderCli3Business {
             }
         }
 
+        Date currentTime = new Date(System.currentTimeMillis());
+        DetailWsWrapper detailWsWrapper = new DetailWsWrapper();
+
         // Actualizacion de cabecera de orden
-        orderFound.setLastTimeStamp(new Date(System.currentTimeMillis()));
+        orderFound.setLastTimeStamp(currentTime);
         orderFound.setLastAccumulatedMass(detail.getAccumulatedMass());
         orderFound.setLastDensity(detail.getDensity());
         orderFound.setLastTemperature(detail.getTemperature());
         orderFound.setLastFlowRate(detail.getFlowRate());
         orderDAO.save(orderFound);
+
+        // todo topico para graficos en tiempo real
+        detailWsWrapper.setTimeStamp(currentTime);
+        detailWsWrapper.setAccumulatedMass(detail.getAccumulatedMass());
+        detailWsWrapper.setDensity(detail.getDensity());
+        detailWsWrapper.setTemperature(detail.getTemperature());
+        detailWsWrapper.setFlowRate(detail.getFlowRate());
+        wSock.convertAndSend("/topic/details/graphs/order/" + orderFound.getId(), detailWsWrapper);
 
         // Evento para manejar el almacenamiento de detalle
         applicationEventPublisher.publishEvent(new DetailEvent(detail, DetailEvent.TypeEvent.SAVE_DETAIL));

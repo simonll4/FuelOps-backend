@@ -1,4 +1,4 @@
-package ar.edu.iw3.util;
+package ar.edu.iw3.util.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;

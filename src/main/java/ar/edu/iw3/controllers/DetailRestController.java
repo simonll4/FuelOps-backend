@@ -40,7 +40,6 @@ public class DetailRestController extends BaseRestController {
     @Autowired
     private IOrderBusiness orderBusiness;
 
-
     /* ENPOINT PARA OBTENER UNA LISTA DE DETALLES CORRESPONDIENTES A UNA ORDEN (PAGINABLE) */
     @GetMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_OPERATOR')")
@@ -98,5 +97,27 @@ public class DetailRestController extends BaseRestController {
         response.put("pagination", paginationInfo);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/all", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_OPERATOR')")
+    @SneakyThrows
+    public ResponseEntity<?> getAllAlarms(@RequestParam Long idOrder) {
+        Order order = orderBusiness.load(idOrder);
+        List<Detail> details = detailBusiness.listByOrder(order.getId());
+        StdSerializer<Detail> detailSerializer = new DetailSlimV1JsonSerializer(Detail.class, false);
+        ObjectMapper mapper = JsonUtils.getObjectMapper(Detail.class, detailSerializer, null);
+
+        // Convertir cada detalle a JSON y agregarla al resultado
+        List<Object> serializedDetails = details.stream()
+                .map(detail -> {
+                    try {
+                        return mapper.valueToTree(detail);  // Serializa a JsonNode directamente
+                    } catch (Exception e) {
+                        throw new RuntimeException("Error al serializar el objeto Detail", e);
+                    }
+                }).toList();
+
+        return new ResponseEntity<>(serializedDetails, HttpStatus.OK);
     }
 }

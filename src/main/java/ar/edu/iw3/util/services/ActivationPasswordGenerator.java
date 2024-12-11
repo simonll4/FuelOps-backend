@@ -1,4 +1,4 @@
-package ar.edu.iw3.util;
+package ar.edu.iw3.util.services;
 
 import org.passay.CharacterRule;
 import org.passay.EnglishCharacterData;
