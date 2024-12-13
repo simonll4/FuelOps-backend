@@ -1,8 +1,10 @@
 package ar.edu.iw3.model.business.interfaces;
 
+import ar.edu.iw3.auth.model.User;
 import ar.edu.iw3.model.Alarm;
 import ar.edu.iw3.model.Order;
 import ar.edu.iw3.model.business.exceptions.BusinessException;
+import ar.edu.iw3.model.business.exceptions.ConflictException;
 import ar.edu.iw3.model.business.exceptions.FoundException;
 import ar.edu.iw3.model.business.exceptions.NotFoundException;
 import org.springframework.data.domain.Page;
@@ -27,6 +29,8 @@ public interface IAlarmBusiness {
     List<Alarm> pendingReview() throws NotFoundException;
 
     Page<Alarm> getAllAlarmsByOrder(Order order, Pageable pageable) throws NotFoundException, BusinessException;
+
+    Order setAlarmStatus(Alarm alarm, User user, Alarm.Status newStatus) throws BusinessException, NotFoundException, ConflictException;
 
     // public Alarm update(Alarm alarm) throws NotFoundException, BusinessException, FoundException;
 

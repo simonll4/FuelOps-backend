@@ -20,6 +20,9 @@ public class AlarmSlimV1JsonSerializer extends StdSerializer<Alarm> {
         // Campo ID
         jsonGenerator.writeNumberField("id", alarm.getId());
 
+        // order id
+       // jsonGenerator.writeNumberField("orderId", alarm.getOrder().getId());
+
         // Campo estado
         jsonGenerator.writeStringField("status", alarm.getStatus().toString());
 

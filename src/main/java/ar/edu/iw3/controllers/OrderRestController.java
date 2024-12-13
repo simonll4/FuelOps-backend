@@ -4,6 +4,7 @@ import ar.edu.iw3.Constants;
 import ar.edu.iw3.auth.model.User;
 import ar.edu.iw3.model.Alarm;
 import ar.edu.iw3.model.Order;
+import ar.edu.iw3.model.business.interfaces.IAlarmBusiness;
 import ar.edu.iw3.model.business.interfaces.IOrderBusiness;
 import ar.edu.iw3.model.serializers.OrderSlimV1JsonSerializer;
 import ar.edu.iw3.util.FieldValidator;
@@ -47,6 +48,9 @@ public class OrderRestController extends BaseRestController {
 
     @Autowired
     private IOrderBusiness orderBusiness;
+
+    @Autowired
+    private IAlarmBusiness alarmBusiness;
 
 
     /* ENPOINT PARA OBTENER UNA LISTA DE ORDENES (PAGINABLE) */
@@ -290,80 +294,92 @@ public class OrderRestController extends BaseRestController {
         return new ResponseEntity<>(pdfContent, headers, HttpStatus.OK);
     }
 
-    /* ENPOINT PARA RECONOCER UNA ALARMA DURANTE LA CARGA*/
-    @Operation(
-            operationId = "acknowledge-alarm",
-            summary = "Reconoce una alarma",
-            description = "Acepta una alarma y guarda la informacion del usuario responsable.")
-    @io.swagger.v3.oas.annotations.parameters.RequestBody(
-            required = true,
-            description = "Objeto JSON que representa los datos de la alarma",
-            content = @Content(
-                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                    schema = @Schema(implementation = Alarm.class)
-            )
-    )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Alarma aceptada exitosamente.", headers = {
-                    @io.swagger.v3.oas.annotations.headers.Header(name = "Location", description = "Ubicacion de la orden", schema = @Schema(type = "string"))}),
-            @ApiResponse(responseCode = "401", description = "Autenticación requerida.", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
-            @ApiResponse(responseCode = "403", description = "Permisos insuficientes para acceder al recurso.", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
-            @ApiResponse(responseCode = "404", description = "Recurso no encontrado.", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
-            @ApiResponse(responseCode = "409", description = "La alarma ya fue aceptada.", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
-            @ApiResponse(responseCode = "500", description = "Error interno.", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))})
-    })
+
     @SneakyThrows
-    @PostMapping("/acknowledge-alarm")
+    @PostMapping("/set-alarm-status")
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_OPERATOR')")
-    public ResponseEntity<?> acknowledgeAlarm(@RequestBody Alarm alarm) {
+    public ResponseEntity<?> setAlarmStatus(@RequestBody Alarm alarm, @RequestParam Alarm.Status newStatus) {
         User user = getUserLogged();
-        Order order = orderBusiness.acknowledgeAlarm(alarm, user);
+        Order order = alarmBusiness.setAlarmStatus(alarm, user, newStatus);
         HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.set("Location", Constants.URL_ORDERS + "/orders/acknowledge-alarm/" + order.getId());
+        responseHeaders.set("Location", Constants.URL_ORDERS + "/orders/set-alarm-status/" + order.getId());
         return new ResponseEntity<>(responseHeaders, HttpStatus.CREATED);
     }
 
+//    /* ENPOINT PARA RECONOCER UNA ALARMA DURANTE LA CARGA*/
+//    @Operation(
+//            operationId = "acknowledge-alarm",
+//            summary = "Reconoce una alarma",
+//            description = "Acepta una alarma y guarda la informacion del usuario responsable.")
+//    @io.swagger.v3.oas.annotations.parameters.RequestBody(
+//            required = true,
+//            description = "Objeto JSON que representa los datos de la alarma",
+//            content = @Content(
+//                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+//                    schema = @Schema(implementation = Alarm.class)
+//            )
+//    )
+//    @ApiResponses(value = {
+//            @ApiResponse(responseCode = "201", description = "Alarma aceptada exitosamente.", headers = {
+//                    @io.swagger.v3.oas.annotations.headers.Header(name = "Location", description = "Ubicacion de la orden", schema = @Schema(type = "string"))}),
+//            @ApiResponse(responseCode = "401", description = "Autenticación requerida.", content = {
+//                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
+//            @ApiResponse(responseCode = "403", description = "Permisos insuficientes para acceder al recurso.", content = {
+//                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
+//            @ApiResponse(responseCode = "404", description = "Recurso no encontrado.", content = {
+//                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
+//            @ApiResponse(responseCode = "409", description = "La alarma ya fue aceptada.", content = {
+//                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
+//            @ApiResponse(responseCode = "500", description = "Error interno.", content = {
+//                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))})
+//    })
+//    @SneakyThrows
+//    @PostMapping("/acknowledge-alarm")
+//    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_OPERATOR')")
+//    public ResponseEntity<?> acknowledgeAlarm(@RequestBody Alarm alarm) {
+//        User user = getUserLogged();
+//        Order order = orderBusiness.acknowledgeAlarm(alarm, user);
+//        HttpHeaders responseHeaders = new HttpHeaders();
+//        responseHeaders.set("Location", Constants.URL_ORDERS + "/orders/acknowledge-alarm/" + order.getId());
+//        return new ResponseEntity<>(responseHeaders, HttpStatus.CREATED);
+//    }
 
-    /* ENDPOINT PARA AVISAR PROBLEMA EN ALARMA DURANTE LA CARGA*/
-    @Operation(
-            operationId = "issue-alarm",
-            summary = "Marca como problematica a una alarma",
-            description = "Emite una alarma y guarda la informacion del usuario responsable.")
-    @io.swagger.v3.oas.annotations.parameters.RequestBody(
-            required = true,
-            description = "Objeto JSON que representa los datos de la alarma",
-            content = @Content(
-                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                    schema = @Schema(implementation = Alarm.class)
-            )
-    )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Alarma establecida con problemas.", headers = {
-                    @io.swagger.v3.oas.annotations.headers.Header(name = "Location", description = "Ubicacion de la orden", schema = @Schema(type = "string"))}),
-            @ApiResponse(responseCode = "401", description = "Autenticación requerida.", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
-            @ApiResponse(responseCode = "403", description = "Permisos insuficientes para acceder al recurso.", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
-            @ApiResponse(responseCode = "404", description = "Recurso no encontrado.", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
-            @ApiResponse(responseCode = "409", description = "La alarma ya fue emitida.", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
-            @ApiResponse(responseCode = "500", description = "Error interno.", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))})
-    })
-    @SneakyThrows
-    @PostMapping("/issue-alarm")
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_OPERATOR')")
-    public ResponseEntity<?> confirmIssueAlarm(@RequestBody Alarm alarm) {
-        User user = getUserLogged();
-        Order order = orderBusiness.confirmIssueAlarm(alarm, user);
-        HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.set("Location", Constants.URL_ORDERS + "/orders/issue-alarm/" + order.getId());
-        return new ResponseEntity<>(responseHeaders, HttpStatus.CREATED);
-    }
+
+//    /* ENDPOINT PARA AVISAR PROBLEMA EN ALARMA DURANTE LA CARGA*/
+//    @Operation(
+//            operationId = "issue-alarm",
+//            summary = "Marca como problematica a una alarma",
+//            description = "Emite una alarma y guarda la informacion del usuario responsable.")
+//    @io.swagger.v3.oas.annotations.parameters.RequestBody(
+//            required = true,
+//            description = "Objeto JSON que representa los datos de la alarma",
+//            content = @Content(
+//                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+//                    schema = @Schema(implementation = Alarm.class)
+//            )
+//    )
+//    @ApiResponses(value = {
+//            @ApiResponse(responseCode = "201", description = "Alarma establecida con problemas.", headers = {
+//                    @io.swagger.v3.oas.annotations.headers.Header(name = "Location", description = "Ubicacion de la orden", schema = @Schema(type = "string"))}),
+//            @ApiResponse(responseCode = "401", description = "Autenticación requerida.", content = {
+//                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
+//            @ApiResponse(responseCode = "403", description = "Permisos insuficientes para acceder al recurso.", content = {
+//                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
+//            @ApiResponse(responseCode = "404", description = "Recurso no encontrado.", content = {
+//                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
+//            @ApiResponse(responseCode = "409", description = "La alarma ya fue emitida.", content = {
+//                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
+//            @ApiResponse(responseCode = "500", description = "Error interno.", content = {
+//                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))})
+//    })
+//    @SneakyThrows
+//    @PostMapping("/issue-alarm")
+//    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_OPERATOR')")
+//    public ResponseEntity<?> confirmIssueAlarm(@RequestBody Alarm alarm) {
+//        User user = getUserLogged();
+//        Order order = orderBusiness.confirmIssueAlarm(alarm, user);
+//        HttpHeaders responseHeaders = new HttpHeaders();
+//        responseHeaders.set("Location", Constants.URL_ORDERS + "/orders/issue-alarm/" + order.getId());
+//        return new ResponseEntity<>(responseHeaders, HttpStatus.CREATED);
+//    }
 }

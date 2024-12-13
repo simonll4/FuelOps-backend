@@ -21,9 +21,9 @@ public interface IOrderBusiness {
 
     public Order update(Order order) throws NotFoundException, BusinessException, FoundException;
 
-    public Order acknowledgeAlarm(Alarm alarm, User user) throws BusinessException, NotFoundException, ConflictException;
-
-    public Order confirmIssueAlarm(Alarm alarm, User user) throws BusinessException, NotFoundException, ConflictException;
+//    public Order acknowledgeAlarm(Alarm alarm, User user) throws BusinessException, NotFoundException, ConflictException;
+//
+//    public Order confirmIssueAlarm(Alarm alarm, User user) throws BusinessException, NotFoundException, ConflictException;
 
     public byte[] getConciliationPdf(Long orderNumber) throws BusinessException, NotFoundException, ConflictException;
 

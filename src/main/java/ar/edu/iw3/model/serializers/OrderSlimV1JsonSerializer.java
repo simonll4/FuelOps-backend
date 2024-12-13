@@ -1,6 +1,7 @@
 package ar.edu.iw3.model.serializers;
 
 import ar.edu.iw3.model.Order;
+import ar.edu.iw3.model.Tanker;
 import ar.edu.iw3.util.OrderUtils;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
@@ -62,6 +63,15 @@ public class OrderSlimV1JsonSerializer extends StdSerializer<Order> {
         // Objeto "truck"
         jsonGenerator.writeObjectFieldStart("truck");
         jsonGenerator.writeStringField("licensePlate", order.getTruck().getLicensePlate());
+        // Lista de tankers
+        jsonGenerator.writeArrayFieldStart("tankers");
+        for (Tanker tanker : order.getTruck().getTankers()) {
+            jsonGenerator.writeStartObject();
+            jsonGenerator.writeNumberField("capacityLiters", tanker.getCapacity_liters());
+            jsonGenerator.writeStringField("licensePlate", tanker.getLicense());
+            jsonGenerator.writeEndObject();
+        }
+        jsonGenerator.writeEndArray();
         jsonGenerator.writeEndObject();
 
         // Objeto "customer"
@@ -117,6 +127,8 @@ public class OrderSlimV1JsonSerializer extends StdSerializer<Order> {
         } else {
             jsonGenerator.writeNull();
         }
+
+        jsonGenerator.writeStringField("lastAccumulatedMass", String.valueOf(order.getLastAccumulatedMass()));
 
         jsonGenerator.writeEndObject();
     }

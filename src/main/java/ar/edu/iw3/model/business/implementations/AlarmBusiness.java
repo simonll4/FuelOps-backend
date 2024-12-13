@@ -1,8 +1,11 @@
 package ar.edu.iw3.model.business.implementations;
 
+import ar.edu.iw3.auth.model.User;
+import ar.edu.iw3.auth.model.business.interfaces.IUserAuthBusiness;
 import ar.edu.iw3.model.Alarm;
 import ar.edu.iw3.model.Order;
 import ar.edu.iw3.model.business.exceptions.BusinessException;
+import ar.edu.iw3.model.business.exceptions.ConflictException;
 import ar.edu.iw3.model.business.exceptions.FoundException;
 import ar.edu.iw3.model.business.exceptions.NotFoundException;
 import ar.edu.iw3.model.business.interfaces.IAlarmBusiness;
@@ -22,6 +25,12 @@ public class AlarmBusiness implements IAlarmBusiness {
 
     @Autowired
     private AlarmRepository alarmDAO;
+
+    @Autowired
+    private OrderBusiness orderBusiness;
+
+    @Autowired
+    IUserAuthBusiness userBusiness;
 
     @Override
     public List<Alarm> list() throws BusinessException {
@@ -126,5 +135,35 @@ public class AlarmBusiness implements IAlarmBusiness {
 
         return alarms.orElseGet(Page::empty);
     }
+
+    @Override
+    public Order setAlarmStatus(Alarm alarm, User user, Alarm.Status newStatus) throws BusinessException, NotFoundException, ConflictException {
+        Alarm alarmFound = load(alarm.getId());
+        Order orderFound = orderBusiness.load(alarmFound.getOrder().getId());
+
+        User userFound = userBusiness.load(user.getUsername());
+
+        if (alarmFound.getStatus() != Alarm.Status.PENDING_REVIEW) {
+            throw ConflictException.builder().message("La alarma ya fue manejada").build();
+        }
+        if (orderFound.getStatus() != Order.Status.REGISTERED_INITIAL_WEIGHING) {
+            throw ConflictException.builder().message("La orden no se encuentra en estado de carga").build();
+        }
+
+        if (newStatus != Alarm.Status.ACKNOWLEDGED && newStatus != Alarm.Status.CONFIRMED_ISSUE) {
+            throw BusinessException.builder().message("El estado proporcionado no es válido").build();
+        }
+
+        if (!(alarm.getObservation() == null || alarm.getObservation().isEmpty())) {
+            alarmFound.setObservation(alarm.getObservation());
+        }
+
+        alarmFound.setStatus(newStatus);
+        alarmFound.setUser(userFound);
+        update(alarmFound);
+
+        return orderBusiness.update(orderFound);
+    }
+
 
 }

@@ -39,7 +39,7 @@ public class Scheduler {
                 alarmWsWrapper.setOrderId(alarm.getOrder().getId());
                 alarmWsWrapper.setStatus(alarm.getStatus());
                 alarmWsWrapper.setTemperature(alarm.getTemperature());
-                alarmWsWrapper.setTimestamp(alarm.getTimeStamp());
+                alarmWsWrapper.setTimeStamp(alarm.getTimeStamp());
                 alarmWsWrapper.setObservation(alarm.getObservation() != null ? alarm.getObservation() : null);
                 alarmWsWrapper.setUser(
                         alarm.getUser() != null && alarm.getUser().getUsername() != null

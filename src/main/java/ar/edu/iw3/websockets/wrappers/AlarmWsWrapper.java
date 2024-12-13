@@ -15,7 +15,7 @@ public class AlarmWsWrapper {
     private Alarm.Status status;
     private float temperature;
     private String observation;
-    private Date timestamp;
+    private Date timeStamp;
     private String user;
 
 }

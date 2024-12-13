@@ -31,8 +31,8 @@ public class OrderBusiness implements IOrderBusiness {
     @Autowired
     DetailBusiness detailBusiness;
 
-    @Autowired
-    AlarmBusiness alarmBusiness;
+//    @Autowired
+//    AlarmBusiness alarmBusiness;
 
     @Override
     public Page<Order> list(Pageable pageable) throws BusinessException {
@@ -70,50 +70,50 @@ public class OrderBusiness implements IOrderBusiness {
         }
     }
 
-    @Autowired
-    IUserAuthBusiness userBusiness;
-
-    @Override
-    public Order acknowledgeAlarm(Alarm alarm, User user) throws BusinessException, NotFoundException, ConflictException {
-        Alarm alarmFound = alarmBusiness.load(alarm.getId());
-        Order orderFound = load(alarmFound.getOrder().getId());
-        User userFound = userBusiness.load(user.getUsername());
-
-        if (alarmFound.getStatus() != Alarm.Status.PENDING_REVIEW) {
-            throw ConflictException.builder().message("La alarma ya fue manejada").build();
-        }
-        if (orderFound.getStatus() != Order.Status.REGISTERED_INITIAL_WEIGHING) {
-            throw ConflictException.builder().message("La orden no se encuentra en estado de carga").build();
-        }
-        if (!(alarm.getObservation() == null || alarm.getObservation().isEmpty())) {
-            alarmFound.setObservation(alarm.getObservation());
-        }
-        alarmFound.setStatus(Alarm.Status.ACKNOWLEDGED);
-        alarmFound.setUser(userFound);
-        alarmBusiness.update(alarmFound);
-        return update(orderFound);
-    }
-
-    @Override
-    public Order confirmIssueAlarm(Alarm alarm, User user) throws BusinessException, NotFoundException, ConflictException {
-        Alarm alarmFound = alarmBusiness.load(alarm.getId());
-        Order orderFound = load(alarmFound.getOrder().getId());
-        User userFound = userBusiness.load(user.getUsername());
-
-        if (alarmFound.getStatus() != Alarm.Status.PENDING_REVIEW) {
-            throw ConflictException.builder().message("La alarma ya fue manejada").build();
-        }
-        if (orderFound.getStatus() != Order.Status.REGISTERED_INITIAL_WEIGHING) {
-            throw ConflictException.builder().message("La orden no se encuentra en estado de carga").build();
-        }
-        if (!(alarm.getObservation() == null || alarm.getObservation().isEmpty())) {
-            alarmFound.setObservation(alarm.getObservation());
-        }
-        alarmFound.setStatus(Alarm.Status.CONFIRMED_ISSUE);
-        alarmFound.setUser(userFound);
-        alarmBusiness.update(alarmFound);
-        return update(orderFound);
-    }
+//    @Autowired
+//    IUserAuthBusiness userBusiness;
+//
+//    @Override
+//    public Order acknowledgeAlarm(Alarm alarm, User user) throws BusinessException, NotFoundException, ConflictException {
+//        Alarm alarmFound = alarmBusiness.load(alarm.getId());
+//        Order orderFound = load(alarmFound.getOrder().getId());
+//        User userFound = userBusiness.load(user.getUsername());
+//
+//        if (alarmFound.getStatus() != Alarm.Status.PENDING_REVIEW) {
+//            throw ConflictException.builder().message("La alarma ya fue manejada").build();
+//        }
+//        if (orderFound.getStatus() != Order.Status.REGISTERED_INITIAL_WEIGHING) {
+//            throw ConflictException.builder().message("La orden no se encuentra en estado de carga").build();
+//        }
+//        if (!(alarm.getObservation() == null || alarm.getObservation().isEmpty())) {
+//            alarmFound.setObservation(alarm.getObservation());
+//        }
+//        alarmFound.setStatus(Alarm.Status.ACKNOWLEDGED);
+//        alarmFound.setUser(userFound);
+//        alarmBusiness.update(alarmFound);
+//        return update(orderFound);
+//    }
+//
+//    @Override
+//    public Order confirmIssueAlarm(Alarm alarm, User user) throws BusinessException, NotFoundException, ConflictException {
+//        Alarm alarmFound = alarmBusiness.load(alarm.getId());
+//        Order orderFound = load(alarmFound.getOrder().getId());
+//        User userFound = userBusiness.load(user.getUsername());
+//
+//        if (alarmFound.getStatus() != Alarm.Status.PENDING_REVIEW) {
+//            throw ConflictException.builder().message("La alarma ya fue manejada").build();
+//        }
+//        if (orderFound.getStatus() != Order.Status.REGISTERED_INITIAL_WEIGHING) {
+//            throw ConflictException.builder().message("La orden no se encuentra en estado de carga").build();
+//        }
+//        if (!(alarm.getObservation() == null || alarm.getObservation().isEmpty())) {
+//            alarmFound.setObservation(alarm.getObservation());
+//        }
+//        alarmFound.setStatus(Alarm.Status.CONFIRMED_ISSUE);
+//        alarmFound.setUser(userFound);
+//        alarmBusiness.update(alarmFound);
+//        return update(orderFound);
+//    }
 
     @Override
     public byte[] getConciliationPdf(Long idOrder) throws BusinessException, NotFoundException {
