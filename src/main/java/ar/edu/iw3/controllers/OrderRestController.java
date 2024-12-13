@@ -60,6 +60,7 @@ public class OrderRestController extends BaseRestController {
             description = "Devuelve todas las ordenes de carga en formato JSON.")
     @Parameter(in = ParameterIn.QUERY, name = "page", schema = @Schema(type = "integer"), required = true, description = "Número de página.")
     @Parameter(in = ParameterIn.QUERY, name = "size", schema = @Schema(type = "integer"), required = true, description = "Cantidad de elementos por página.")
+    @Parameter(in = ParameterIn.QUERY, name = "filter", schema = @Schema(type = "string"), description = "Filtrado por estado")
     @Parameter(in = ParameterIn.QUERY, name = "sort", schema = @Schema(type = "string"), description = "Campo y dirección de ordenamiento (ejemplo: 'externalReceptionDate,desc').")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Ordenes obtenidas con éxito.",
@@ -116,6 +117,7 @@ public class OrderRestController extends BaseRestController {
     @SneakyThrows
     public ResponseEntity<?> getAll(@RequestParam(value = "page", defaultValue = "0") int page,
                                     @RequestParam(value = "size", defaultValue = "10") int size,
+                                    @RequestParam(value = "filter", required = false) String filter,
                                     @RequestParam(value = "sort", defaultValue = "externalReceptionDate,desc") String sort) {
 
         Pageable pageable;
@@ -139,11 +141,23 @@ public class OrderRestController extends BaseRestController {
         StdSerializer<Order> orderSerializer = new OrderSlimV1JsonSerializer(Order.class, false);
         ObjectMapper mapper = JsonUtils.getObjectMapper(Order.class, orderSerializer, null);
 
+        // Verificar el filtro y dividirlo en una lista de estados
+        final List<String> statusFilters = (filter != null && !filter.isEmpty())
+                ? List.of(filter.split(","))
+                : null;
+
         // Convertir cada orden a JSON y agregarla al resultado
         List<Object> serializedOrders = orders.getContent().stream()
+                .filter(order -> {
+                    // Si hay un filtro activo, verificamos que el estado esté en la lista
+                    if (statusFilters != null) {
+                        return statusFilters.contains(order.getStatus().toString());
+                    }
+                    return true; // Si no hay filtro, incluimos todas las órdenes
+                })
                 .map(order -> {
                     try {
-                        return mapper.valueToTree(order);  // Serializa a JsonNode directamente
+                        return mapper.valueToTree(order); // Serializa a JsonNode directamente
                     } catch (Exception e) {
                         throw new RuntimeException("Error al serializar el objeto Order", e);
                     }
