@@ -92,7 +92,14 @@ public class ProductBusiness implements IProductBusiness {
     @Override
     public Product update(Product product) throws NotFoundException, FoundException, BusinessException {
 
-        load(product.getId());
+        Product existingProduct = load(product.getId());
+
+        // Actualizar solo los campos necesarios
+        existingProduct.setProduct(product.getProduct());
+        existingProduct.setDescription(product.getDescription());
+        existingProduct.setThresholdTemperature(product.getThresholdTemperature());
+        existingProduct.setDensity(product.getDensity());
+        existingProduct.setStock(product.isStock());
 
         Optional<Product> productFound;
         try {
@@ -107,7 +114,7 @@ public class ProductBusiness implements IProductBusiness {
         }
 
         try {
-            return productDAO.save(product);
+            return productDAO.save(existingProduct);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             //throw BusinessException.builder().ex(e).build();

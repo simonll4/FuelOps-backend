@@ -1,6 +1,7 @@
 package ar.edu.iw3.controllers;
 
 import ar.edu.iw3.Constants;
+import ar.edu.iw3.model.Order;
 import ar.edu.iw3.model.Product;
 import ar.edu.iw3.model.Category;
 import ar.edu.iw3.model.business.exceptions.BusinessException;
@@ -8,7 +9,12 @@ import ar.edu.iw3.model.business.exceptions.FoundException;
 import ar.edu.iw3.model.business.exceptions.NotFoundException;
 import ar.edu.iw3.model.business.interfaces.ICategoryBusiness;
 import ar.edu.iw3.model.business.interfaces.IProductBusiness;
+import ar.edu.iw3.model.serializers.OrderSlimV1JsonSerializer;
+import ar.edu.iw3.model.serializers.ProductSlimV1JsonSerializer;
+import ar.edu.iw3.util.JsonUtils;
 import ar.edu.iw3.util.StandartResponse;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -27,6 +33,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import ar.edu.iw3.util.IStandartResponseBusiness;
+
+import java.util.List;
 
 @Tag(description = "API para Gestionar Productos", name = "Product")
 @RestController
@@ -58,7 +66,22 @@ public class ProductRestController extends BaseRestController {
     @SneakyThrows
     @GetMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> list() {
-        return new ResponseEntity<>(productBusiness.list(), HttpStatus.OK);
+
+        List<Product> products = productBusiness.list();
+
+        StdSerializer<Product> productSerializer = new ProductSlimV1JsonSerializer(Product.class, false);
+        ObjectMapper mapper = JsonUtils.getObjectMapper(Product.class, productSerializer, null);
+
+        List<Object> serializedProducts = products.stream()
+                .map(product -> {
+                    try {
+                        return mapper.valueToTree(product);
+                    } catch (Exception e) {
+                        throw new RuntimeException("Error al serializar el objeto Product", e);
+                    }
+                }).toList();
+
+        return new ResponseEntity<>(serializedProducts, HttpStatus.OK);
     }
 
     @Operation(operationId = "load-internal-product", summary = "Cargar producto", description = "Carga los datos de un producto")

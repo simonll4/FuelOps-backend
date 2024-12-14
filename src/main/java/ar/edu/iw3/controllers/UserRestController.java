@@ -2,8 +2,14 @@ package ar.edu.iw3.controllers;
 
 import ar.edu.iw3.Constants;
 import ar.edu.iw3.auth.model.User;
+import ar.edu.iw3.model.Product;
 import ar.edu.iw3.model.business.interfaces.IUserBusiness;
+import ar.edu.iw3.model.serializers.ProductSlimV1JsonSerializer;
+import ar.edu.iw3.model.serializers.UserSlimV1JsonSerializer;
+import ar.edu.iw3.util.JsonUtils;
 import ar.edu.iw3.util.StandartResponse;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -21,6 +27,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @Tag(name = "2. Usuarios", description = "Operaciones con usuarios")
@@ -41,7 +49,22 @@ public class UserRestController extends BaseRestController {
     @SneakyThrows
     @GetMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> list() {
-        return new ResponseEntity<>(userBusiness.list(), HttpStatus.OK);
+
+        List<User> users = userBusiness.list();
+
+        StdSerializer<User> userSerializer = new UserSlimV1JsonSerializer(User.class, false);
+        ObjectMapper mapper = JsonUtils.getObjectMapper(User.class, userSerializer, null);
+
+        List<Object> serializedUsers = users.stream()
+                .map(user -> {
+                    try {
+                        return mapper.valueToTree(user);
+                    } catch (Exception e) {
+                        throw new RuntimeException("Error al serializar el objeto User", e);
+                    }
+                }).toList();
+
+        return new ResponseEntity<>(serializedUsers, HttpStatus.OK);
     }
 
     @Operation(operationId = "load_internal_user", summary = "Cargar usuario", description = "Carga un usuario interno por id")
