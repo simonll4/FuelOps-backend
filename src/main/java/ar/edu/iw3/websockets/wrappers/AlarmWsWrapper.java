@@ -17,5 +17,6 @@ public class AlarmWsWrapper {
     private String observation;
     private Date timeStamp;
     private String user;
+    private float thresholdTemperature;
 
 }

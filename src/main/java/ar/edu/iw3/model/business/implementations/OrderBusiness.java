@@ -35,14 +35,17 @@ public class OrderBusiness implements IOrderBusiness {
 //    AlarmBusiness alarmBusiness;
 
     @Override
-    public Page<Order> list(Pageable pageable) throws BusinessException {
+    public Page<Order> list(Pageable pageable, List<String> statuses) throws BusinessException {
         try {
-            return orderDAO.findAll(pageable);
+            return statuses == null || statuses.isEmpty()
+                    ? orderDAO.findAll(pageable) // Si no hay filtro, devuelve todo
+                    : orderDAO.findByStatuses(statuses, pageable);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             throw BusinessException.builder().ex(e).build();
         }
     }
+
 
     @Override
     public Order load(long id) throws NotFoundException, BusinessException {

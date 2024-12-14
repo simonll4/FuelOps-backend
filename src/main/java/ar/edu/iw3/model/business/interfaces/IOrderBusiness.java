@@ -15,7 +15,7 @@ import java.util.Map;
 
 public interface IOrderBusiness {
 
-    public Page<Order> list(Pageable pageable) throws BusinessException;
+    public Page<Order> list(Pageable pageable, List<String> statuses) throws BusinessException;
 
     public Order load(long id) throws NotFoundException, BusinessException;
 

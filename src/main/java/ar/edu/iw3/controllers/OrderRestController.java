@@ -131,39 +131,29 @@ public class OrderRestController extends BaseRestController {
             if (FieldValidator.isValidField(Order.class, sortField)) {
                 throw new IllegalArgumentException("El campo de ordenación '" + sortField + "' no es válido para la entidad Order");
             }
-
             pageable = PageRequest.of(page, size, Sort.by(direction, sortField));
         } else {
             pageable = PageRequest.of(page, size);
         }
 
-        Page<Order> orders = orderBusiness.list(pageable);
-        StdSerializer<Order> orderSerializer = new OrderSlimV1JsonSerializer(Order.class, false);
-        ObjectMapper mapper = JsonUtils.getObjectMapper(Order.class, orderSerializer, null);
-
-        // Verificar el filtro y dividirlo en una lista de estados
         final List<String> statusFilters = (filter != null && !filter.isEmpty())
                 ? List.of(filter.split(","))
                 : null;
 
-        // Convertir cada orden a JSON y agregarla al resultado
+        Page<Order> orders = orderBusiness.list(pageable, statusFilters);
+
+        StdSerializer<Order> orderSerializer = new OrderSlimV1JsonSerializer(Order.class, false);
+        ObjectMapper mapper = JsonUtils.getObjectMapper(Order.class, orderSerializer, null);
+
         List<Object> serializedOrders = orders.getContent().stream()
-                .filter(order -> {
-                    // Si hay un filtro activo, verificamos que el estado esté en la lista
-                    if (statusFilters != null) {
-                        return statusFilters.contains(order.getStatus().toString());
-                    }
-                    return true; // Si no hay filtro, incluimos todas las órdenes
-                })
                 .map(order -> {
                     try {
-                        return mapper.valueToTree(order); // Serializa a JsonNode directamente
+                        return mapper.valueToTree(order);
                     } catch (Exception e) {
                         throw new RuntimeException("Error al serializar el objeto Order", e);
                     }
                 }).toList();
 
-        // Crear un objeto de información de paginación
         PaginationInfo paginationInfo = new PaginationInfo(
                 orders.getPageable(),
                 orders.getTotalPages(),
@@ -173,7 +163,6 @@ public class OrderRestController extends BaseRestController {
                 orders.getNumberOfElements()
         );
 
-        // Crear la respuesta
         Map<String, Object> response = new HashMap<>();
         response.put("orders", serializedOrders);
         response.put("pagination", paginationInfo);
