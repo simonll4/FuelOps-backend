@@ -67,6 +67,7 @@ public class UserRestController extends BaseRestController {
         return new ResponseEntity<>(serializedUsers, HttpStatus.OK);
     }
 
+
     @Operation(operationId = "load_internal_user", summary = "Cargar usuario", description = "Carga un usuario interno por id")
     @Parameter(in = ParameterIn.PATH, name = "id", description = "Id del usuario a cargar", required = true)
     @ApiResponses(value = {
@@ -94,6 +95,7 @@ public class UserRestController extends BaseRestController {
     public ResponseEntity<?> loadUser(@PathVariable String user) {
         return new ResponseEntity<>(userBusiness.load(user), HttpStatus.OK);
     }
+
 
     @Operation(operationId = "add_internal_user", summary = "Agregar usuario", description = "Agrega un usuario interno")
     @ApiResponses(value = {

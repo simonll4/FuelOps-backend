@@ -89,6 +89,7 @@ public class OrderSlimV1JsonSerializer extends StdSerializer<Order> {
         // Objeto "product"
         jsonGenerator.writeObjectFieldStart("product");
         jsonGenerator.writeStringField("product", order.getProduct().getProduct());
+        jsonGenerator.writeStringField("thresholdTemperature", String.valueOf(order.getProduct().getThresholdTemperature()));
         jsonGenerator.writeStringField("density", String.valueOf(order.getProduct().getDensity()));
         jsonGenerator.writeEndObject();
 
