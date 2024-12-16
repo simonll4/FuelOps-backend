@@ -86,7 +86,7 @@ public class UserBusiness implements IUserBusiness {
     @Override
     public User update(User user) throws NotFoundException, BusinessException, FoundException {
 
-        load(user.getId());
+        User userToUpdate = load(user.getId());
         Optional<User> userFound;
 
         try {
@@ -101,6 +101,7 @@ public class UserBusiness implements IUserBusiness {
         }
 
         try {
+            user.setPassword(userToUpdate.getPassword());
             return userDAO.save(user);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
