@@ -8,7 +8,6 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
 import java.io.IOException;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class UserSlimV1JsonSerializer extends StdSerializer<User> {
 
@@ -24,12 +23,16 @@ public class UserSlimV1JsonSerializer extends StdSerializer<User> {
         jsonGenerator.writeStringField("username", user.getUsername()); // Serializa el campo username
         jsonGenerator.writeBooleanField("enabled", user.isEnabled()); // Serializa el campo enabled
 
-        // Transforma el Set<Rol> a un String separado por comas
+        // Array de roles
         Set<Role> roles = user.getRoles();
-        String roleString = roles.stream()
-                .map(Role::getName) // Asume que Rol tiene un método getName()
-                .collect(Collectors.joining(","));
-        jsonGenerator.writeStringField("roles", roleString); // Incluye los roles como un String
+        jsonGenerator.writeArrayFieldStart("roles");
+        for (Role role : roles) {
+            jsonGenerator.writeStartObject();
+            jsonGenerator.writeStringField("id", String.valueOf(role.getId()));
+            jsonGenerator.writeStringField("name", role.getName());
+            jsonGenerator.writeEndObject();
+        }
+        jsonGenerator.writeEndArray();
 
         jsonGenerator.writeEndObject(); // Finaliza el objeto JSON
     }

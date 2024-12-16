@@ -85,7 +85,8 @@ public class UserBusiness implements IUserBusiness {
 
     @Override
     public User update(User user) throws NotFoundException, BusinessException, FoundException {
-        load(user.getId() );
+
+        load(user.getId());
         Optional<User> userFound;
 
         try {
@@ -106,31 +107,6 @@ public class UserBusiness implements IUserBusiness {
             throw BusinessException.builder().ex(e).build();
         }
     }
-
-
-//    @Override
-//    public User update(User user) throws NotFoundException, BusinessException, FoundException {
-//        load(user.getId());
-//        Optional<User> userFound;
-//
-//        try {
-//            userFound = userDAO.findByUsernameAndIdNot(user.getUsername(), user.getId());
-//        } catch (Exception e) {
-//            log.error(e.getMessage(), e);
-//            throw BusinessException.builder().ex(e).build();
-//        }
-//
-//        if (userFound.isPresent()) {
-//            throw FoundException.builder().message("Se encontro el Usuario " + user.getUsername()).build();
-//        }
-//
-//        try {
-//            return userDAO.save(user);
-//        } catch (Exception e) {
-//            log.error(e.getMessage(), e);
-//            throw BusinessException.builder().ex(e).build();
-//        }
-//    }
 
     @Override
     public void delete(User user) throws NotFoundException, BusinessException {

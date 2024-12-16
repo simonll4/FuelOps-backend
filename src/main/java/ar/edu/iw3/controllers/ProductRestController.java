@@ -1,15 +1,8 @@
 package ar.edu.iw3.controllers;
 
 import ar.edu.iw3.Constants;
-import ar.edu.iw3.model.Order;
 import ar.edu.iw3.model.Product;
-import ar.edu.iw3.model.Category;
-import ar.edu.iw3.model.business.exceptions.BusinessException;
-import ar.edu.iw3.model.business.exceptions.FoundException;
-import ar.edu.iw3.model.business.exceptions.NotFoundException;
-import ar.edu.iw3.model.business.interfaces.ICategoryBusiness;
 import ar.edu.iw3.model.business.interfaces.IProductBusiness;
-import ar.edu.iw3.model.serializers.OrderSlimV1JsonSerializer;
 import ar.edu.iw3.model.serializers.ProductSlimV1JsonSerializer;
 import ar.edu.iw3.util.JsonUtils;
 import ar.edu.iw3.util.StandartResponse;
@@ -45,10 +38,8 @@ public class ProductRestController extends BaseRestController {
     private IProductBusiness productBusiness;
 
     @Autowired
-    private ICategoryBusiness categoryBusiness;
-
-    @Autowired
     private IStandartResponseBusiness response;
+
 
     @Operation(operationId = "list-internal-products", summary = "Listar productos", description = "Lista todos los productos")
     @ApiResponses(value = {
@@ -83,6 +74,8 @@ public class ProductRestController extends BaseRestController {
 
         return new ResponseEntity<>(serializedProducts, HttpStatus.OK);
     }
+
+
 
     @Operation(operationId = "load-internal-product", summary = "Cargar producto", description = "Carga los datos de un producto")
     @Parameter(in = ParameterIn.PATH, name = "id", description = "Identificador del producto", required = true)
@@ -207,179 +200,179 @@ public class ProductRestController extends BaseRestController {
     }
 
 
-    @Operation(operationId = "list-internal-categories", summary = "Listar categorías", description = "Lista todas las categorías")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Lista de categorías", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = Category.class))}),
-            @ApiResponse(responseCode = "401", description = "Autenticación requerida", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
-            @ApiResponse(responseCode = "403", description = "Permisos insuficientes para acceder al recurso", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
-            @ApiResponse(responseCode = "404", description = "Recurso no encontrado", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
-            @ApiResponse(responseCode = "500", description = "Error interno", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
-    })
-    @GetMapping(value = "/categories", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> listCategories() {
-        try {
-            return new ResponseEntity<>(categoryBusiness.list(), HttpStatus.OK);
-        } catch (BusinessException e) {
-            return new ResponseEntity<>(response.build(HttpStatus.INTERNAL_SERVER_ERROR, e, e.getMessage()),
-                    HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-
-    @Operation(operationId = "load-internal-category", summary = "Cargar categoría", description = "Carga los datos de una categoría")
-    @Parameter(in = ParameterIn.PATH, name = "id", description = "Identificador de la categoría", required = true)
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Categoría cargada", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = Category.class))}),
-            @ApiResponse(responseCode = "401", description = "Autenticación requerida", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
-            @ApiResponse(responseCode = "403", description = "Permisos insuficientes para acceder al recurso", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
-            @ApiResponse(responseCode = "404", description = "Recurso no encontrado", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
-            @ApiResponse(responseCode = "500", description = "Error interno", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
-    })
-    @GetMapping(value = "/categories/{id}")
-    public ResponseEntity<?> loadCategory(@PathVariable long id) {
-        try {
-            return new ResponseEntity<>(categoryBusiness.load(id), HttpStatus.OK);
-        } catch (BusinessException e) {
-            return new ResponseEntity<>(response.build(HttpStatus.INTERNAL_SERVER_ERROR, e, e.getMessage()),
-                    HttpStatus.INTERNAL_SERVER_ERROR);
-        } catch (NotFoundException e) {
-            return new ResponseEntity<>(response.build(HttpStatus.NOT_FOUND, e, e.getMessage()), HttpStatus.NOT_FOUND);
-        }
-    }
-
-
-    @Operation(operationId = "load-internal-category-by-name", summary = "Cargar categoría por nombre", description = "Carga los datos de una categoría por nombre")
-    @Parameter(in = ParameterIn.PATH, name = "category", description = "Nombre de la categoría", required = true)
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Categoría cargada", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = Category.class))}),
-            @ApiResponse(responseCode = "401", description = "Autenticación requerida", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
-            @ApiResponse(responseCode = "403", description = "Permisos insuficientes para acceder al recurso", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
-            @ApiResponse(responseCode = "404", description = "Recurso no encontrado", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
-            @ApiResponse(responseCode = "500", description = "Error interno", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
-    })
-    @GetMapping(value = "/categories/by_name/{category}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> loadCategory(@PathVariable String category) {
-        try {
-            return new ResponseEntity<>(categoryBusiness.load(category), HttpStatus.OK);
-        } catch (BusinessException e) {
-            return new ResponseEntity<>(response.build(HttpStatus.INTERNAL_SERVER_ERROR, e, e.getMessage()),
-                    HttpStatus.INTERNAL_SERVER_ERROR);
-        } catch (NotFoundException e) {
-            return new ResponseEntity<>(response.build(HttpStatus.NOT_FOUND, e, e.getMessage()), HttpStatus.NOT_FOUND);
-        }
-    }
-
-    @Operation(operationId = "add-internal-category", summary = "Agregar categoría", description = "Agrega una categoría")
-    @io.swagger.v3.oas.annotations.parameters.RequestBody(
-            required = true,
-            description = "Objeto JSON que representa los datos de la categoría",
-            content = @Content(
-                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                    schema = @Schema(implementation = Category.class)
-            )
-    )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Categoría agregada", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = Category.class))}),
-            @ApiResponse(responseCode = "401", description = "Autenticación requerida", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
-            @ApiResponse(responseCode = "403", description = "Permisos insuficientes para acceder al recurso", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
-            @ApiResponse(responseCode = "404", description = "Recurso no encontrado", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
-            @ApiResponse(responseCode = "500", description = "Error interno", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
-    })
-    @PostMapping(value = "/categories")
-    public ResponseEntity<?> addCategory(@RequestBody Category category) {
-        try {
-            Category response = categoryBusiness.add(category);
-            HttpHeaders responseHeaders = new HttpHeaders();
-            responseHeaders.set("location", Constants.URL_PRODUCTS + "/categories/" + response.getId());
-            return new ResponseEntity<>(responseHeaders, HttpStatus.CREATED);
-        } catch (BusinessException e) {
-            return new ResponseEntity<>(response.build(HttpStatus.INTERNAL_SERVER_ERROR, e, e.getMessage()),
-                    HttpStatus.INTERNAL_SERVER_ERROR);
-        } catch (FoundException e) {
-            return new ResponseEntity<>(response.build(HttpStatus.FOUND, e, e.getMessage()), HttpStatus.FOUND);
-        }
-    }
-
-    @Operation(operationId = "update-internal-category", summary = "Actualizar categoría", description = "Actualiza una categoría")
-    @io.swagger.v3.oas.annotations.parameters.RequestBody(
-            required = true,
-            description = "Objeto JSON que representa los datos de la categoría",
-            content = @Content(
-                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                    schema = @Schema(implementation = Category.class)
-            )
-    )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Categoría actualizada"),
-            @ApiResponse(responseCode = "401", description = "Autenticación requerida", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
-            @ApiResponse(responseCode = "403", description = "Permisos insuficientes para acceder al recurso", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
-            @ApiResponse(responseCode = "404", description = "Recurso no encontrado", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
-            @ApiResponse(responseCode = "500", description = "Error interno", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
-    })
-    @PutMapping(value = "/categories")
-    public ResponseEntity<?> updateCategory(@RequestBody Category category) {
-        try {
-            categoryBusiness.update(category);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (BusinessException e) {
-            return new ResponseEntity<>(response.build(HttpStatus.INTERNAL_SERVER_ERROR, e, e.getMessage()),
-                    HttpStatus.INTERNAL_SERVER_ERROR);
-        } catch (NotFoundException e) {
-            return new ResponseEntity<>(response.build(HttpStatus.NOT_FOUND, e, e.getMessage()), HttpStatus.NOT_FOUND);
-        } catch (FoundException e) {
-            return new ResponseEntity<>(response.build(HttpStatus.FOUND, e, e.getMessage()), HttpStatus.FOUND);
-        }
-    }
-
-
-    @Operation(operationId = "delete-internal-category", summary = "Eliminar categoría", description = "Elimina una categoría")
-    @Parameter(in = ParameterIn.PATH, name = "id", description = "Identificador de la categoría", required = true)
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Categoría eliminada"),
-            @ApiResponse(responseCode = "401", description = "Autenticación requerida", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
-            @ApiResponse(responseCode = "403", description = "Permisos insuficientes para acceder al recurso", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
-            @ApiResponse(responseCode = "404", description = "Recurso no encontrado", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
-            @ApiResponse(responseCode = "500", description = "Error interno", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
-    })
-    @DeleteMapping(value = "/categories/{id}")
-    public ResponseEntity<?> deleteCategory(@PathVariable long id) {
-        try {
-            categoryBusiness.delete(id);
-            return new ResponseEntity<String>(HttpStatus.OK);
-        } catch (BusinessException e) {
-            return new ResponseEntity<>(response.build(HttpStatus.INTERNAL_SERVER_ERROR, e, e.getMessage()),
-                    HttpStatus.INTERNAL_SERVER_ERROR);
-        } catch (NotFoundException e) {
-            return new ResponseEntity<>(response.build(HttpStatus.NOT_FOUND, e, e.getMessage()), HttpStatus.NOT_FOUND);
-        }
-    }
+//    @Operation(operationId = "list-internal-categories", summary = "Listar categorías", description = "Lista todas las categorías")
+//    @ApiResponses(value = {
+//            @ApiResponse(responseCode = "200", description = "Lista de categorías", content = {
+//                    @Content(mediaType = "application/json", schema = @Schema(implementation = Category.class))}),
+//            @ApiResponse(responseCode = "401", description = "Autenticación requerida", content = {
+//                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
+//            @ApiResponse(responseCode = "403", description = "Permisos insuficientes para acceder al recurso", content = {
+//                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
+//            @ApiResponse(responseCode = "404", description = "Recurso no encontrado", content = {
+//                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
+//            @ApiResponse(responseCode = "500", description = "Error interno", content = {
+//                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
+//    })
+//    @GetMapping(value = "/categories", produces = MediaType.APPLICATION_JSON_VALUE)
+//    public ResponseEntity<?> listCategories() {
+//        try {
+//            return new ResponseEntity<>(categoryBusiness.list(), HttpStatus.OK);
+//        } catch (BusinessException e) {
+//            return new ResponseEntity<>(response.build(HttpStatus.INTERNAL_SERVER_ERROR, e, e.getMessage()),
+//                    HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//    }
+//
+//
+//    @Operation(operationId = "load-internal-category", summary = "Cargar categoría", description = "Carga los datos de una categoría")
+//    @Parameter(in = ParameterIn.PATH, name = "id", description = "Identificador de la categoría", required = true)
+//    @ApiResponses(value = {
+//            @ApiResponse(responseCode = "200", description = "Categoría cargada", content = {
+//                    @Content(mediaType = "application/json", schema = @Schema(implementation = Category.class))}),
+//            @ApiResponse(responseCode = "401", description = "Autenticación requerida", content = {
+//                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
+//            @ApiResponse(responseCode = "403", description = "Permisos insuficientes para acceder al recurso", content = {
+//                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
+//            @ApiResponse(responseCode = "404", description = "Recurso no encontrado", content = {
+//                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
+//            @ApiResponse(responseCode = "500", description = "Error interno", content = {
+//                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
+//    })
+//    @GetMapping(value = "/categories/{id}")
+//    public ResponseEntity<?> loadCategory(@PathVariable long id) {
+//        try {
+//            return new ResponseEntity<>(categoryBusiness.load(id), HttpStatus.OK);
+//        } catch (BusinessException e) {
+//            return new ResponseEntity<>(response.build(HttpStatus.INTERNAL_SERVER_ERROR, e, e.getMessage()),
+//                    HttpStatus.INTERNAL_SERVER_ERROR);
+//        } catch (NotFoundException e) {
+//            return new ResponseEntity<>(response.build(HttpStatus.NOT_FOUND, e, e.getMessage()), HttpStatus.NOT_FOUND);
+//        }
+//    }
+//
+//
+//    @Operation(operationId = "load-internal-category-by-name", summary = "Cargar categoría por nombre", description = "Carga los datos de una categoría por nombre")
+//    @Parameter(in = ParameterIn.PATH, name = "category", description = "Nombre de la categoría", required = true)
+//    @ApiResponses(value = {
+//            @ApiResponse(responseCode = "200", description = "Categoría cargada", content = {
+//                    @Content(mediaType = "application/json", schema = @Schema(implementation = Category.class))}),
+//            @ApiResponse(responseCode = "401", description = "Autenticación requerida", content = {
+//                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
+//            @ApiResponse(responseCode = "403", description = "Permisos insuficientes para acceder al recurso", content = {
+//                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
+//            @ApiResponse(responseCode = "404", description = "Recurso no encontrado", content = {
+//                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
+//            @ApiResponse(responseCode = "500", description = "Error interno", content = {
+//                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
+//    })
+//    @GetMapping(value = "/categories/by_name/{category}", produces = MediaType.APPLICATION_JSON_VALUE)
+//    public ResponseEntity<?> loadCategory(@PathVariable String category) {
+//        try {
+//            return new ResponseEntity<>(categoryBusiness.load(category), HttpStatus.OK);
+//        } catch (BusinessException e) {
+//            return new ResponseEntity<>(response.build(HttpStatus.INTERNAL_SERVER_ERROR, e, e.getMessage()),
+//                    HttpStatus.INTERNAL_SERVER_ERROR);
+//        } catch (NotFoundException e) {
+//            return new ResponseEntity<>(response.build(HttpStatus.NOT_FOUND, e, e.getMessage()), HttpStatus.NOT_FOUND);
+//        }
+//    }
+//
+//    @Operation(operationId = "add-internal-category", summary = "Agregar categoría", description = "Agrega una categoría")
+//    @io.swagger.v3.oas.annotations.parameters.RequestBody(
+//            required = true,
+//            description = "Objeto JSON que representa los datos de la categoría",
+//            content = @Content(
+//                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+//                    schema = @Schema(implementation = Category.class)
+//            )
+//    )
+//    @ApiResponses(value = {
+//            @ApiResponse(responseCode = "201", description = "Categoría agregada", content = {
+//                    @Content(mediaType = "application/json", schema = @Schema(implementation = Category.class))}),
+//            @ApiResponse(responseCode = "401", description = "Autenticación requerida", content = {
+//                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
+//            @ApiResponse(responseCode = "403", description = "Permisos insuficientes para acceder al recurso", content = {
+//                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
+//            @ApiResponse(responseCode = "404", description = "Recurso no encontrado", content = {
+//                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
+//            @ApiResponse(responseCode = "500", description = "Error interno", content = {
+//                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
+//    })
+//    @PostMapping(value = "/categories")
+//    public ResponseEntity<?> addCategory(@RequestBody Category category) {
+//        try {
+//            Category response = categoryBusiness.add(category);
+//            HttpHeaders responseHeaders = new HttpHeaders();
+//            responseHeaders.set("location", Constants.URL_PRODUCTS + "/categories/" + response.getId());
+//            return new ResponseEntity<>(responseHeaders, HttpStatus.CREATED);
+//        } catch (BusinessException e) {
+//            return new ResponseEntity<>(response.build(HttpStatus.INTERNAL_SERVER_ERROR, e, e.getMessage()),
+//                    HttpStatus.INTERNAL_SERVER_ERROR);
+//        } catch (FoundException e) {
+//            return new ResponseEntity<>(response.build(HttpStatus.FOUND, e, e.getMessage()), HttpStatus.FOUND);
+//        }
+//    }
+//
+//    @Operation(operationId = "update-internal-category", summary = "Actualizar categoría", description = "Actualiza una categoría")
+//    @io.swagger.v3.oas.annotations.parameters.RequestBody(
+//            required = true,
+//            description = "Objeto JSON que representa los datos de la categoría",
+//            content = @Content(
+//                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+//                    schema = @Schema(implementation = Category.class)
+//            )
+//    )
+//    @ApiResponses(value = {
+//            @ApiResponse(responseCode = "200", description = "Categoría actualizada"),
+//            @ApiResponse(responseCode = "401", description = "Autenticación requerida", content = {
+//                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
+//            @ApiResponse(responseCode = "403", description = "Permisos insuficientes para acceder al recurso", content = {
+//                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
+//            @ApiResponse(responseCode = "404", description = "Recurso no encontrado", content = {
+//                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
+//            @ApiResponse(responseCode = "500", description = "Error interno", content = {
+//                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
+//    })
+//    @PutMapping(value = "/categories")
+//    public ResponseEntity<?> updateCategory(@RequestBody Category category) {
+//        try {
+//            categoryBusiness.update(category);
+//            return new ResponseEntity<>(HttpStatus.OK);
+//        } catch (BusinessException e) {
+//            return new ResponseEntity<>(response.build(HttpStatus.INTERNAL_SERVER_ERROR, e, e.getMessage()),
+//                    HttpStatus.INTERNAL_SERVER_ERROR);
+//        } catch (NotFoundException e) {
+//            return new ResponseEntity<>(response.build(HttpStatus.NOT_FOUND, e, e.getMessage()), HttpStatus.NOT_FOUND);
+//        } catch (FoundException e) {
+//            return new ResponseEntity<>(response.build(HttpStatus.FOUND, e, e.getMessage()), HttpStatus.FOUND);
+//        }
+//    }
+//
+//
+//    @Operation(operationId = "delete-internal-category", summary = "Eliminar categoría", description = "Elimina una categoría")
+//    @Parameter(in = ParameterIn.PATH, name = "id", description = "Identificador de la categoría", required = true)
+//    @ApiResponses(value = {
+//            @ApiResponse(responseCode = "200", description = "Categoría eliminada"),
+//            @ApiResponse(responseCode = "401", description = "Autenticación requerida", content = {
+//                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
+//            @ApiResponse(responseCode = "403", description = "Permisos insuficientes para acceder al recurso", content = {
+//                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
+//            @ApiResponse(responseCode = "404", description = "Recurso no encontrado", content = {
+//                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
+//            @ApiResponse(responseCode = "500", description = "Error interno", content = {
+//                    @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
+//    })
+//    @DeleteMapping(value = "/categories/{id}")
+//    public ResponseEntity<?> deleteCategory(@PathVariable long id) {
+//        try {
+//            categoryBusiness.delete(id);
+//            return new ResponseEntity<String>(HttpStatus.OK);
+//        } catch (BusinessException e) {
+//            return new ResponseEntity<>(response.build(HttpStatus.INTERNAL_SERVER_ERROR, e, e.getMessage()),
+//                    HttpStatus.INTERNAL_SERVER_ERROR);
+//        } catch (NotFoundException e) {
+//            return new ResponseEntity<>(response.build(HttpStatus.NOT_FOUND, e, e.getMessage()), HttpStatus.NOT_FOUND);
+//        }
+//    }
 
 }

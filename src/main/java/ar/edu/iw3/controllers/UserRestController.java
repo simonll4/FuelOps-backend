@@ -2,9 +2,7 @@ package ar.edu.iw3.controllers;
 
 import ar.edu.iw3.Constants;
 import ar.edu.iw3.auth.model.User;
-import ar.edu.iw3.model.Product;
 import ar.edu.iw3.model.business.interfaces.IUserBusiness;
-import ar.edu.iw3.model.serializers.ProductSlimV1JsonSerializer;
 import ar.edu.iw3.model.serializers.UserSlimV1JsonSerializer;
 import ar.edu.iw3.util.JsonUtils;
 import ar.edu.iw3.util.StandartResponse;
@@ -26,6 +24,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -40,10 +39,13 @@ public class UserRestController extends BaseRestController {
     @Autowired
     private IUserBusiness userBusiness;
 
+    @Autowired
+    private PasswordEncoder pEncoder;
 
-    @Operation(operationId = "list_internal_users", summary = "Listar usuarios", description = "Lista todos los usuarios internos")
+
+    @Operation(operationId = "list_users", summary = "Listar usuarios", description = "Lista todos los usuarios")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Lista de usuarios internos", content = {
+            @ApiResponse(responseCode = "200", description = "Lista de usuarios", content = {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = User.class))}),
     })
     @SneakyThrows
@@ -68,12 +70,12 @@ public class UserRestController extends BaseRestController {
     }
 
 
-    @Operation(operationId = "load_internal_user", summary = "Cargar usuario", description = "Carga un usuario interno por id")
+    @Operation(operationId = "load_internal_user", summary = "Cargar usuario", description = "Carga un usuario por id")
     @Parameter(in = ParameterIn.PATH, name = "id", description = "Id del usuario a cargar", required = true)
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Usuario interno cargado", content = {
+            @ApiResponse(responseCode = "200", description = "Usuario cargado", content = {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = User.class))}),
-            @ApiResponse(responseCode = "404", description = "Usuario interno no encontrado", content = {
+            @ApiResponse(responseCode = "404", description = "Usuario no encontrado", content = {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
     })
     @SneakyThrows
@@ -82,11 +84,12 @@ public class UserRestController extends BaseRestController {
         return new ResponseEntity<>(userBusiness.load(id), HttpStatus.OK);
     }
 
-    @Operation(operationId = "load_internal_user_by_username", summary = "Cargar usuario por username", description = "Carga un usuario interno por username")
+
+    @Operation(operationId = "load_user_by_username", summary = "Cargar usuario por username", description = "Carga un usuario por username")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Usuario interno cargado", content = {
+            @ApiResponse(responseCode = "200", description = "Usuario cargado", content = {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = User.class))}),
-            @ApiResponse(responseCode = "404", description = "Usuario interno no encontrado", content = {
+            @ApiResponse(responseCode = "404", description = "Usuario no encontrado", content = {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = StandartResponse.class))}),
     })
     @Parameter(in = ParameterIn.PATH, name = "user", description = "Nombre del usuario a cargar", required = true)
@@ -97,9 +100,9 @@ public class UserRestController extends BaseRestController {
     }
 
 
-    @Operation(operationId = "add_internal_user", summary = "Agregar usuario", description = "Agrega un usuario interno")
+    @Operation(operationId = "add_user", summary = "Agregar usuario", description = "Agrega un usuario")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Usuario interno agregado"),
+            @ApiResponse(responseCode = "201", description = "Usuario agregado"),
     })
     @io.swagger.v3.oas.annotations.parameters.RequestBody(
             required = true,
@@ -112,15 +115,19 @@ public class UserRestController extends BaseRestController {
     @SneakyThrows
     @PostMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> add(@Valid @RequestBody User user) {
+
+        user.setPassword(pEncoder.encode(user.getPassword()));
         User response = userBusiness.add(user);
+
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set("Location", Constants.URL_USERS + "/" + response.getId());
         return new ResponseEntity<>(responseHeaders, HttpStatus.CREATED);
     }
 
-    @Operation(operationId = "update_internal_user", summary = "Actualizar usuario", description = "Actualiza un usuario interno")
+
+    @Operation(operationId = "update_user", summary = "Actualizar usuario", description = "Actualiza un usuario")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Usuario interno actualizado"),
+            @ApiResponse(responseCode = "200", description = "Usuario actualizado"),
     })
     @io.swagger.v3.oas.annotations.parameters.RequestBody(
             required = true,
@@ -137,9 +144,10 @@ public class UserRestController extends BaseRestController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @Operation(operationId = "delete_internal_user", summary = "Eliminar usuario", description = "Elimina un usuario interno")
+
+    @Operation(operationId = "delete_user", summary = "Eliminar usuario", description = "Elimina un usuario")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Usuario interno eliminado"),
+            @ApiResponse(responseCode = "200", description = "Usuario eliminado"),
     })
     @Parameter(in = ParameterIn.PATH, name = "id", description = "Id del usuario a eliminar", required = true)
     @SneakyThrows
@@ -148,4 +156,5 @@ public class UserRestController extends BaseRestController {
         userBusiness.delete(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
 }
