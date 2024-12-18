@@ -49,26 +49,24 @@ mvn clean install -P<profile-id>
 
 ## Instalacion y Ejecucion del Proyecto: Dev
 
-Antes de iniciar el servidor, ejecute el archivo docker-compose.yml ubicado en la raíz del proyecto.
+Antes de iniciar el servidor en modo desarrollo, ejecute el archivo `docker-compose-dev.yml`.
 Este archivo configura y levanta una base de datos para el perfil de ejecución mysqldev.
 
+Para iniciar el servidor en modo produccion se uilizo el archivo `docker-compose-prod.yml`.
+
+
+
 ## Postman Collection
+La colección de Postman para probar la API se encuentra en el siguiente enlace:
+[Postman Collection - FuelOps API](https://drive.google.com/file/d/10PLZQ9K2Ebvr_ctLqo4R80MPGvfnf38l/view?usp=sharing)
 
-Puedes encontrar la colección de Postman para probar la API en el siguiente enlace:
-
-[Postman Collection - FuelOps API](<https://drive.google.com/file/d/1E8iaMf6G7WXBFj8npD88_DrCpJXe3am3/view?usp=sharing>)
 
 ## API Documentation
+La documentacion de la API se encuentra disponible en Swagger UI. Para acceder
+a la documentación de la API Utilizar el siguiente enlace: http://localhost:8080/swagger-ui.html
 
-La documentacion de la API se encuentra disponible en Swagger UI. Puede acceder
-a la documentación de la API en el siguiente enlace:
-
-```
-http://localhost:8080/swagger-ui.html
-```
 
 ## Contributors
-
 - [Simonll4](https://github.com/simonll4)
 - [MattGoode7](https://github.com/MattGoode7)
 - [Pandulc](https://github.com/Pandulc)

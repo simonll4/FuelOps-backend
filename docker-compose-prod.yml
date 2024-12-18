@@ -1,0 +1,38 @@
+version: '3.7'
+
+volumes:
+  mysql-data-iw3:
+services:
+  tomcat:
+    image: magm3333/tomcat:10.1.28
+    container_name: tomcat
+    restart: always
+    environment:
+      - TZ=America/Argentina/Buenos_Aires
+    ports:
+      - 443:8443
+    volumes:
+      - ./tomcat/webapps:/opt/tomcat/webapps
+      - ./tomcat/conf:/opt/tomcat/conf
+      - ./tomcat/certs:/opt/tomcat/certs
+  mysql:
+    image: mysql:8.0.3
+    container_name: mysql
+    restart: always
+    environment:
+      - TZ=America/Argentina/Buenos_Aires
+      - MYSQL_DATABASE=iw3
+      - MYSQL_ROOT_PASSWORD=1u4iwE
+    command: --bind-address=0.0.0.0
+    expose:
+      - 3306
+    volumes:
+      - mysql-data-iw3:/var/lib/mysql
+  adminer:
+    image: adminer:latest
+    container_name: adminer
+    restart: always
+    environment:
+      - TZ=America/Argentina/Buenos_Aires
+    ports:
+      - 80:8080

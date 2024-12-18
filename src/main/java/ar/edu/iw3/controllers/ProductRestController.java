@@ -37,9 +37,6 @@ public class ProductRestController extends BaseRestController {
     @Autowired
     private IProductBusiness productBusiness;
 
-    @Autowired
-    private IStandartResponseBusiness response;
-
 
     @Operation(operationId = "list-internal-products", summary = "Listar productos", description = "Lista todos los productos")
     @ApiResponses(value = {

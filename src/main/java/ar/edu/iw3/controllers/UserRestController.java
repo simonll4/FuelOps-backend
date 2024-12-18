@@ -121,7 +121,8 @@ public class UserRestController extends BaseRestController {
 
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set("Location", Constants.URL_USERS + "/" + response.getId());
-        return new ResponseEntity<>(responseHeaders, HttpStatus.CREATED);
+        //return new ResponseEntity<>(responseHeaders, HttpStatus.CREATED);
+        return new ResponseEntity<>(response, responseHeaders, HttpStatus.CREATED);
     }
 
 
