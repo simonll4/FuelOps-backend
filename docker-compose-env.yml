@@ -1,0 +1,87 @@
+services:
+
+  nginx:
+    image: nginx:1.23.3
+    container_name: nginx
+    restart: always
+    links:
+      - "backend"
+      - "nodered"
+      - "adminer"
+    depends_on:
+      - "backend"
+      - "nodered"
+      - "adminer"
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+
+  certbot:
+    image: certbot/certbot
+    container_name: certbot
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot  # Directorio para el plugin webroot
+    entrypoint: >
+      /bin/sh -c "certbot certonly --webroot -w /var/www/certbot --agree-tos --no-eff-email --email gguillaumet011@alumnos.iua.edu.ar -d lpn1.crabdance.com
+      && trap exit TERM; while :; do certbot renew --webroot -w /var/www/certbot --deploy-hook 'nginx -s reload'; sleep 30d & wait $${!}; done;"
+    networks:
+      - app-network
+    # Nota: Con el plugin webroot ya no es necesario mapear el puerto 80 en este servicio
+
+  backend:
+    image: simonll4/fuelops-backend-iw3:latest
+    container_name: backend
+    restart: always
+    depends_on:
+      - "mysql"
+    #    ports:
+    #      - '8080:8080'
+    expose:
+      - 8080
+    environment:
+      - SPRING_PROFILES_ACTIVE=mysqlprod
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_NAME=iw3
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=123
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    restart: always
+    environment:
+      - TZ=America/Argentina/Buenos_Aires
+      - MYSQL_DATABASE=iw3
+      - MYSQL_ROOT_PASSWORD=123
+    command: --bind-address=0.0.0.0
+    expose:
+      - 3306
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+  adminer:
+    image: adminer:latest
+    container_name: adminer
+    restart: always
+    environment:
+      - TZ=America/Argentina/Buenos_Aires
+    #    ports:
+    #      - '8081:8080'
+    expose:
+      - 8080
+
+  nodered:
+    image: nodered/node-red:latest
+    container_name: nodered
+    restart: always
+    #    ports:
+    #      - '1880:1880'
+    expose:
+      - 1880
+
+volumes:
+  mysql-data:
